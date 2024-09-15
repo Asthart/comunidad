@@ -1,0 +1,55 @@
+<!-- templates/chat.html -->
+{% extends 'base.html' %} {% block content %}
+<div class="chat-container">
+  <h1>Chat con {{ receptor.username }}</h1>
+  <div id="chat-messages" class="chat-messages">
+    {% for mensaje in mensajes %}
+    <div
+      class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}"
+    >
+      <strong>{{ mensaje.emisor.username }}:</strong> {{ mensaje.contenido }}
+    </div>
+    {% endfor %}
+  </div>
+  <div class="chat-input">
+    <input
+      type="text"
+      id="chat-message-input"
+      placeholder="Escribe un mensaje..."
+    />
+    <button id="chat-message-submit">Enviar</button>
+  </div>
+</div>
+
+<script>
+  const roomName = "{{ room_name }}";
+  const username = "{{ request.user.username }}";
+  const chatSocket = new WebSocket(
+    "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
+  );
+
+  chatSocket.onmessage = function (e) {
+    const data = JSON.parse(e.data);
+    const messageElement = document.createElement("div");
+    messageElement.classList.add("message");
+    messageElement.classList.add(
+      data.username === username ? "sent" : "received"
+    );
+    messageElement.innerHTML =
+      "<strong>" + data.username + ":</strong> " + data.message;
+    document.querySelector("#chat-messages").appendChild(messageElement);
+  };
+
+  document.querySelector("#chat-message-submit").onclick = function (e) {
+    const messageInputDom = document.querySelector("#chat-message-input");
+    const message = messageInputDom.value;
+    chatSocket.send(
+      JSON.stringify({
+        message: message,
+        username: username,
+      })
+    );
+    messageInputDom.value = "";
+  };
+</script>
+{% endblock %}

@@ -1,0 +1,127 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}CTInnovate Technology{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><a href="{% url 'inicio' %}">Inicio</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'crear_comunidad' %}">Crear Comunidad</a></li>
+          <li><a href="{% url 'crear_proyecto' %}">Crear Proyecto</a></li>
+          <li><a href="{% url 'crear_desafio' %}">Crear Desafío</a></li>
+          <li>
+            <a href="{% url 'perfil_usuario' user.username %}">Mi Perfil</a>
+          </li>
+          <li><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+          {% else %}
+          <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+          <li><a href="{% url 'registrar' %}">Registrarse</a></li>
+          {% endif %}
+        </ul>
+      </nav>
+    </header>
+    <main>{% block content %} {% endblock %}</main>
+    <footer>
+      <p>&copy; 2023 CTInnovate Technology</p>
+    </footer>
+  </body>
+</html>
+
+<!-- templates/inicio.html -->
+{% extends 'base.html' %} {% block content %}
+<h1>Bienvenido a CTInnovate Technology</h1>
+<h2>Tus Comunidades</h2>
+<ul>
+  {% for comunidad in comunidades %}
+  <li>
+    <a href="{% url 'detalle_comunidad' comunidad.pk %}"
+      >{{ comunidad.nombre }}</a
+    >
+  </li>
+  {% empty %}
+  <li>No perteneces a ninguna comunidad aún.</li>
+  {% endfor %}
+</ul>
+<h2>Proyectos Recientes</h2>
+<ul>
+  {% for proyecto in proyectos %}
+  <li>
+    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay proyectos recientes.</li>
+  {% endfor %}
+</ul>
+<h2>Desafíos Activos</h2>
+<ul>
+  {% for desafio in desafios %}
+  <li>
+    <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay desafíos activos.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+<!-- templates/detalle_comunidad.html -->
+{% extends 'base.html' %} {% block content %}
+<h1>{{ comunidad.nombre }}</h1>
+<p>{{ comunidad.descripcion }}</p>
+{% if es_admin %}
+<p>Eres el administrador de esta comunidad.</p>
+{% endif %}
+<h2>Proyectos</h2>
+<ul>
+  {% for proyecto in proyectos %}
+  <li>
+    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay proyectos en esta comunidad.</li>
+  {% endfor %}
+</ul>
+<h2>Desafíos</h2>
+<ul>
+  {% for desafio in desafios %}
+  <li>
+    <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay desafíos en esta comunidad.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+<!-- templates/perfil_usuario.html -->
+{% extends 'base.html' %} {% block content %}
+<h1>Perfil de {{ usuario.username }}</h1>
+<p>Biografía: {{ perfil.biografia }}</p>
+<p>Rol: {{ perfil.rol }}</p>
+<p>Puntos: {{ perfil.puntos }}</p>
+<h2>Proyectos</h2>
+<ul>
+  {% for proyecto in proyectos %}
+  <li>
+    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>Este usuario no ha creado ningún proyecto.</li>
+  {% endfor %}
+</ul>
+<h2>Actividades Recientes</h2>
+<ul>
+  {% for actividad in actividades %}
+  <li>{{ actividad.tipo_actividad }} - {{ actividad.fecha_hora }}</li>
+  {% empty %}
+  <li>No hay actividades recientes.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
