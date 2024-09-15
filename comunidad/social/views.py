@@ -6,7 +6,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
 
-from comunidad.social.decorators import permiso_requerido
+from .decorators import permiso_requerido
 from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, User
 from .forms import ArchivoProyectoForm, ComunidadForm, ProyectoForm, DesafioForm
 from django.contrib.auth.models import User

@@ -1,0 +1,36 @@
+<!-- templates/inicio.html -->
+{% extends 'base.html' %} {% block content %} {% load static %}
+<h1>Bienvenido a CTInnovate Technology</h1>
+<h2>Tus Comunidades</h2>
+<ul>
+  {% for comunidad in comunidades %}
+  <li>
+    <a href="{% url 'detalle_comunidad' comunidad.pk %}"
+      >{{ comunidad.nombre }}</a
+    >
+  </li>
+  {% empty %}
+  <li>No perteneces a ninguna comunidad aún.</li>
+  {% endfor %}
+</ul>
+<h2>Proyectos Recientes</h2>
+<ul>
+  {% for proyecto in proyectos %}
+  <li>
+    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay proyectos recientes.</li>
+  {% endfor %}
+</ul>
+<h2>Desafíos Activos</h2>
+<ul>
+  {% for desafio in desafios %}
+  <li>
+    <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay desafíos activos.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

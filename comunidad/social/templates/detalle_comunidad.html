@@ -1,0 +1,28 @@
+<!-- templates/detalle_comunidad.html -->
+{% extends 'base.html' %} {% block content %} {% load static %}
+<h1>{{ comunidad.nombre }}</h1>
+<p>{{ comunidad.descripcion }}</p>
+{% if es_admin %}
+<p>Eres el administrador de esta comunidad.</p>
+{% endif %}
+<h2>Proyectos</h2>
+<ul>
+  {% for proyecto in proyectos %}
+  <li>
+    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay proyectos en esta comunidad.</li>
+  {% endfor %}
+</ul>
+<h2>Desafíos</h2>
+<ul>
+  {% for desafio in desafios %}
+  <li>
+    <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
+  </li>
+  {% empty %}
+  <li>No hay desafíos en esta comunidad.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
