@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Desafío - CTInnovate Technology{% endblock %}
+
+{% block content %}
+    <h1>Crear Nuevo Desafío</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Crear Desafío</button>
+    </form>
+{% endblock %}

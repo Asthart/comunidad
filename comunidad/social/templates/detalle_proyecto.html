@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ proyecto.titulo }} - CTInnovate Technology{% endblock %}
+
+{% block content %}
+    <h1>{{ proyecto.titulo }}</h1>
+    <p>Creado por: {{ proyecto.creador.username }}</p>
+    <p>Fecha de creación: {{ proyecto.fecha_creacion }}</p>
+    <p>{{ proyecto.descripcion }}</p>
+    <p>Comunidad: <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}">{{ proyecto.comunidad.nombre }}</a></p>
+{% endblock %}

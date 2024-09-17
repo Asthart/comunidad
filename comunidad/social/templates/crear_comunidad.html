@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Crear Comunidad - CTInnovate Technology{% endblock %}
+
+{% block content %}
+    <h1>Crear Nueva Comunidad</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Crear Comunidad</button>
+    </form>
+{% endblock %}

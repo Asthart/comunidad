@@ -1,28 +1,13 @@
 # views.py
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
-
-from .decorators import permiso_requerido
-from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, User
-from .forms import ArchivoProyectoForm, ComunidadForm, ProyectoForm, DesafioForm
+from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario
+from .forms import ComunidadForm, ProyectoForm, DesafioForm
 from django.contrib.auth.models import User
-
-def registrar(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            usuario = form.save()
-            PerfilUsuario.objects.create(usuario=usuario)
-            login(request, usuario)
-            return redirect('inicio')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registrar.html', {'form': form})
-
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user)
@@ -35,7 +20,7 @@ def inicio(request):
     })
 
 @login_required
-@permiso_requerido('crear_comunidad')
+@permission_required('tu_app.add_comunidad', raise_exception=True)
 def crear_comunidad(request):
     if request.method == 'POST':
         form = ComunidadForm(request.POST)
@@ -67,25 +52,15 @@ def detalle_comunidad(request, pk):
         'es_admin': es_admin
     })
 
-# views.py
-
 @login_required
-@permiso_requerido('crear_proyecto')
+@permission_required('tu_app.add_proyecto', raise_exception=True)
 def crear_proyecto(request):
     if request.method == 'POST':
         form = ProyectoForm(request.POST)
-        archivo_form = ArchivoProyectoForm(request.POST, request.FILES)
-        if form.is_valid() and archivo_form.is_valid():
+        if form.is_valid():
             proyecto = form.save(commit=False)
             proyecto.creador = request.user
             proyecto.save()
-            
-            archivo = archivo_form.save(commit=False)
-            archivo.subido_por = request.user
-            archivo.save()
-            
-            proyecto.archivos.add(archivo)
-            
             ActividadUsuario.objects.create(
                 usuario=request.user,
                 tipo_actividad='crear_proyecto',
@@ -94,8 +69,7 @@ def crear_proyecto(request):
             return redirect('detalle_proyecto', pk=proyecto.pk)
     else:
         form = ProyectoForm()
-        archivo_form = ArchivoProyectoForm()
-    return render(request, 'crear_proyecto.html', {'form': form, 'archivo_form': archivo_form})
+    return render(request, 'crear_proyecto.html', {'form': form})
 
 @login_required
 def detalle_proyecto(request, pk):
@@ -103,7 +77,7 @@ def detalle_proyecto(request, pk):
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
-@permiso_requerido('crear_desafio')
+@permission_required('tu_app.add_desafio', raise_exception=True)
 def crear_desafio(request):
     if request.method == 'POST':
         form = DesafioForm(request.POST)
@@ -138,6 +112,24 @@ def buscar(request):
         'comunidades': comunidades
     })
 
+@login_required
+def chat(request, receptor_id):
+    receptor = get_object_or_404(User, id=receptor_id)
+    mensajes = MensajeChat.objects.filter(
+        Q(emisor=request.user, receptor=receptor) |
+        Q(emisor=receptor, receptor=request.user)
+    ).order_by('fecha_hora')
+    
+    if request.method == 'POST':
+        contenido = request.POST.get('contenido')
+        MensajeChat.objects.create(
+            emisor=request.user,
+            receptor=receptor,
+            contenido=contenido
+        )
+        return redirect('chat', receptor_id=receptor_id)
+    
+    return render(request, 'chat.html', {'receptor': receptor, 'mensajes': mensajes})
 
 @login_required
 def ranking_usuarios(request):
@@ -157,18 +149,15 @@ def perfil_usuario(request, username):
         'actividades': actividades
     })
     
-# views.py
+from .forms import CustomUserCreationForm
 
-@login_required
-def chat(request, receptor_id):
-    receptor = get_object_or_404(User, id=receptor_id)
-    mensajes = MensajeChat.objects.filter(
-        Q(emisor=request.user, receptor=receptor) |
-        Q(emisor=receptor, receptor=request.user)
-    ).order_by('fecha_hora')
-    
-    return render(request, 'chat.html', {
-        'receptor': receptor,
-        'mensajes': mensajes,
-        'room_name': f'{request.user.id}_{receptor.id}'
-    })
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('inicio')
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'register.html', {'form': form})

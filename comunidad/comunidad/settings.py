@@ -97,7 +97,7 @@ WSGI_APPLICATION = 'comunidad.wsgi.application'
 }'''
 
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgres:///social"),
+    "default": env.db("DATABASE_URL", default="postgres:///social"), # type: ignore
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # Password validation
@@ -151,7 +151,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 ASGI_APPLICATION = 'comunidad.asgi.application'
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
 }

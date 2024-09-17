@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block title %}Ranking de Usuarios - CTInnovate
+Technology{% endblock %} {% block content %}
+<h1>Ranking de Usuarios</h1>
+<ol>
+  {% for perfil in top_usuarios %}
+  <li>
+    <a href="{% url 'perfil_usuario' perfil.usuario.username %}"
+      >{{ perfil.usuario.username }}</a
+    >
+    - {{ perfil.puntos }} puntos
+  </li>
+  {% empty %}
+  <li>No hay usuarios en el ranking.</li>
+  {% endfor %}
+</ol>
+{% endblock %}

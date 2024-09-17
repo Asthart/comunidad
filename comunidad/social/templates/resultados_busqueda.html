@@ -1,0 +1,46 @@
+{% extends 'base.html' %} {% block title %}Resultados de Búsqueda - CTInnovate
+Technology{% endblock %} {% block content %}
+<h1>Resultados de Búsqueda</h1>
+<section>
+  <h2>Proyectos</h2>
+  <ul>
+    {% for proyecto in proyectos %}
+    <li>
+      <a href="{% url 'detalle_proyecto' proyecto.pk %}"
+        >{{ proyecto.titulo }}</a
+      >
+    </li>
+    {% empty %}
+    <li>No se encontraron proyectos.</li>
+    {% endfor %}
+  </ul>
+</section>
+<section>
+  <h2>Usuarios</h2>
+  <ul>
+    {% for usuario in usuarios %}
+    <li>
+      <a href="{% url 'perfil_usuario' usuario.username %}"
+        >{{ usuario.username }}</a
+      >
+    </li>
+    {% empty %}
+    <li>No se encontraron usuarios.</li>
+    {% endfor %}
+  </ul>
+</section>
+<section>
+  <h2>Comunidades</h2>
+  <ul>
+    {% for comunidad in comunidades %}
+    <li>
+      <a href="{% url 'detalle_comunidad' comunidad.pk %}"
+        >{{ comunidad.nombre }}</a
+      >
+    </li>
+    {% empty %}
+    <li>No se encontraron comunidades.</li>
+    {% endfor %}
+  </ul>
+</section>
+{% endblock %}
