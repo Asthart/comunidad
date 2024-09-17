@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% include 'header.html' %}
 
 {% block title %}{{ proyecto.titulo }} - CTInnovate Technology{% endblock %}
 
@@ -9,3 +10,5 @@
     <p>{{ proyecto.descripcion }}</p>
     <p>Comunidad: <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}">{{ proyecto.comunidad.nombre }}</a></p>
 {% endblock %}
+
+{% include 'footer.html' %}

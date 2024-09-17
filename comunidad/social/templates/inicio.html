@@ -1,5 +1,6 @@
 <!-- templates/inicio.html -->
 {% extends 'base.html' %}
+{% include 'header.html' %}
 
 {% block content %}
     {% load static %}
@@ -50,4 +51,9 @@
     {% else %}
     <p>No hay publicaciones que mostrar.</p>
     {% endif %}
+    <div class="text-center">
+        <a href="{% url 'crear_publicacion' %}" class="btn btn-primary btn-lg">Crear Publicación</a>
+    </div>
 {% endblock %}
+
+{% include 'footer.html' %}

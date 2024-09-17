@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario
+from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag
 
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
@@ -45,3 +45,11 @@ class ActividadUsuarioAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'tipo_actividad', 'fecha_hora', 'puntos_ganados')
     list_filter = ('tipo_actividad', 'fecha_hora')
     search_fields = ('usuario__username', 'tipo_actividad')
+    
+@admin.register(Publicacion)
+class ActividadUsuarioAdmin(admin.ModelAdmin):
+    list_display = ('autor',)
+    list_filter = ('autor',)
+    search_fields = ('autor',)
+    
+admin.site.register(Tag)

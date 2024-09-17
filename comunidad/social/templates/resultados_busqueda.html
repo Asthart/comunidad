@@ -1,4 +1,7 @@
-{% extends 'base.html' %} {% block title %}Resultados de Búsqueda - CTInnovate
+{% extends 'base.html' %} 
+{% include 'header.html' %}
+
+{% block title %}Resultados de Búsqueda - CTInnovate
 Technology{% endblock %} {% block content %}
 <h1>Resultados de Búsqueda</h1>
 <section>
@@ -44,3 +47,5 @@ Technology{% endblock %} {% block content %}
   </ul>
 </section>
 {% endblock %}
+
+{% include 'footer.html' %}

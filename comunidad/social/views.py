@@ -201,7 +201,7 @@ def register(request):
 
 def crear_publicacion(request):
     if request.method == 'POST':
-        form = PublicacionForm(request.POST)
+        form = PublicacionForm(request.POST, request.FILES)
         if form.is_valid():
             publicacion = form.save(commit=False)
             publicacion.autor = request.user

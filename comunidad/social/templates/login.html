@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% include 'header.html' %}
 
 {% block title %}Iniciar Sesión - CTInnovate Technology{% endblock %}
 
@@ -11,3 +12,5 @@
     </form>
     <p>¿No tienes una cuenta? <a href="{% url 'register' %}">Regístrate aquí</a></p>
 {% endblock %}
+
+{% include 'footer.html' %}

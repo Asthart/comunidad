@@ -1,0 +1,31 @@
+<!-- templates/crear_publicacion.html -->
+{% extends 'base.html' %}
+{% include 'header.html' %}
+
+{% block content %}
+    <h1>Crear Publicación</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div>
+            <label for="id_contenido">Contenido:</label>
+            {{ form.contenido }}
+        </div>
+        <div>
+            <label for="id_tags">Tags:</label>
+            {{ form.tags }}
+        </div>
+        <div>
+            <label for="id_imagen">Imagen:</label>
+            {{ form.imagen }}
+            <input type="file" name="imagen" id="id_imagen" />
+        </div>
+        <div>
+            <label for="id_video">Video:</label>
+            {{ form.video }}
+            <input type="file" name="video" id="id_video" />
+        </div>
+        <button type="submit" class="btn btn-primary">Crear Publicación</button>
+    </form>
+{% endblock %}
+
+{% include 'footer.html' %}

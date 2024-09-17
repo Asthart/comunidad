@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% include 'header.html' %}
 
 {% block title %}{{ desafio.titulo }} - CTInnovate Technology{% endblock %}
 
@@ -10,3 +11,5 @@
     <p>{{ desafio.descripcion }}</p>
     <p>Comunidad: <a href="{% url 'detalle_comunidad' desafio.comunidad.pk %}">{{ desafio.comunidad.nombre }}</a></p>
 {% endblock %}
+
+{% include 'footer.html' %}

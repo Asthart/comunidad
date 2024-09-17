@@ -1,4 +1,7 @@
-{% extends 'base.html' %} {% block title %}Ranking de Usuarios - CTInnovate
+{% extends 'base.html' %} 
+{% include 'header.html' %}
+
+{% block title %}Ranking de Usuarios - CTInnovate
 Technology{% endblock %} {% block content %}
 <h1>Ranking de Usuarios</h1>
 <ol>
@@ -14,3 +17,5 @@ Technology{% endblock %} {% block content %}
   {% endfor %}
 </ol>
 {% endblock %}
+
+{% include 'footer.html' %}

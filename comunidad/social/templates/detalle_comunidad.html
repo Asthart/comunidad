@@ -1,5 +1,8 @@
 <!-- templates/detalle_comunidad.html -->
-{% extends 'base.html' %} {% block content %} {% load static %}
+{% extends 'base.html' %} 
+{% include 'header.html' %}
+
+{% block content %} {% load static %}
 <h1>{{ comunidad.nombre }}</h1>
 <p>{{ comunidad.descripcion }}</p>
 {% if es_admin %}
@@ -26,3 +29,5 @@
   {% endfor %}
 </ul>
 {% endblock %}
+
+{% include 'footer.html' %}

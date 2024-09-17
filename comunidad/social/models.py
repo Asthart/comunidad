@@ -104,9 +104,12 @@ class Publicacion(models.Model):
     tags = models.ManyToManyField('Tag')
     imagen = models.ImageField(upload_to='publicaciones/imagenes/', blank=True, null=True)
     video = models.FileField(upload_to='publicaciones/videos/', blank=True, null=True)
-
+ 
 class Tag(models.Model):
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.nombre
     
 class PublicacionVista(models.Model):
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)

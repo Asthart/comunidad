@@ -2,8 +2,10 @@
 
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from . import views
 
+from comunidad import settings
+from . import views
+from django.conf.urls.static import static
 urlpatterns = [
     path('', views.inicio, name='inicio'),
     path('register/', views.register, name='register'),
@@ -21,4 +23,5 @@ urlpatterns = [
     path('perfil/<str:username>/', views.perfil_usuario, name='perfil_usuario'),
     path('publicaciones/', views.obtener_publicaciones_no_vistas, name='publicaciones'),
     path('publicaciones/<int:publicacion_id>/vista/', views.registrar_publicacion_vista, name='registrar_publicacion_vista'),
-]
+    path('crear-publicacion/', views.crear_publicacion, name='crear_publicacion'),
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

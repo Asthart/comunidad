@@ -1,5 +1,8 @@
 <!-- templates/perfil_usuario.html -->
-{% extends 'base.html' %} {% block content %} {% load static %}
+{% extends 'base.html' %} 
+{% include 'header.html' %}
+
+{% block content %} {% load static %}
 <h1>Perfil de {{ usuario.username }}</h1>
 <p>Biografía: {{ perfil.biografia }}</p>
 <p>Rol: {{ perfil.rol }}</p>
@@ -23,3 +26,5 @@
   {% endfor %}
 </ul>
 {% endblock %}
+
+{% include 'footer.html' %}
