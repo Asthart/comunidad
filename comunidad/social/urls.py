@@ -19,4 +19,6 @@ urlpatterns = [
     path('chat/<int:receptor_id>/', views.chat, name='chat'),
     path('ranking/', views.ranking_usuarios, name='ranking'),
     path('perfil/<str:username>/', views.perfil_usuario, name='perfil_usuario'),
+    path('publicaciones/', views.obtener_publicaciones_no_vistas, name='publicaciones'),
+    path('publicaciones/<int:publicacion_id>/vista/', views.registrar_publicacion_vista, name='registrar_publicacion_vista'),
 ]

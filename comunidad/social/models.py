@@ -97,3 +97,18 @@ class MensajeChat(models.Model):
 
     def __str__(self):
         return f'{self.emisor.username} to {self.receptor.username}: {self.contenido[:20]}'
+
+class Publicacion(models.Model):
+    contenido = models.TextField()
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    tags = models.ManyToManyField('Tag')
+    imagen = models.ImageField(upload_to='publicaciones/imagenes/', blank=True, null=True)
+    video = models.FileField(upload_to='publicaciones/videos/', blank=True, null=True)
+
+class Tag(models.Model):
+    nombre = models.CharField(max_length=100)
+    
+class PublicacionVista(models.Model):
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_vista = models.DateTimeField(auto_now_add=True)

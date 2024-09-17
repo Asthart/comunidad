@@ -1,36 +1,53 @@
 <!-- templates/inicio.html -->
-{% extends 'base.html' %} {% block content %} {% load static %}
-<h1>Bienvenido a CTInnovate Technology</h1>
-<h2>Tus Comunidades</h2>
-<ul>
-  {% for comunidad in comunidades %}
-  <li>
-    <a href="{% url 'detalle_comunidad' comunidad.pk %}"
-      >{{ comunidad.nombre }}</a
-    >
-  </li>
-  {% empty %}
-  <li>No perteneces a ninguna comunidad activa aún.</li>
-  {% endfor %}
-</ul>
-<h2>Proyectos Recientes</h2>
-<ul>
-  {% for proyecto in proyectos %}
-  <li>
-    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
-  </li>
-  {% empty %}
-  <li>No hay proyectos recientes.</li>
-  {% endfor %}
-</ul>
-<h2>Desafíos Activos</h2>
-<ul>
-  {% for desafio in desafios %}
-  <li>
-    <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
-  </li>
-  {% empty %}
-  <li>No hay desafíos activos.</li>
-  {% endfor %}
-</ul>
+{% extends 'base.html' %}
+
+{% block content %}
+    {% load static %}
+    <h1>Bienvenido a CTInnovate Technology</h1>
+    <h2>Tus Comunidades</h2>
+    <ul>
+        {% for comunidad in comunidades %}
+        <li>
+            <a href="{% url 'detalle_comunidad' comunidad.pk %}">{{ comunidad.nombre }}</a>
+        </li>
+        {% empty %}
+        <li>No perteneces a ninguna comunidad activa aún.</li>
+        {% endfor %}
+    </ul>
+    <h2>Proyectos Recientes</h2>
+    <ul>
+        {% for proyecto in proyectos %}
+        <li>
+            <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+        </li>
+        {% empty %}
+        <li>No hay proyectos recientes.</li>
+        {% endfor %}
+    </ul>
+    <h2>Desafíos Activos</h2>
+    <ul>
+        {% for desafio in desafios %}
+        <li>
+            <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
+        </li>
+        {% empty %}
+        <li>No hay desafíos activos.</li>
+        {% endfor %}
+    </ul>
+    <h2>Publicaciones de las personas que sigues y tags que más te interesan</h2>
+    {% if publicaciones %}
+        {% for publicacion in publicaciones %}
+        <article>
+            <h2>{{ publicacion.titulo }}</h2>
+            <p>{{ publicacion.contenido }}</p>
+            <ul>
+                {% for tag in publicacion.tags.all %}
+                <li>{{ tag.nombre }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        {% endfor %}
+    {% else %}
+    <p>No hay publicaciones que mostrar.</p>
+    {% endif %}
 {% endblock %}

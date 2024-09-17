@@ -1,5 +1,5 @@
 from django import forms
-from .models import Comunidad, Proyecto, Desafio, ArchivoProyecto
+from .models import Comunidad, Proyecto, Desafio, ArchivoProyecto, Publicacion
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -35,3 +35,7 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+class PublicacionForm(forms.ModelForm):
+    class Meta:
+        model = Publicacion
+        fields = ['contenido', 'tags']

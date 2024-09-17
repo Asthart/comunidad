@@ -1,12 +1,13 @@
 # views.py
 
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
-from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario
-from .forms import ComunidadForm, ProyectoForm, DesafioForm
+from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario,Publicacion, PublicacionVista,Tag
+from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 @login_required
@@ -196,3 +197,42 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
+
+
+def crear_publicacion(request):
+    if request.method == 'POST':
+        form = PublicacionForm(request.POST)
+        if form.is_valid():
+            publicacion = form.save(commit=False)
+            publicacion.autor = request.user
+            publicacion.save()
+            return redirect('inicio')
+    else:
+        form = PublicacionForm()
+    return render(request, 'crear_publicacion.html', {'form': form})
+
+def mostrar_publicaciones(request):
+    publicaciones = obtener_publicaciones_no_vistas(request)
+    for publicacion in publicaciones:
+        registrar_publicacion_vista_script(request, publicacion.id)
+    return render(request, 'base.html', {'publicaciones': publicaciones})
+
+def registrar_publicacion_vista(request, publicacion_id):
+    publicacion = Publicacion.objects.get(id=publicacion_id)
+    usuario = request.user
+    PublicacionVista.objects.create(publicacion=publicacion, usuario=usuario)
+    return HttpResponse('Publicación vista registrada')
+
+def obtener_publicaciones_no_vistas(request):
+    usuario = request.user
+    publicaciones_vistas = PublicacionVista.objects.filter(usuario=usuario).values_list('publicacion_id', flat=True)
+    tags = request.GET.getlist('tags')
+    if tags:
+        publicaciones = Publicacion.objects.filter(tags__name__in=tags).exclude(id__in=publicaciones_vistas)
+    else:
+        publicaciones = Publicacion.objects.exclude(id__in=publicaciones_vistas)
+    return render(request, 'publicaciones.html', {'publicaciones': publicaciones})
+
+def registrar_publicacion_vista_script(request, publicacion_id):
+    registrar_publicacion_vista(request, publicacion_id)
+    return HttpResponse('Publicación vista registrada')
