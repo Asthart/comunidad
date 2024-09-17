@@ -8,15 +8,16 @@ from django.db.models import Q
 from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario
 from .forms import ComunidadForm, ProyectoForm, DesafioForm
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 @login_required
 def inicio(request):
-    comunidades = Comunidad.objects.filter(miembros=request.user)
+    comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
     proyectos = Proyecto.objects.filter(comunidad__in=comunidades)
     desafios = Desafio.objects.filter(comunidad__in=comunidades)
     return render(request, 'inicio.html', {
         'comunidades': comunidades,
         'proyectos': proyectos,
-        'desafios': desafios
+        'desafios': desafios,
     })
 
 @login_required
@@ -34,23 +35,57 @@ def crear_comunidad(request):
                 tipo_actividad='crear_comunidad',
                 puntos_ganados=50
             )
-            return redirect('detalle_comunidad', pk=comunidad.pk)
+            send_mail(
+                'Nueva solicitud de cuenta',
+                f'El usuario {request.user} ha solicitado una comunidad. Con el nombre de {comunidad.nombre}.',
+                'cespedesalejandro247@gmail.com',
+                ['cespedesalejandro247@gmail.com'],
+                fail_silently=False,
+            )
+            return redirect('inicio')
     else:
         form = ComunidadForm()
     return render(request, 'crear_comunidad.html', {'form': form})
 
+
+
+''''@login_required
+def solicitar_cuenta(request):
+    if request.method == 'POST':
+        form = SolicitudCuentaForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.usuario = request.user
+            solicitud.save()
+            # Enviar correo al administrador
+            send_mail(
+                'Nueva solicitud de cuenta',
+                f'El usuario {solicitud.nombre} ha solicitado una comunidad.',
+                'cespedesalejandro247@gmail.com',
+                ['cespedesalejandro247@gmail.com'],
+                fail_silently=False,
+            )
+            return redirect('solicitud_enviada')
+    else:
+        form = SolicitudCuentaForm()
+    return render(request, 'comunidad/solicitar_cuenta.html', {'form': form})
+'''
+
+
+
 @login_required
 def detalle_comunidad(request, pk):
-    comunidad = get_object_or_404(Comunidad, pk=pk)
+    comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad)
     desafios = Desafio.objects.filter(comunidad=comunidad)
     es_admin = comunidad.administrador == request.user
     return render(request, 'detalle_comunidad.html', {
-        'comunidad': comunidad,
-        'proyectos': proyectos,
-        'desafios': desafios,
-        'es_admin': es_admin
-    })
+    'comunidad': comunidad,
+    'proyectos': proyectos,
+    'desafios': desafios,
+    'es_admin': es_admin,
+
+})
 
 @login_required
 @permission_required('tu_app.add_proyecto', raise_exception=True)
