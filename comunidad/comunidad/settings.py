@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'UTC'
 
@@ -165,3 +165,12 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'cespedesalejandro247@gmail.com'
 EMAIL_HOST_PASSWORD = 'apkw sfog sxay anub '
 DEFAULT_FROM_EMAIL = 'cespedesalejandro247@gmail.com'
+LOGIN_URL = 'login/'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}

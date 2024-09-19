@@ -21,6 +21,7 @@ from social import urls
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),path('chat/', include('social.urls')),
+    
     path('',include(urls)),
 ]

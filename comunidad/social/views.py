@@ -236,3 +236,56 @@ def obtener_publicaciones_no_vistas(request):
 def registrar_publicacion_vista_script(request, publicacion_id):
     registrar_publicacion_vista(request, publicacion_id)
     return HttpResponse('Publicación vista registrada')
+
+from django.http import HttpResponse
+from channels.generic.websocket import AsyncWebsocketConsumer
+
+class ChatWS    (AsyncWebsocketConsumer):
+    async def connect(self):
+        print("Ruta utilizada:", self.scope['path'])
+        # Obtener el receptor_id del URL
+        self.receptor_id = self.scope['url_route']['kwargs']['receptor_id']
+        self.emisor_id = self.scope['user'].id
+        print("Receptor ID:", self.receptor_id)
+        print("Emisor ID:", self.emisor_id)
+
+        # Crear un grupo de chat para el emisor y el receptor
+        self.group_name = f"chat_{self.emisor_id}-{self.receptor_id}"
+        await self.channel_layer.group_add(
+            self.group_name,
+            self.channel_name
+        )
+
+        # Enviar un mensaje de bienvenida al emisor
+        await self.send(text_data="¡Bienvenido al chat!")
+
+    async def disconnect(self, close_code):
+        # Eliminar el grupo de chat cuando el emisor se desconecta
+        await self.channel_layer.group_discard(
+            self.group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        # Obtener el mensaje del emisor
+        mensaje = text_data
+
+        # Crear un objeto Mensaje en la base de datos
+        mensaje_obj = MensajeChat.objects.create(
+            emisor=self.scope['user'],
+            receptor_id=self.receptor_id,
+            contenido=mensaje
+        )
+
+        # Enviar el mensaje al receptor
+        await self.channel_layer.group_send(
+            self.group_name,
+            {
+                "type": "chat_message",
+                "mensaje": mensaje_obj.contenido
+            }
+        )
+
+    async def chat_message(self, event):
+        # Enviar el mensaje al emisor
+        await self.send(text_data=event["mensaje"])

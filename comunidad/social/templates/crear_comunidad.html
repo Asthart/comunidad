@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% include 'header.html' %}
 
-{% block title %}Crear Comunidad - CTInnovate Technology{% endblock %}
+{% block title %}Crear Comunidad - Hubinab Reward{% endblock %}
 
 {% block content %}
-    <h1>Crear Nueva Comunidad</h1>
+    <h1>Solicitar Nueva Comunidad</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

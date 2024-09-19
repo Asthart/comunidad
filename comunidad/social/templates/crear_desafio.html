@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% include 'header.html' %}
 
-{% block title %}Crear Desafío - CTInnovate Technology{% endblock %}
+{% block title %}Crear Reto - Hubinab Reward{% endblock %}
 
 {% block content %}
-    <h1>Crear Nuevo Desafío</h1>
+    <h1>Crear Nuevo Reto</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

@@ -22,10 +22,10 @@
 </div>
 
 <script>
-  const roomName = "{{ room_name }}";
+  const receptorId mName = "{{ receptorId }}";
   const username = "{{ request.user.username }}";
   const chatSocket = new WebSocket(
-    "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
+    "ws://" + window.location.host + "/ws/chat/" + receptorId + "/"
   );
 
   chatSocket.onmessage = function (e) {

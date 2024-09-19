@@ -24,4 +24,5 @@ urlpatterns = [
     path('publicaciones/', views.obtener_publicaciones_no_vistas, name='publicaciones'),
     path('publicaciones/<int:publicacion_id>/vista/', views.registrar_publicacion_vista, name='registrar_publicacion_vista'),
     path('crear-publicacion/', views.crear_publicacion, name='crear_publicacion'),
+    path('ws/chat/<int:receptor_id>/', views.ChatWS.as_asgi(), name='chat_ws'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

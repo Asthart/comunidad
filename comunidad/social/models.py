@@ -10,6 +10,7 @@ class Comunidad(models.Model):
     administrador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comunidades_administradas')
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
+    #publica = models.BooleanField(default=False)
     
     def __str__(self):
         return self.nombre
@@ -115,3 +116,4 @@ class PublicacionVista(models.Model):
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_vista = models.DateTimeField(auto_now_add=True)
+    
