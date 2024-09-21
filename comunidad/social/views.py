@@ -10,6 +10,7 @@ from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, Ac
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.utils import timezone
 
 @login_required
 def inicio(request):
@@ -152,21 +153,19 @@ def buscar(request):
 @login_required
 def chat(request, receptor_id):
     receptor = get_object_or_404(User, id=receptor_id)
-    mensajes = MensajeChat.objects.filter(
-        Q(emisor=request.user, receptor=receptor) |
-        Q(emisor=receptor, receptor=request.user)
-    ).order_by('fecha_hora')
+    room_name = f'{min(request.user.id, receptor.id)}_{max(request.user.id, receptor.id)}'
+    mensajes = MensajeChat.objects.filter(room_name=room_name).order_by('fecha_envio')
     
-    if request.method == 'POST':
-        contenido = request.POST.get('contenido')
-        MensajeChat.objects.create(
-            emisor=request.user,
-            receptor=receptor,
-            contenido=contenido
-        )
-        return redirect('chat', receptor_id=receptor_id)
+    # Marcar mensajes como leídos
+    mensajes_no_leidos = mensajes.filter(leido=False).exclude(emisor=request.user)
+    for mensaje in mensajes_no_leidos:
+        mensaje.marcar_como_leido()
     
-    return render(request, 'chat.html', {'receptor': receptor, 'mensajes': mensajes})
+    return render(request, 'chat.html', {
+        'receptor': receptor,
+        'mensajes': mensajes,
+        'room_name': room_name
+    })
 
 @login_required
 def ranking_usuarios(request):

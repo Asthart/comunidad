@@ -1,55 +1,126 @@
-<!-- templates/chat.html -->
-{% extends 'base.html' %} {% block content %} {% load static %}
+{% extends 'base.html' %} {% load static %}
+
+{% block content %}
 <div class="chat-container">
-  <h1>Chat con {{ receptor.username }}</h1>
-  <div id="chat-messages" class="chat-messages">
-    {% for mensaje in mensajes %}
-    <div
-      class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}"
-    >
-      <strong>{{ mensaje.emisor.username }}:</strong> {{ mensaje.contenido }}
+    <h1>Chat con {{ receptor.username }}</h1>
+    <div id="chat-messages" class="chat-messages">
+        {% for mensaje in mensajes %}
+            <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
+                <strong>{{ mensaje.emisor.username }}:</strong> 
+                {{ mensaje.contenido }}
+                <small class="message-time">
+                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y H:i:s" }})
+                    <span class="read-status">
+                        {% if mensaje.leido %}
+                            (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y H:i:s" }})
+                        {% endif %}
+                    </span>
+                </small>
+            </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-  </div>
-  <div class="chat-input">
-    <input
-      type="text"
-      id="chat-message-input"
-      placeholder="Escribe un mensaje..."
-    />
-    <button id="chat-message-submit">Enviar</button>
-  </div>
+    <div class="chat-input">
+        <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
+        <button id="chat-message-submit">Enviar</button>
+    </div>
 </div>
 
 <script>
-  const receptorId mName = "{{ receptorId }}";
-  const username = "{{ request.user.username }}";
-  const chatSocket = new WebSocket(
-    "ws://" + window.location.host + "/ws/chat/" + receptorId + "/"
-  );
-
-  chatSocket.onmessage = function (e) {
-    const data = JSON.parse(e.data);
-    const messageElement = document.createElement("div");
-    messageElement.classList.add("message");
-    messageElement.classList.add(
-      data.username === username ? "sent" : "received"
+    const roomName = '{{ room_name }}';
+    const username = '{{ request.user.username }}';
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
-    messageElement.innerHTML =
-      "<strong>" + data.username + ":</strong> " + data.message;
-    document.querySelector("#chat-messages").appendChild(messageElement);
-  };
 
-  document.querySelector("#chat-message-submit").onclick = function (e) {
-    const messageInputDom = document.querySelector("#chat-message-input");
-    const message = messageInputDom.value;
-    chatSocket.send(
-      JSON.stringify({
-        message: message,
-        username: username,
-      })
-    );
-    messageInputDom.value = "";
-  };
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('es-ES', { 
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+    }
+
+    chatSocket.onopen = function(e) {
+        console.log('WebSocket connection established');
+        chatSocket.send(JSON.stringify({
+            'type': 'mark_as_read'
+        }));
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'chat_message') {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(data.username === username ? 'sent' : 'received');
+            messageElement.dataset.id = data.id;
+            
+            const fechaFormateada = formatDate(data.fecha_envio);
+            
+            messageElement.innerHTML = `
+                <strong>${data.username}:</strong> 
+                ${data.message}
+                <small class="message-time">
+                    ${fechaFormateada}
+                    <span class="read-status"></span>
+                </small>
+            `;
+            document.querySelector('#chat-messages').appendChild(messageElement);
+
+            // Si el mensaje es recibido, márcalo como leído
+            if (data.username !== username) {
+                chatSocket.send(JSON.stringify({
+                    'type': 'mark_as_read'
+                }));
+            }
+        } else if (data.type === 'messages_marked_as_read') {
+            data.message_ids.forEach(id => {
+                const messageElement = document.querySelector(`.message[data-id="${id}"]`);
+                if (messageElement) {
+                    const readStatusElement = messageElement.querySelector('.read-status');
+                    const fechaFormateada = formatDate(data.fecha_lectura);
+                    readStatusElement.textContent = `(Leído: ${fechaFormateada})`;
+                }
+            });
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'type': 'chat_message',
+            'message': message,
+            'username': username
+        }));
+        messageInputDom.value = '';
+    };
+
+    // Marcar mensajes como leídos cuando la ventana obtiene el foco
+    window.onfocus = function() {
+        chatSocket.send(JSON.stringify({
+            'type': 'mark_as_read'
+        }));
+    };
+
+    // Evento para cuando la página se está cerrando
+    window.onbeforeunload = function() {
+        chatSocket.close();
+    };
+
+    // Función para comprobar periódicamente si hay mensajes no leídos
+    function checkUnreadMessages() {
+        chatSocket.send(JSON.stringify({
+            'type': 'mark_as_read'
+        }));
+    }
+
+    // Comprobar mensajes no leídos cada 5 segundos
+    setInterval(checkUnreadMessages, 5000);
 </script>
 {% endblock %}

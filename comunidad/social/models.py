@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import Permission
+from django.utils import timezone
 
 class Comunidad(models.Model):
     nombre = models.CharField(max_length=100)
@@ -88,16 +89,20 @@ class ActividadUsuario(models.Model):
     
 class MensajeChat(models.Model):
     emisor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_enviados')
-    receptor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_recibidos')
+    room_name = models.CharField(max_length=255)
     contenido = models.TextField()
-    fecha_hora = models.DateTimeField(auto_now_add=True)
+    fecha_envio = models.DateTimeField(default=timezone.now)
     leido = models.BooleanField(default=False)
-
-    class Meta:
-        ordering = ['fecha_hora']
+    fecha_lectura = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
-        return f'{self.emisor.username} to {self.receptor.username}: {self.contenido[:20]}'
+        return f'{self.emisor.username} en {self.room_name}: {self.contenido[:20]}'
+
+    def marcar_como_leido(self):
+        if not self.leido:
+            self.leido = True
+            self.fecha_lectura = timezone.now()
+            self.save()
 
 class Publicacion(models.Model):
     contenido = models.TextField()

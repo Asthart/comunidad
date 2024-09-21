@@ -36,9 +36,10 @@ class DesafioAdmin(admin.ModelAdmin):
 
 @admin.register(MensajeChat)
 class MensajeChatAdmin(admin.ModelAdmin):
-    list_display = ('emisor', 'receptor', 'contenido', 'fecha_hora')
-    list_filter = ('fecha_hora',)
-    search_fields = ('emisor__username', 'receptor__username', 'contenido')
+    list_display = ('emisor', 'room_name', 'contenido', 'fecha_envio', 'leido', 'fecha_lectura')
+    list_filter = ('emisor', 'fecha_envio', 'leido')
+    search_fields = ('emisor__username', 'room_name', 'contenido')
+    date_hierarchy = 'fecha_envio'
 
 @admin.register(ActividadUsuario)
 class ActividadUsuarioAdmin(admin.ModelAdmin):
@@ -47,3 +48,14 @@ class ActividadUsuarioAdmin(admin.ModelAdmin):
     search_fields = ('usuario__username', 'tipo_actividad')
     
 admin.site.register(Tag)
+
+'''
+<small class="message-time">
+                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y H:i:s" }})
+                    <span class="read-status">
+                        {% if mensaje.leido %}
+                            (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y H:i:s" }})
+                        {% endif %}
+                    </span>
+                </small>
+'''
