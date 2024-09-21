@@ -1,12 +1,13 @@
 # views.py
 
+from pyexpat.errors import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
-from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario,Publicacion, PublicacionVista,Tag
+from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario,Publicacion, PublicacionVista,Tag, TerminosCondiciones
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -191,9 +192,10 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('inicio')
+            if request.POST.get('aceptado_terminos') == 'on':
+                user = form.save()
+                login(request, user)
+                return redirect('inicio')
     else:
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
@@ -289,3 +291,8 @@ class ChatWS    (AsyncWebsocketConsumer):
     async def chat_message(self, event):
         # Enviar el mensaje al emisor
         await self.send(text_data=event["mensaje"])
+        
+
+def aceptar_terminos(request):
+    terminos = TerminosCondiciones.objects.get(id=1)
+    return render(request, 'aceptar_terminos.html', {'terminos': terminos})

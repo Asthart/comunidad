@@ -10,6 +10,9 @@
   <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
+    <p>Al hacer clic en "Registrarse", usted acepta nuestros <a href="{% url 'aceptar_terminos' %}">Términos y Condiciones</a>.</p>
+    <input type="checkbox" id="aceptado_terminos" name="aceptado_terminos">
+    <label for="aceptado_terminos">Acepto los Términos y Condiciones</label>
     <button type="submit">Registrarse</button>
   </form>
   <p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>

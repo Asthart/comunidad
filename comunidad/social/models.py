@@ -122,3 +122,12 @@ class PublicacionVista(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_vista = models.DateTimeField(auto_now_add=True)
     
+from django.db import models
+
+class TerminosCondiciones(models.Model):
+    texto = models.TextField()
+    creado_en = models.DateTimeField(auto_now_add=True)
+    actualizado_en = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "Términos y Condiciones"

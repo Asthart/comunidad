@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag
+from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
 
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
@@ -59,3 +59,5 @@ admin.site.register(Tag)
                     </span>
                 </small>
 '''
+
+admin.site.register(TerminosCondiciones)
