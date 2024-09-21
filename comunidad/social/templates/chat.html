@@ -1,5 +1,4 @@
 {% extends 'base.html' %} {% load static %}
-
 {% block content %}
 <div class="chat-container">
     <h1>Chat con {{ receptor.username }}</h1>
@@ -9,10 +8,10 @@
                 <strong>{{ mensaje.emisor.username }}:</strong> 
                 {{ mensaje.contenido }}
                 <small class="message-time">
-                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y H:i:s" }})
+                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
                     <span class="read-status">
                         {% if mensaje.leido %}
-                            (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y H:i:s" }})
+                            (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y, H:i:s" }})
                         {% endif %}
                     </span>
                 </small>
@@ -24,14 +23,12 @@
         <button id="chat-message-submit">Enviar</button>
     </div>
 </div>
-
 <script>
     const roomName = '{{ room_name }}';
     const username = '{{ request.user.username }}';
     const chatSocket = new WebSocket(
         'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
-
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleString('es-ES', { 
@@ -44,14 +41,9 @@
             hour12: false
         });
     }
-
     chatSocket.onopen = function(e) {
         console.log('WebSocket connection established');
-        chatSocket.send(JSON.stringify({
-            'type': 'mark_as_read'
-        }));
     };
-
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         if (data.type === 'chat_message') {
@@ -59,19 +51,16 @@
             messageElement.classList.add('message');
             messageElement.classList.add(data.username === username ? 'sent' : 'received');
             messageElement.dataset.id = data.id;
-            
             const fechaFormateada = formatDate(data.fecha_envio);
-            
             messageElement.innerHTML = `
                 <strong>${data.username}:</strong> 
                 ${data.message}
                 <small class="message-time">
-                    ${fechaFormateada}
+                    (Enviado: ${fechaFormateada})
                     <span class="read-status"></span>
                 </small>
             `;
             document.querySelector('#chat-messages').appendChild(messageElement);
-
             // Si el mensaje es recibido, márcalo como leído
             if (data.username !== username) {
                 chatSocket.send(JSON.stringify({
@@ -99,9 +88,8 @@
             'username': username
         }));
         messageInputDom.value = '';
+        location.reload(); // Esta línea refresca la página
     };
-
-    // Marcar mensajes como leídos cuando la ventana obtiene el foco
     window.onfocus = function() {
         chatSocket.send(JSON.stringify({
             'type': 'mark_as_read'
@@ -122,5 +110,16 @@
 
     // Comprobar mensajes no leídos cada 5 segundos
     setInterval(checkUnreadMessages, 5000);
+
+    // Función para actualizar la página automáticamente cada 5 segundos
+    function autoRefresh() {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        if (messageInputDom.value === '') {
+            location.reload();
+        }
+    }
+
+    // Actualizar la página cada 5 segundos si el input está vacío
+    setInterval(autoRefresh, 7000);
 </script>
 {% endblock %}

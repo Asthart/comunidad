@@ -15,13 +15,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         await self.accept()
-        await self.mark_messages_as_read()
+        print(f"User {self.user.username} connected to room {self.room_name}")
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
         )
+        print(f"User {self.user.username} disconnected from room {self.room_name}")
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -40,6 +41,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'id': mensaje.id,
                 }
             )
+            print(f"Message from {username}: {message}")
         elif message_type == 'mark_as_read':
             read_message_ids = await self.mark_messages_as_read()
             if read_message_ids:
@@ -52,6 +54,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                         'fecha_lectura': timezone.now().isoformat(),
                     }
                 )
+                print(f"Messages marked as read by {self.user.username}: {read_message_ids}")
 
     async def chat_message(self, event):
         await self.send(text_data=json.dumps(event))
@@ -80,4 +83,5 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message.fecha_lectura = timezone.now()
             message.save()
             read_message_ids.append(message.id)
+        print(f"Marked messages as read: {read_message_ids}")
         return read_message_ids
