@@ -46,10 +46,4 @@ class ActividadUsuarioAdmin(admin.ModelAdmin):
     list_filter = ('tipo_actividad', 'fecha_hora')
     search_fields = ('usuario__username', 'tipo_actividad')
     
-@admin.register(Publicacion)
-class ActividadUsuarioAdmin(admin.ModelAdmin):
-    list_display = ('autor',)
-    list_filter = ('autor',)
-    search_fields = ('autor',)
-    
 admin.site.register(Tag)

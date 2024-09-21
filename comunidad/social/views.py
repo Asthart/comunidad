@@ -10,6 +10,7 @@ from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, Ac
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
@@ -22,7 +23,7 @@ def inicio(request):
     })
 
 @login_required
-@permission_required('tu_app.add_comunidad', raise_exception=True)
+#@permission_required('social.add_comunidad', raise_exception=True)
 def crear_comunidad(request):
     if request.method == 'POST':
         form = ComunidadForm(request.POST)
@@ -89,7 +90,7 @@ def detalle_comunidad(request, pk):
 })
 
 @login_required
-@permission_required('tu_app.add_proyecto', raise_exception=True)
+#@permission_required('social.add_proyecto', raise_exception=True)
 def crear_proyecto(request):
     if request.method == 'POST':
         form = ProyectoForm(request.POST)
@@ -113,7 +114,7 @@ def detalle_proyecto(request, pk):
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
-@permission_required('tu_app.add_desafio', raise_exception=True)
+#@permission_required('social.add_desafio', raise_exception=True)
 def crear_desafio(request):
     if request.method == 'POST':
         form = DesafioForm(request.POST)
