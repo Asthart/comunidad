@@ -5,11 +5,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}Hubinab Reward{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    {% block extra_css %}{% endblock %}
   </head>
   <body>
     {% include 'header.html' %}
     <main>{% block content %} {% endblock %}</main>
     {% include 'footer.html' %}
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const menu = document.querySelector('.menu');
+    
+        menuToggle.addEventListener('click', function() {
+          menu.classList.toggle('active');
+        });
+      });
+    </script>
+    {% block extra_js %}{% endblock %}
   </body>
 </html>

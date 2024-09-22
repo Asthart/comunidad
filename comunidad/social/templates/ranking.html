@@ -1,20 +1,24 @@
 {% extends 'base.html' %} 
-{% include 'header.html' %}
+{% load static %}
 
-{% block title %}Ranking de Usuarios - Hubinab Reward{% endblock %} {% block content %}
-<h1>Ranking de Usuarios</h1>
-<ol>
-  {% for perfil in top_usuarios %}
-  <li>
-    <a href="{% url 'perfil_usuario' perfil.usuario.username %}"
-      >{{ perfil.usuario.username }}</a
-    >
-    - {{ perfil.puntos }} puntos
-  </li>
-  {% empty %}
-  <li>No hay usuarios en el ranking.</li>
-  {% endfor %}
-</ol>
+{% block title %}Ranking de Usuarios - Hubinab Reward{% endblock %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
 
-{% include 'footer.html' %}
+{% block content %}
+<div class="ranking-page">
+  <h1>Ranking de Usuarios</h1>
+  <ol>
+    {% for perfil in top_usuarios %}
+      <li>
+        <a href="{% url 'perfil_usuario' perfil.usuario.username %}">
+          {{ perfil.usuario.username }}
+        </a> - {{ perfil.puntos }} puntos
+      </li>
+    {% empty %}
+      <li>No hay usuarios en el ranking.</li>
+    {% endfor %}
+  </ol>
+</div>
+{% endblock %}

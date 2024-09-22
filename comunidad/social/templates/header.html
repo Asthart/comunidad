@@ -1,15 +1,30 @@
-<nav>
-  <ul>
-    <li><button><a href="{% url 'inicio' %}">Inicio</a></button></li>
-    {% if user.is_authenticated %}
-    <li><button><a href="{% url 'crear_comunidad' %}">Crear Comunidad</a></button></li>
-    <li><button><a href="{% url 'crear_proyecto' %}">Crear Proyecto</a></button></li>
-    <li><button><a href="{% url 'crear_desafio' %}">Crear Desafío</a></button></li>
-    <li><button><a href="{% url 'perfil_usuario' user.username %}">Mi Perfil</a></button></li>
-    <li><button><a href="{% url 'logout' %}">Cerrar Sesión</a></button></li>
-    {% else %}
-    <li><button><a href="{% url 'login' %}">Iniciar Sesión</a></button></li>
-    <li><button><a href="{% url 'register' %}">Registrarse</a></button></li>
-    {% endif %}
-  </ul>
-</nav>
+{% load static %}
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <a href="{% url 'inicio' %}">
+        <img src="{% static 'images/logo2.png' %}" alt="CTInnovate Logo">
+      </a>
+    </div>
+    <div class="menu-container">
+      <button class="menu-toggle" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="menu">
+        <li><a href="{% url 'inicio' %}">Inicio</a></li>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'crear_comunidad' %}">Crear Comunidad</a></li>
+          <li><a href="{% url 'crear_proyecto' %}">Crear Proyecto</a></li>
+          <li><a href="{% url 'crear_desafio' %}">Crear Desafío</a></li>
+          <li><a href="{% url 'perfil_usuario' user.username %}">Mi Perfil</a></li>
+          <li><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+        {% else %}
+          <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
+          <li><a href="{% url 'register' %}">Registrarse</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </nav>
+</header>

@@ -1,6 +1,12 @@
 {% extends 'base.html' %} {% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
 {% block content %}
 <div class="chat-container">
+    <div class="scroll-to-bottom-btn" title="Ir al fondo">
+        <img src="https://cdn-icons-png.flaticon.com/512/6687/6687957.png" alt="Ir al fondo">
+    </div>
     <h1>Chat con {{ receptor.username }}</h1>
     <div id="chat-messages" class="chat-messages">
         {% for mensaje in mensajes %}
@@ -121,5 +127,11 @@
 
     // Actualizar la página cada 5 segundos si el input está vacío
     setInterval(autoRefresh, 7000);
+    
+    document.getElementById('scroll-to-bottom-btn').addEventListener('click', function() {
+        const chatMessages = document.querySelector('#chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
 </script>
 {% endblock %}

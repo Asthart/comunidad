@@ -1,30 +1,39 @@
-<!-- templates/perfil_usuario.html -->
 {% extends 'base.html' %} 
-{% include 'header.html' %}
-
-{% block content %} {% load static %}
-<h1>Perfil de {{ usuario.username }}</h1>
-<p>Biografía: {{ perfil.biografia }}</p>
-<p>Rol: {{ perfil.rol }}</p>
-<p>Puntos: {{ perfil.puntos }}</p>
-<h2>Proyectos</h2>
-<ul>
-  {% for proyecto in proyectos %}
-  <li>
-    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
-  </li>
-  {% empty %}
-  <li>Este usuario no ha creado ningún proyecto.</li>
-  {% endfor %}
-</ul>
-<h2>Actividades Recientes</h2>
-<ul>
-  {% for actividad in actividades %}
-  <li>{{ actividad.tipo_actividad }} - {{ actividad.fecha_hora }}</li>
-  {% empty %}
-  <li>No hay actividades recientes.</li>
-  {% endfor %}
-</ul>
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 {% endblock %}
+{% block content %}
 
-{% include 'footer.html' %}
+<div class="profile-page">
+  <div class="user-info">
+    <h1>Perfil de {{ usuario.username }}</h1>
+    <p>Biografía: {{ perfil.biografia }}</p>
+    <p>Rol: {{ perfil.rol }}</p>
+    <p>Puntos: {{ perfil.puntos }}</p>
+  </div>
+
+  <hr>
+
+  <h2>Proyectos</h2>
+  <ul>
+    {% for proyecto in proyectos %}
+      <li><a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a></li>
+    {% empty %}
+      <li>Este usuario no ha creado ningún proyecto.</li>
+    {% endfor %}
+  </ul>
+
+  <hr>
+
+  <h2>Actividades Recientes</h2>
+  <ul>
+    {% for actividad in actividades %}
+      <li>{{ actividad.tipo_actividad }} - {{ actividad.fecha_hora }}</li>
+    {% empty %}
+      <li>No hay actividades recientes.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

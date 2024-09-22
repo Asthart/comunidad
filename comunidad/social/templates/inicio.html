@@ -1,59 +1,74 @@
-<!-- templates/inicio.html -->
 {% extends 'base.html' %}
-{% include 'header.html' %}
-
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
 {% block content %}
-    {% load static %}
-    <h1>Bienvenido a Hubinab Reward</h1>
-    <h2>Tus Comunidades</h2>
-    <ul>
-        {% for comunidad in comunidades %}
-        <li>
-            <a href="{% url 'detalle_comunidad' comunidad.pk %}">{{ comunidad.nombre }}</a>
-        </li>
-        {% empty %}
-        <li>No perteneces a ninguna comunidad activa aún.</li>
-        {% endfor %}
-    </ul>
-    <h2>Proyectos Recientes</h2>
-    <ul>
-        {% for proyecto in proyectos %}
-        <li>
-            <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
-        </li>
-        {% empty %}
-        <li>No hay proyectos recientes.</li>
-        {% endfor %}
-    </ul>
-    <h2>Desafíos Activos</h2>
-    <ul>
-        {% for desafio in desafios %}
-        <li>
-            <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
-        </li>
-        {% empty %}
-        <li>No hay desafíos activos.</li>
-        {% endfor %}
-    </ul>
-    <h2>Publicaciones de las personas que sigues y tags que más te interesan</h2>
-    {% if publicaciones %}
-        {% for publicacion in publicaciones %}
-        <article>
-            <h2>{{ publicacion.titulo }}</h2>
-            <p>{{ publicacion.contenido }}</p>
-            <ul>
-                {% for tag in publicacion.tags.all %}
-                <li>{{ tag.nombre }}</li>
+<div class="container">
+    <h1 class="main-title">Bienvenido a Hubinab Reward</h1>
+    
+    <div class="grid-container">
+        <section class="card">
+            <h2>Tus Comunidades</h2>
+            <ul class="list">
+                {% for comunidad in comunidades %}
+                <li>
+                    <a href="{% url 'detalle_comunidad' comunidad.pk %}">{{ comunidad.nombre }}</a>
+                </li>
+                {% empty %}
+                <li>No perteneces a ninguna comunidad activa aún.</li>
                 {% endfor %}
             </ul>
-        </article>
-        {% endfor %}
-    {% else %}
-    <p>No hay publicaciones que mostrar.</p>
-    {% endif %}
+        </section>
+
+        <section class="card">
+            <h2>Proyectos Recientes</h2>
+            <ul class="list">
+                {% for proyecto in proyectos %}
+                <li>
+                    <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a>
+                </li>
+                {% empty %}
+                <li>No hay proyectos recientes.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="card">
+            <h2>Desafíos Activos</h2>
+            <ul class="list">
+                {% for desafio in desafios %}
+                <li>
+                    <a href="{% url 'detalle_desafio' desafio.pk %}">{{ desafio.titulo }}</a>
+                </li>
+                {% empty %}
+                <li>No hay desafíos activos.</li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
+
+    <section class="card full-width">
+        <h2>Publicaciones de las personas que sigues y tags que más te interesan</h2>
+        {% if publicaciones %}
+            {% for publicacion in publicaciones %}
+            <article class="publication">
+                <h3>{{ publicacion.titulo }}</h3>
+                <p>{{ publicacion.contenido }}</p>
+                <ul class="tags">
+                    {% for tag in publicacion.tags.all %}
+                    <li>{{ tag.nombre }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+            {% endfor %}
+        {% else %}
+        <p>No hay publicaciones que mostrar.</p>
+        {% endif %}
+    </section>
+    <br>
     <div class="text-center">
         <a href="{% url 'crear_publicacion' %}" class="btn btn-primary btn-lg">Crear Publicación</a>
     </div>
+</div>
 {% endblock %}
-
-{% include 'footer.html' %}
