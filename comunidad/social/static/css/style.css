@@ -280,22 +280,6 @@ a:hover {
     flex-direction: column;
 }
 
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.error-message {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
 .btn {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -358,38 +342,6 @@ a:hover {
 .register-form {
     display: flex;
     flex-direction: column;
-}
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.5rem;
-    border: 1px solid #6c757d;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.error-message {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.terms-container {
-    margin-bottom: 1rem;
-}
-
-.terms-container p {
-    margin-bottom: 0.5rem;
 }
 
 .checkbox-container {
@@ -786,4 +738,112 @@ footer {
     max-width: 45px;
     max-height: 45px;
     object-fit: contain;
+}
+
+
+/* Estilos para la página de creación de comunidad */
+
+.crear-comunidad {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-title {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--primary-color);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  margin-right: 1.7rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group textarea {
+  height: 150px;
+  min-height: 150px;
+  resize: vertical;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: #004494;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .crear-comunidad {
+      margin: 1rem;
+      padding: 1rem;
+  }
+}
+
+
+/* crear proyecto */
+
+
+.file-input {
+  margin-top: 1rem;
+}
+
+.file-input input[type="file"] {
+  display: block;
+}
+
+.file-input label {
+  cursor: pointer;
+  display: inline-block;
+  padding: 12px 24px;
+  background-color: #f8f9fa;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.file-input label:hover {
+  background-color: #e9ecef;
 }
