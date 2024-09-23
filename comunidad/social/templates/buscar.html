@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
-
+{% load static %}
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
 {% block content %}
   <h1>Resultados de la búsqueda</h1>
   <h2>Usuarios</h2>
   <ul>
     {% for usuario in usuarios %}
-      <li><a href="{% url 'perfil_usuario' usuario.username %}">({{ usuario.first_name }} {{ usuario.last_name }})</a></li>
+      <li><a href="{% url 'perfil_usuario' usuario.username %}">{{ usuario.foto_perfil }} {{ usuario.first_name }} {{ usuario.last_name }}</a></li>
     {% endfor %}
   </ul>
 <h2>Comunidades</h2>

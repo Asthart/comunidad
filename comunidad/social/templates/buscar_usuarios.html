@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
-
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
 {% block content %}
   <h1>Buscar usuarios</h1>
   <ul>

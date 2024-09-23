@@ -142,7 +142,7 @@ def detalle_desafio(request, pk):
 def buscar(request):
     q = request.GET.get('q')
     if q:
-        usuarios = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q))
+        usuarios = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q) )
         comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
         proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
         desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
