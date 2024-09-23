@@ -139,18 +139,16 @@ def detalle_desafio(request, pk):
     desafio = get_object_or_404(Desafio, pk=pk)
     return render(request, 'detalle_desafio.html', {'desafio': desafio})
 
-@login_required
 def buscar(request):
-    query = request.GET.get('q')
-    proyectos = Proyecto.objects.filter(titulo__icontains=query)
-    usuarios = User.objects.filter(username__icontains=query)
-    comunidades = Comunidad.objects.filter(nombre__icontains=query)
-    return render(request, 'resultados_busqueda.html', {
-        'proyectos': proyectos,
-        'usuarios': usuarios,
-        'comunidades': comunidades
-    })
-
+    q = request.GET.get('q')
+    if q:
+        usuarios = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q))
+        comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
+        proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
+        desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
+        return render(request, 'buscar.html', {'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
+    else:
+        return redirect('inicio')
 @login_required
 def chat(request, receptor_id):
     receptor = get_object_or_404(User, id=receptor_id)
@@ -179,11 +177,13 @@ def perfil_usuario(request, username):
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
+    sigue_a = perfil.sigue_a(request.user)
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
         'proyectos': proyectos,
-        'actividades': actividades
+        'actividades': actividades,
+        'sigue_a': sigue_a,
     })
     
 from .forms import CustomUserCreationForm
@@ -296,3 +296,25 @@ class ChatWS    (AsyncWebsocketConsumer):
 def aceptar_terminos(request):
     terminos = TerminosCondiciones.objects.get(id=1)
     return render(request, 'aceptar_terminos.html', {'terminos': terminos})
+
+@login_required
+def buscar_usuarios(request):
+    usuarios = User.objects.all()
+    sigue_a = {}
+    for usuario in usuarios:
+        sigue_a[usuario] = request.user.perfilusuario.sigue_a(usuario)
+    return render(request, 'buscar_usuarios.html', {'usuarios': usuarios, 'sigue_a': sigue_a})
+
+@login_required
+def seguir_usuario(request, pk):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    usuario = PerfilUsuario.objects.get(id=pk).usuario
+    perfil_usuario.seguir_usuario(usuario)
+    return redirect('perfil_usuario', username=usuario.username)
+
+@login_required
+def dejar_de_seguir_usuario(request, pk):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    usuario = PerfilUsuario.objects.get(id=pk).usuario
+    perfil_usuario.dejar_de_seguir_usuario(usuario)
+    return redirect('perfil_usuario', username=usuario.username)

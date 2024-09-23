@@ -8,6 +8,14 @@
 <div class="profile-page">
   <div class="user-info">
     <h1>Perfil de {{ usuario.username }}</h1>
+
+    {% if sigue_a %}
+        <a href="{% url 'dejar_de_seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-secondary">Dejar de seguir</a>
+    {% else %}
+        <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary">Seguir</a>
+    {% endif %}
+
+    
     <p>Biografía: {{ perfil.biografia }}</p>
     <p>Rol: {{ perfil.rol }}</p>
     <p>Puntos: {{ perfil.puntos }}</p>

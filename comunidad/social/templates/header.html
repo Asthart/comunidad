@@ -24,6 +24,12 @@
           <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
           <li><a href="{% url 'register' %}">Registrarse</a></li>
         {% endif %}
+        <li>
+          <form action="{% url 'buscar' %}" method="get">
+            <input type="search" name="q" placeholder="Buscar...">
+            <button type="submit">Buscar</button>
+          </form>
+        </li>
       </ul>
     </div>
   </nav>
