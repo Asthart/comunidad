@@ -66,7 +66,21 @@ class PerfilUsuario(models.Model):
     biografia = models.TextField(blank=True)
     #rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     puntos = models.IntegerField(default=0)
+    seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
 
+    def sigue_a(self, usuario):
+        perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
+        print(f"Verificando si {self.usuario.username} sigue a {perfil_usuario.usuario.username}")
+        sigue = perfil_usuario.seguidos.filter(id=self.usuario.id).exists()
+        print(f"Resultado: {sigue}")
+        return sigue
+    def seguir_usuario(self, usuario_a_seguir):
+        perfil_usuario_a_seguir = PerfilUsuario.objects.get(usuario=usuario_a_seguir)
+        self.seguidos.add(perfil_usuario_a_seguir)
+
+    def dejar_de_seguir_usuario(self, usuario_a_dejar_de_seguir):
+        perfil_usuario_a_dejar_de_seguir = PerfilUsuario.objects.get(usuario=usuario_a_dejar_de_seguir)
+        self.seguidos.remove(perfil_usuario_a_dejar_de_seguir)
     def __str__(self):
         return self.usuario.username
 

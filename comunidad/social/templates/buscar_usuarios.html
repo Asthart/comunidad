@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Buscar usuarios</h1>
+  <ul>
+    {% for usuario in usuarios %}
+  <li>
+    {{ usuario.username }}
+    {% if sigue_a.usuario %}
+      <a href="{% url 'dejar_de_seguir_usuario' usuario.id %}">Dejar de seguir</a>
+    {% else %}
+      <a href="{% url 'seguir_usuario' usuario.id %}">Seguir</a>
+    {% endif %}
+  </li>
+{% endfor %}
+  </ul>
+{% endblock %}

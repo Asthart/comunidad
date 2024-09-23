@@ -179,11 +179,13 @@ def perfil_usuario(request, username):
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
+    sigue_a = perfil.sigue_a(request.user)
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
         'proyectos': proyectos,
-        'actividades': actividades
+        'actividades': actividades,
+        'sigue_a': sigue_a,
     })
     
 from .forms import CustomUserCreationForm
@@ -296,3 +298,25 @@ class ChatWS    (AsyncWebsocketConsumer):
 def aceptar_terminos(request):
     terminos = TerminosCondiciones.objects.get(id=1)
     return render(request, 'aceptar_terminos.html', {'terminos': terminos})
+
+@login_required
+def buscar_usuarios(request):
+    usuarios = User.objects.all()
+    sigue_a = {}
+    for usuario in usuarios:
+        sigue_a[usuario] = request.user.perfilusuario.sigue_a(usuario)
+    return render(request, 'buscar_usuarios.html', {'usuarios': usuarios, 'sigue_a': sigue_a})
+
+@login_required
+def seguir_usuario(request, pk):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    usuario = PerfilUsuario.objects.get(id=pk).usuario
+    perfil_usuario.seguir_usuario(usuario)
+    return redirect('perfil_usuario', username=usuario.username)
+
+@login_required
+def dejar_de_seguir_usuario(request, pk):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    usuario = PerfilUsuario.objects.get(id=pk).usuario
+    perfil_usuario.dejar_de_seguir_usuario(usuario)
+    return redirect('perfil_usuario', username=usuario.username)

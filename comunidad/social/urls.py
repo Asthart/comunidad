@@ -26,4 +26,7 @@ urlpatterns = [
     path('crear-publicacion/', views.crear_publicacion, name='crear_publicacion'),
     path('ws/chat/<int:receptor_id>/', views.ChatWS.as_asgi(), name='chat_ws'),
     path('aceptar-terminos/', views.aceptar_terminos, name='aceptar_terminos'),
+    path('seguir/<pk>/', views.seguir_usuario, name='seguir_usuario'),
+    path('dejar_de_seguir/<pk>/', views.dejar_de_seguir_usuario, name='dejar_de_seguir_usuario'),
+    path('buscar_usuarios/', views.buscar_usuarios, name='buscar_usuarios'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
