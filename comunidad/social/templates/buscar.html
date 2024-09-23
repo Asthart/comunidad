@@ -8,22 +8,24 @@
       <li><a href="{% url 'perfil_usuario' usuario.username %}">({{ usuario.first_name }} {{ usuario.last_name }})</a></li>
     {% endfor %}
   </ul>
-  <h2>Comunidades</h2>
-  <ul>
-    {% for comunidad in comunidades %}
-      <li>{{ comunidad.nombre }} </li>
-    {% endfor %}
-  </ul>
-  <h2>Proyectos</h2>
-  <ul>
-    {% for proyecto in proyectos %}
-      <li>{{ proyecto.titulo }} </li>
-    {% endfor %}
-  </ul>
-  <h2>Desafíos</h2>
-  <ul>
-    {% for desafio in desafios %}
-      <li>{{ desafio.titulo }} </li>
-    {% endfor %}
-  </ul>
+<h2>Comunidades</h2>
+<ul>
+  {% for comunidad in comunidades %}
+    <li><a href="{% url 'comunidad_detalle' comunidad.id %}">{{ comunidad.nombre }}</a></li>
+  {% endfor %}
+</ul>
+
+<h2>Proyectos</h2>
+<ul>
+  {% for proyecto in proyectos %}
+    <li><a href="{% url 'proyecto_detalle' proyecto.id %}">{{ proyecto.titulo }}</a></li>
+  {% endfor %}
+</ul>
+
+<h2>Desafíos</h2>
+<ul>
+  {% for desafio in desafios %}
+    <li><a href="{% url 'desafio_detalle' desafio.id %}">{{ desafio.titulo }}</a></li>
+  {% endfor %}
+</ul>
 {% endblock %}

@@ -171,8 +171,18 @@ def ranking_usuarios(request):
     top_usuarios = PerfilUsuario.objects.order_by('-puntos')[:10]
     return render(request, 'ranking.html', {'top_usuarios': top_usuarios})
 
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def perfil_usuario(request, username):
+    if request.method == 'POST':
+        perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+        foto_perfil = request.FILES.get('foto_perfil')
+        if foto_perfil:
+            perfil_usuario.foto_perfil = foto_perfil
+            perfil_usuario.save()
+            return redirect('perfil_usuario', username=request.user.username)
+    
     usuario = get_object_or_404(User, username=username)
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
@@ -318,3 +328,13 @@ def dejar_de_seguir_usuario(request, pk):
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.dejar_de_seguir_usuario(usuario)
     return redirect('perfil_usuario', username=usuario.username)
+
+def lista_publicaciones(request):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    seguidos = perfil_usuario.seguidos.all()
+    publicaciones = Publicacion.objects.filter(autor__in=[seguido.usuario for seguido in seguidos])
+    publicaciones_propias = Publicacion.objects.filter(autor=request.user)
+    publicaciones = publicaciones | publicaciones_propias
+    if not publicaciones.exists():
+        publicaciones = None
+    return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones})

@@ -67,6 +67,7 @@ class PerfilUsuario(models.Model):
     #rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
+    foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True)
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)

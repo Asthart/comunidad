@@ -18,6 +18,7 @@ nav ul {
     padding: 0;
 }
 
+
 nav ul li {
     display: inline;
     margin-right: 10px;
@@ -74,4 +75,11 @@ main {
     color: #fff;
     border: none;
     cursor: pointer;
+}
+
+.foto-perfil {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
 }
