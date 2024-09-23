@@ -139,18 +139,16 @@ def detalle_desafio(request, pk):
     desafio = get_object_or_404(Desafio, pk=pk)
     return render(request, 'detalle_desafio.html', {'desafio': desafio})
 
-@login_required
 def buscar(request):
-    query = request.GET.get('q')
-    proyectos = Proyecto.objects.filter(titulo__icontains=query)
-    usuarios = User.objects.filter(username__icontains=query)
-    comunidades = Comunidad.objects.filter(nombre__icontains=query)
-    return render(request, 'resultados_busqueda.html', {
-        'proyectos': proyectos,
-        'usuarios': usuarios,
-        'comunidades': comunidades
-    })
-
+    q = request.GET.get('q')
+    if q:
+        usuarios = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q))
+        comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
+        proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
+        desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
+        return render(request, 'buscar.html', {'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
+    else:
+        return redirect('inicio')
 @login_required
 def chat(request, receptor_id):
     receptor = get_object_or_404(User, id=receptor_id)
