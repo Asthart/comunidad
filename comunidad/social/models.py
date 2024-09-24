@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import Permission
 from django.utils import timezone
+from multiupload.fields import MultiFileField
 
 class Comunidad(models.Model):
     nombre = models.CharField(max_length=100)
@@ -15,8 +16,11 @@ class Comunidad(models.Model):
     
     def __str__(self):
         return self.nombre
+    @property
+    def publicaciones(self):
+        return Publicacion.objects.filter(comunidad=self).order_by('-fecha_publicacion')
 
-class Proyecto(models.Model):
+class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -123,9 +127,13 @@ class Publicacion(models.Model):
     contenido = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag')
-    imagen = models.ImageField(upload_to='publicaciones/imagenes/', blank=True, null=True)
-    video = models.FileField(upload_to='publicaciones/videos/', blank=True, null=True)
- 
+    archivos = MultiFileField(min_num=1, max_num=5)
+    comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
+    fecha_publicacion = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Publicación de {self.autor.username} en {self.fecha_publicacion}"
+    
 class Tag(models.Model):
     nombre = models.CharField(max_length=255)
 
@@ -146,3 +154,7 @@ class TerminosCondiciones(models.Model):
 
     def __str__(self):
         return "Términos y Condiciones"
+    
+class Adjunto(models.Model):
+    archivo = models.FileField(upload_to='publicaciones/archivos/')
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='adjuntos')

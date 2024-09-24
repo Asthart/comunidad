@@ -22,10 +22,12 @@
             {{ form.comunidad.label }} {{ form.comunidad }}
         </div>
         <div class="form-group">
-            {{ form.fecha_inicio.label }} {{ form.fecha_inicio }}
+            {{ form.fecha_inicio.label }}
+            <input type="datetime-local" name="fecha_inicio" id="id_fechainicio" />
         </div>
         <div class="form-group">
-            {{ form.fecha_fin.label }} {{ form.fecha_fin }}
+            {{ form.fecha_fin.label }} 
+            <input type="datetime-local" name="fecha_fin" id="id_fechafin" />
         </div>
         <button type="submit" class="btn btn-primary">Crear Desafío</button>
     </form>

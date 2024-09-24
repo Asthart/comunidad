@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
-from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario,Publicacion, PublicacionVista,Tag, TerminosCondiciones
+from .models import *
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -210,31 +210,53 @@ def register(request):
         form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
-
+@login_required
+@login_required
 def crear_publicacion(request):
     if request.method == 'POST':
         form = PublicacionForm(request.POST, request.FILES)
         if form.is_valid():
             publicacion = form.save(commit=False)
             publicacion.autor = request.user
+            
+            # Verificamos si hay al menos un tag seleccionado
+            if not form.cleaned_data['tags']:
+                form.add_error('tags', 'Debes seleccionar al menos un tag.')
+                return render(request, 'crear_publicacion.html', {'form': form})
+            
             publicacion.save()
+            
+            tags = form.cleaned_data.get('tags')
+            if tags:
+                publicacion.tags.set(tags)
+                
+            # Guarda los adjuntos después de guardar la publicación
+            for archivo in form.cleaned_data['archivos']:
+                Adjunto.objects.create(publicacion=publicacion, archivo=archivo)
+            
             return redirect('inicio')
     else:
         form = PublicacionForm()
+    
     return render(request, 'crear_publicacion.html', {'form': form})
 
+
+
+@login_required
 def mostrar_publicaciones(request):
     publicaciones = obtener_publicaciones_no_vistas(request)
     for publicacion in publicaciones:
         registrar_publicacion_vista_script(request, publicacion.id)
     return render(request, 'base.html', {'publicaciones': publicaciones})
 
+@login_required
 def registrar_publicacion_vista(request, publicacion_id):
     publicacion = Publicacion.objects.get(id=publicacion_id)
     usuario = request.user
     PublicacionVista.objects.create(publicacion=publicacion, usuario=usuario)
     return HttpResponse('Publicación vista registrada')
 
+@login_required
 def obtener_publicaciones_no_vistas(request):
     usuario = request.user
     publicaciones_vistas = PublicacionVista.objects.filter(usuario=usuario).values_list('publicacion_id', flat=True)
@@ -245,6 +267,7 @@ def obtener_publicaciones_no_vistas(request):
         publicaciones = Publicacion.objects.exclude(id__in=publicaciones_vistas)
     return render(request, 'publicaciones.html', {'publicaciones': publicaciones})
 
+@login_required
 def registrar_publicacion_vista_script(request, publicacion_id):
     registrar_publicacion_vista(request, publicacion_id)
     return HttpResponse('Publicación vista registrada')
@@ -329,6 +352,7 @@ def dejar_de_seguir_usuario(request, pk):
     perfil_usuario.dejar_de_seguir_usuario(usuario)
     return redirect('perfil_usuario', username=usuario.username)
 
+@login_required
 def lista_publicaciones(request):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     seguidos = perfil_usuario.seguidos.all()

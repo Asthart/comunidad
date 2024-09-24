@@ -1,7 +1,8 @@
 from django import forms
-from .models import Comunidad, Proyecto, Desafio, ArchivoProyecto, Publicacion
+from .models import *
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from multiupload.fields import MultiFileField
 
 class ComunidadForm(forms.ModelForm):
     class Meta:
@@ -35,7 +36,22 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
 class PublicacionForm(forms.ModelForm):
+    archivos = MultiFileField(min_num=1, max_num=5, max_file_size=1920*1920*5)
+    tags = forms.ModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
+    comunidad = forms.ModelChoiceField(
+        queryset=Comunidad.objects.all(),
+        required=False
+    )
+    
     class Meta:
         model = Publicacion
-        fields = ['contenido', 'tags']
+        fields = ('contenido', 'tags', 'archivos', 'comunidad')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['archivos'].required = True

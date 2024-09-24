@@ -847,3 +847,23 @@ footer {
 .file-input label:hover {
   background-color: #e9ecef;
 }
+
+
+/* crear publicacion */
+
+
+.tags-group {
+  margin-bottom: 20px;
+}
+
+.tags-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+}
