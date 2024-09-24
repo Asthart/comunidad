@@ -13,8 +13,10 @@
     {% for perfil in top_usuarios %}
       <li>
         <a href="{% url 'perfil_usuario' perfil.usuario.username %}">
-          {{ perfil.usuario.username }}
-        </a> - {{ perfil.puntos }} puntos
+          {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
+        </a> - {{ perfil.puntos }} puntos 
+        </a> - {{ perfil.clasificacion }} 
+
       </li>
     {% empty %}
       <li>No hay usuarios en el ranking.</li>

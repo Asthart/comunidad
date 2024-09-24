@@ -1,4 +1,3 @@
-{% extends 'base.html' %}
 {% load static %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -11,19 +10,13 @@
         <h1 class="register-title">Registro de Usuario</h1>
         <form method="post" class="register-form">
             {% csrf_token %}
-            {% for field in form %}
-                <div class="form-group">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="error-message">
-                            {% for error in field.errors %}
-                                {{ error }}
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+            {{ form.as_p }}
+            
+            <!-- Agregar esto al final del formulario -->
+            <div class="alert alert-danger" style="display: none;">
+                Las contraseñas no coinciden. Por favor, verifica y vuelve a intentar.
+            </div>
+
             <div class="terms-container">
                 <p>Al hacer clic en "Registrarse", usted acepta nuestros <a href="{% url 'aceptar_terminos' %}">Términos y Condiciones</a>.</p>
                 <div class="checkbox-container">
@@ -37,3 +30,16 @@
     </div>
 </div>
 {% endblock %}
+
+<script>
+document.getElementById('id_password2').addEventListener('blur', function() {
+    var password1 = document.getElementById('id_password1').value;
+    var password2 = this.value;
+    
+    if (password1 !== password2) {
+        document.querySelector('.alert-danger').style.display = 'block';
+    } else {
+        document.querySelector('.alert-danger').style.display = 'none';
+    }
+});
+</script>

@@ -144,7 +144,11 @@ def detalle_desafio(request, pk):
 def buscar(request):
     q = request.GET.get('q')
     if q:
-        usuarios = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q) )
+        usuarios = User.objects.filter(
+            Q(username__icontains=q) |
+            Q(first_name__icontains=q) |
+            Q(last_name__icontains=q)
+        ).select_related('perfilusuario')
         comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
         proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
         desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
@@ -206,12 +210,15 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            if request.POST.get('aceptado_terminos') == 'on':
-                user = form.save()
-                login(request, user)
-                return redirect('inicio')
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('inicio')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
         form = CustomUserCreationForm()
+
     return render(request, 'register.html', {'form': form})
 
 
