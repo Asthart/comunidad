@@ -83,3 +83,49 @@ main {
     height: 100px;
     object-fit: cover;
 }
+.menu-container ul li a {
+  position: relative;
+}
+
+.menu-container ul li a .tooltip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px;
+  background-color: #333;
+  color: #fff;
+  font-size: 12px;
+  border-radius: 5px;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.menu-container ul li a:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.menu-container ul li a .tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #333 transparent;
+}
+.menu-container ul li a .texto {
+    display: none;
+  }
+  
+  .menu-container ul li a:hover .texto {
+    display: inline-block;
+    margin-left: 10px;
+  }
+
+  .menu {
+    height: 300px; /* establece un alto fijo de 300px */
+    overflow-y: auto; /* agrega una barra de desplazamiento vertical si el contenido es más grande que el alto fijo */
+  }

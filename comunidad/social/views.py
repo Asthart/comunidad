@@ -7,11 +7,13 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
+from django.contrib.auth.models import User
 from .models import Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario,Publicacion, PublicacionVista,Tag, TerminosCondiciones
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
-from django.contrib.auth.models import User
+
 from django.core.mail import send_mail
 from django.utils import timezone
+from .utils import get_clasificacion
 
 @login_required
 def inicio(request):
@@ -186,6 +188,7 @@ def perfil_usuario(request, username):
     usuario = get_object_or_404(User, username=username)
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
+    clasificacion = get_clasificacion(perfil.puntos)
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
     sigue_a = perfil.sigue_a(request.user)
     return render(request, 'perfil_usuario.html', {
@@ -194,6 +197,7 @@ def perfil_usuario(request, username):
         'proyectos': proyectos,
         'actividades': actividades,
         'sigue_a': sigue_a,
+        'clasificacion': clasificacion,
     })
     
 from .forms import CustomUserCreationForm
