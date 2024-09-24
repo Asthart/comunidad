@@ -8,7 +8,14 @@
   <h2>Usuarios</h2>
   <ul>
     {% for usuario in usuarios %}
-      <li><a href="{% url 'perfil_usuario' usuario.username %}">{{ usuario.foto_perfil }} {{ usuario.first_name }} {{ usuario.last_name }}</a></li>
+      <li>
+        {% if usuario.perfil %}
+          <img src="{{ usuario.perfil.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50">
+        {% endif %}
+        <span>
+          <a href="{% url 'perfil_usuario' usuario.username %}">{{ usuario.puntos }} {{ usuario.first_name }} {{ usuario.last_name }}</a>
+        </span>
+      </li>
     {% endfor %}
   </ul>
 <h2>Comunidades</h2>

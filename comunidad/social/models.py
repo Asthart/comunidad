@@ -154,6 +154,12 @@ class TerminosCondiciones(models.Model):
 
     def __str__(self):
         return "Términos y Condiciones"
+class Clasificacion(models.Model):
+    nombre = models.CharField(max_length=50)
+    umbral_puntos = models.IntegerField()
+    print(f"Verificando si {nombre} tiene {umbral_puntos}")
+    def __str__(self):
+        return self.nombre
     
 class Adjunto(models.Model):
     archivo = models.FileField(upload_to='publicaciones/archivos/')

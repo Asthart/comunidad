@@ -3,31 +3,41 @@
   <nav class="navbar">
     <div class="logo">
       <a href="{% url 'inicio' %}">
-        <img src="{% static 'images/logo2.png' %}" alt="CTInnovate Logo">
+        <img src="{% static 'images/logo2.png' %}" alt="CTInnovate Logo"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link rel="stylesheet" href="{% static 'css/css/all.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
       </a>
     </div>
     <div class="menu-container">
       <button class="menu-toggle" aria-label="Abrir menú">
-        <span></span>
-        <span></span>
+        <span>h</span>
+        <span>j</span>
         <span></span>
       </button>
-      <ul class="menu">
-        <li><a href="{% url 'inicio' %}">Inicio</a></li>
+      <ul class="menu"  style="height: 60px;">
+        <li><a href="{% url 'perfil_usuario' user.username %}">
+          {% if user.perfilusuario.foto_perfil %}
+            <img src="{{ user.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ user.username }}" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
+          {% else %}
+            <img src="{% static 'img/default_avatar.png' %}" alt="Foto de perfil de {{ user.username }}" width="24" height="24">
+          {% endif %}
+          <span class="texto"></span>
+        </a></li>
+          <li><a href="{% url 'inicio' %}"><i  class="fas fa-home fa-lg fa-fw"></i><span class="texto">Inicio</span></a></li>
         {% if user.is_authenticated %}
-          <li><a href="{% url 'crear_comunidad' %}">Crear Comunidad</a></li>
-          <li><a href="{% url 'crear_proyecto' %}">Crear Proyecto</a></li>
-          <li><a href="{% url 'crear_desafio' %}">Crear Desafío</a></li>
-          <li><a href="{% url 'perfil_usuario' user.username %}">Mi Perfil</a></li>
-          <li><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+          <li><a href="{% url 'crear_comunidad' %}"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
+          <li><a href="{% url 'crear_proyecto' %}"><i class="fas fa-project-diagram"></i><span class="texto">Proyecto</span></a></li>
+          <li><a href="{% url 'crear_desafio' %}"><i class="fas fa-bolt"></i><span class="texto">Desafios</span></a></li>
+          <li><a href="{% url 'ranking' %}"><i class="fas fa-ranking-star"></i><span class="texto">Ranking</span></a></li>
+          <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span class="texto"></span></a></li>
         {% else %}
-          <li><a href="{% url 'login' %}">Iniciar Sesión</a></li>
-          <li><a href="{% url 'register' %}">Registrarse</a></li>
+          <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i><span class="texto">Iniciar Sesión</span></a></li>
+          <li><a href="{% url 'register' %}"><i class="fas fa-user-plus"></i><span class="texto">Registrarse</span></a></li>
         {% endif %}
         <li>
           <form action="{% url 'buscar' %}" method="get">
             <input type="search" name="q" placeholder="Buscar...">
-            <button type="submit">Buscar</button>
+            <button type="submit"><i class="fas fa-search"></i></button>
           </form>
         </li>
       </ul>

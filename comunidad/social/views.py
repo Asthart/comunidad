@@ -9,9 +9,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
 from .models import *
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
-from django.contrib.auth.models import User
+
 from django.core.mail import send_mail
 from django.utils import timezone
+from .utils import get_clasificacion
 
 @login_required
 def inicio(request):
@@ -142,7 +143,11 @@ def detalle_desafio(request, pk):
 def buscar(request):
     q = request.GET.get('q')
     if q:
-        usuarios = User.objects.filter(Q(username__icontains=q) | Q(first_name__icontains=q) | Q(last_name__icontains=q) )
+        usuarios = User.objects.filter(
+            Q(username__icontains=q) |
+            Q(first_name__icontains=q) |
+            Q(last_name__icontains=q)
+        ).select_related('perfilusuario')
         comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
         proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
         desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
@@ -186,6 +191,7 @@ def perfil_usuario(request, username):
     usuario = get_object_or_404(User, username=username)
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
+    clasificacion = get_clasificacion(perfil.puntos)
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
     sigue_a = perfil.sigue_a(request.user)
     return render(request, 'perfil_usuario.html', {
@@ -194,6 +200,7 @@ def perfil_usuario(request, username):
         'proyectos': proyectos,
         'actividades': actividades,
         'sigue_a': sigue_a,
+        'clasificacion': clasificacion,
     })
     
 from .forms import CustomUserCreationForm
@@ -202,12 +209,15 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            if request.POST.get('aceptado_terminos') == 'on':
-                user = form.save()
-                login(request, user)
-                return redirect('inicio')
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('inicio')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
         form = CustomUserCreationForm()
+
     return render(request, 'register.html', {'form': form})
 
 @login_required

@@ -15,7 +15,6 @@
     {% endif %}
 </div>
     
-
     {% if sigue_a %}
         <a href="{% url 'dejar_de_seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-secondary">Dejar de seguir</a>
     {% else %}
@@ -29,6 +28,7 @@
     <p>Biografía: {{ perfil.biografia }}</p>
     <p>Rol: {{ perfil.rol }}</p>
     <p>Puntos: {{ perfil.puntos }}</p>
+    <p>Clasificacion: {{ clasificacion }}</p>
   </div>
 
   <hr>
