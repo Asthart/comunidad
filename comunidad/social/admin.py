@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Clasificacion, Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
+from .models import Action, Clasificacion, Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
 
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
@@ -66,3 +66,8 @@ admin.site.register(TerminosCondiciones)
 class ClasificacionAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'umbral_puntos')
     search_fields = ('nombre',)
+    
+@admin.register(Action)
+class ActionAdmin(admin.ModelAdmin):
+    list_display = ('id','name', 'points')
+    search_fields = ('name',)

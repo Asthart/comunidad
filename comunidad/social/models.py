@@ -165,3 +165,12 @@ class Clasificacion(models.Model):
 class Adjunto(models.Model):
     archivo = models.FileField(upload_to='publicaciones/archivos/')
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='adjuntos')
+    
+class Action(models.Model):
+    name = models.CharField(max_length=100)
+    points = models.IntegerField(default=0)
+
+class UserAction(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    action = models.ForeignKey(Action, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)

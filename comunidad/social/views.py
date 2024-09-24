@@ -3,22 +3,23 @@
 from pyexpat.errors import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
 from .models import *
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
-
+from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
-from django.utils import timezone
-from .utils import get_clasificacion
 
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
     proyectos = Proyecto.objects.filter(comunidad__in=comunidades)
     desafios = Desafio.objects.filter(comunidad__in=comunidades)
+    
+    accion = Action.objects.filter(name='inicio').first()
+    update_user_points(request.user.id, accion.id, accion.points)
+    
     return render(request, 'inicio.html', {
         'comunidades': comunidades,
         'proyectos': proyectos,
@@ -47,35 +48,12 @@ def crear_comunidad(request):
                 ['cespedesalejandro247@gmail.com'],
                 fail_silently=False,
             )
+            accion = Action.objects.filter(name='crear_comunidad').first()
+            update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
         form = ComunidadForm()
     return render(request, 'crear_comunidad.html', {'form': form})
-
-
-
-''''@login_required
-def solicitar_cuenta(request):
-    if request.method == 'POST':
-        form = SolicitudCuentaForm(request.POST)
-        if form.is_valid():
-            solicitud = form.save(commit=False)
-            solicitud.usuario = request.user
-            solicitud.save()
-            # Enviar correo al administrador
-            send_mail(
-                'Nueva solicitud de cuenta',
-                f'El usuario {solicitud.nombre} ha solicitado una comunidad.',
-                'cespedesalejandro247@gmail.com',
-                ['cespedesalejandro247@gmail.com'],
-                fail_silently=False,
-            )
-            return redirect('solicitud_enviada')
-    else:
-        form = SolicitudCuentaForm()
-    return render(request, 'comunidad/solicitar_cuenta.html', {'form': form})
-'''
-
 
 
 @login_required
@@ -106,6 +84,8 @@ def crear_proyecto(request):
                 tipo_actividad='crear_proyecto',
                 puntos_ganados=30
             )
+            accion = Action.objects.filter(name='crear_proyecto').first()
+            update_user_points(request.user.id, accion.id, accion.points)
             return redirect('detalle_proyecto', pk=proyecto.pk)
     else:
         form = ProyectoForm()
@@ -130,6 +110,8 @@ def crear_desafio(request):
                 tipo_actividad='crear_desafio',
                 puntos_ganados=40
             )
+            accion = Action.objects.filter(name='crear_desafio').first()
+            update_user_points(request.user.id, accion.id, accion.points)
             return redirect('detalle_desafio', pk=desafio.pk)
     else:
         form = DesafioForm()
@@ -214,6 +196,8 @@ def register(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
+            accion = Action.objects.filter(name='registrarse').first()
+            update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
         form = CustomUserCreationForm()
@@ -243,7 +227,8 @@ def crear_publicacion(request):
             # Guarda los adjuntos después de guardar la publicación
             for archivo in form.cleaned_data['archivos']:
                 Adjunto.objects.create(publicacion=publicacion, archivo=archivo)
-            
+            accion = Action.objects.filter(name='publicar').first()
+            update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
         form = PublicacionForm()
@@ -353,6 +338,8 @@ def seguir_usuario(request, pk):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.seguir_usuario(usuario)
+    accion = Action.objects.filter(name='seguir').first()
+    update_user_points(request.user.id, accion.id, accion.points)
     return redirect('perfil_usuario', username=usuario.username)
 
 @login_required
@@ -372,3 +359,22 @@ def lista_publicaciones(request):
     if not publicaciones.exists():
         publicaciones = None
     return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones})
+
+
+
+def action_view(request, action_id):
+    action = Action.objects.get(id=action_id)
+    if request.user.is_authenticated:
+        update_user_points(request.user.id, action_id, action.points)
+    return render(request, 'action.html', {'action': action})
+
+def user_profile_view(request, user_id):
+    user = User.objects.get(id=user_id)
+    profile, _ = PerfilUsuario.objects.get_or_create(user=user)
+    return render(request, 'profile.html', {'user': user, 'profile': profile})
+
+
+
+
+
+

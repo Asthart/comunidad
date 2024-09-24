@@ -29,4 +29,5 @@ urlpatterns = [
     path('seguir/<pk>/', views.seguir_usuario, name='seguir_usuario'),
     path('dejar_de_seguir/<pk>/', views.dejar_de_seguir_usuario, name='dejar_de_seguir_usuario'),
     path('buscar_usuarios/', views.buscar_usuarios, name='buscar_usuarios'),
+    path('actions/<int:action_id>/', views.update_user_points, name='action'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
