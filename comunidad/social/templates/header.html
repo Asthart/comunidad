@@ -3,7 +3,7 @@
   <nav class="navbar">
     <div class="logo">
       <a href="{% url 'inicio' %}">
-        <img src="{% static 'images/logo2.png' %}" alt="CTInnovate Logo"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <img src="{% static 'images/logo2.png' %}" alt="CTInnovate Logo"><link rel="stylesheet" >
         <link rel="stylesheet" href="{% static 'css/css/all.min.css' %}">
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
       </a>
@@ -17,13 +17,13 @@
       <ul class="menu"  style="height: 60px;">
         <li><a href="{% url 'perfil_usuario' user.username %}">
           {% if user.perfilusuario.foto_perfil %}
-            <img src="{{ user.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ user.username }}" width="60" height="60" style="object-fit: cover; border-radius: 50%;">
+            <img src="{{ user.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% else %}
-            <img src="{% static 'img/default_avatar.png' %}" alt="Foto de perfil de {{ user.username }}" width="24" height="24">
+            <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% endif %}
           <span class="texto"></span>
         </a></li>
-          <li><a href="{% url 'inicio' %}"><i  class="fas fa-home fa-lg fa-fw"></i><span class="texto">Inicio</span></a></li>
+          <li><a href="{% url 'inicio' %}" ><i  class="fas fa-home "></i><span class="texto">Inicio</span></a></li>
         {% if user.is_authenticated %}
           <li><a href="{% url 'crear_comunidad' %}"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
           <li><a href="{% url 'crear_proyecto' %}"><i class="fas fa-project-diagram"></i><span class="texto">Proyecto</span></a></li>

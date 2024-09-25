@@ -1,12 +1,13 @@
 # admin.py
 
+import os
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.urls import path
 from .models import Action, Clasificacion, Comunidad, Concurso, Premio, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
-
+from django.core.mail import send_mail
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
     can_delete = False
@@ -23,7 +24,44 @@ class ComunidadAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'administrador')
     search_fields = ('nombre', 'administrador__username')
     filter_horizontal = ('miembros',)
+    
+    def make_active(self, request, queryset):
+        updated = queryset.update(activada=True)
+        if updated:
+            self.send_activation_email(queryset.first())
+        return updated
 
+    def send_activation_email(self, comunidad):
+        subject = 'Tu comunidad ha sido activada'
+        message = f'Hola {comunidad.administrador.username},\n\n' \
+                  f'Tu comunidad "{comunidad.nombre}" ha sido activada.\n\n' \
+                  
+        ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
+        send_mail(
+            subject,
+            message,
+            ADMIN_EMAIL,  # Reemplaza con tu dirección de correo
+            [comunidad.administrador.email],
+            fail_silently=False,
+        )
+        
+    actions = ['make_active']  # Agregar esta línea
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['actions_on_top'] = True
+        return super().changelist_view(request, extra_context=extra_context)
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        
+        try:
+            del actions['delete_selected']
+        except KeyError:
+            pass
+        
+        return actions
+    
 @admin.register(Proyecto)
 class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_creacion')

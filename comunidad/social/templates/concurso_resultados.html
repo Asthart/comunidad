@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+{% block content %}
+
+<h2>Resultados del Concurso Actual</h2>
+
+<p>Concurso: {{ concurso.nombre }}</p>
+<p>Fecha de inicio: {{ concurso.fecha_inicio }}</p>
+<p>Fecha de fin: {{ concurso.fecha_fin }}</p>
+
+<h3>Ganando:</h3>
+<p>{{ usuario.first_name }} {{ usuario.last_name }}</p>
+
+<h3>Ranking Actual:</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Puntos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for perfil in top_usuarios %}
+        <tr>
+            <td href="{% url 'perfil_usuario' perfil.usuario.username %}">
+                {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}</td>
+            
+            <td>{{ perfil.puntos }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}
+{% include 'footer.html' %}

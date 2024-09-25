@@ -1,6 +1,7 @@
 # views.py
 
 from datetime import datetime
+import os
 from pyexpat.errors import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -42,10 +43,11 @@ def crear_comunidad(request):
                 tipo_actividad='crear_comunidad',
                 puntos_ganados=50
             )
+            ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
             send_mail(
                 'Nueva solicitud de cuenta',
                 f'El usuario {request.user} ha solicitado una comunidad. Con el nombre de {comunidad.nombre}.',
-                'cespedesalejandro247@gmail.com',
+                ADMIN_EMAIL,
                 ['cespedesalejandro247@gmail.com'],
                 fail_silently=False,
             )
@@ -177,6 +179,7 @@ def perfil_usuario(request, username):
     clasificacion = get_clasificacion(perfil.puntos)
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
     sigue_a = perfil.sigue_a(request.user)
+    yo= not usuario==request.user
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
@@ -184,6 +187,7 @@ def perfil_usuario(request, username):
         'actividades': actividades,
         'sigue_a': sigue_a,
         'clasificacion': clasificacion,
+        'yo':yo,
     })
     
 from .forms import CustomUserCreationForm
@@ -407,11 +411,13 @@ def concurso_resultados(request):
     concurso_actual = Concurso.objects.latest('fecha_fin')
     # Ordenar por ranking y tomar el primero
     ganador = PerfilUsuario.objects.order_by('-puntos').first()
-    
-
-    return render(request, 'admin/concurso_resultados.html', {
+    usuario= User.objects.get(id=ganador.usuario_id)
+    top_usuarios = PerfilUsuario.objects.order_by('-puntos')[:10]
+    return render(request, 'concurso_resultados.html', {
         'concurso': concurso_actual,
-        'resultados': ganador
+        'ganador': ganador,
+        'usuario':usuario,
+        'top_usuarios':top_usuarios,
     })
     
 

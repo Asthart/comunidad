@@ -31,5 +31,5 @@ urlpatterns = [
     path('buscar_usuarios/', views.buscar_usuarios, name='buscar_usuarios'),
     path('actions/<int:action_id>/', views.update_user_points, name='action'),
     path('crear_concurso/', views.crear_concurso, name='crear_concurso'),
-    path('listar_concursos/', views.listar_concursos, name='listar_concursos'),
+    path('concurso_resultados/', views.concurso_resultados, name='concurso_resultados'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
