@@ -200,8 +200,7 @@ class ResultadoConcurso(models.Model):
     concurso = models.ForeignKey(Concurso, on_delete=models.CASCADE)
     ganador = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_resultado = models.DateField()
-
-
+    
 class Campaign(models.Model):
     activa = models.BooleanField(default=True)
     desafio = models.OneToOneField(Desafio, on_delete=models.CASCADE)
