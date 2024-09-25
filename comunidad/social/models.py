@@ -174,3 +174,30 @@ class UserAction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.ForeignKey(Action, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+
+class Premio(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    tipo = models.CharField(max_length=50, choices=[
+        ('metalico', 'Premio metálico'),
+        ('experiencia', 'Experiencia'),
+        ('producto', 'Producto'),
+        ('merchandising', 'Merchandising'),
+        ('reconocimiento', 'Reconocimiento'),
+        ('surpresa', 'Surpresa')
+    ])
+    def __str__(self):
+        return f"{self.nombre}"
+
+class Concurso(models.Model):
+    nombre = models.CharField(max_length=100)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    premio = models.ForeignKey(Premio, on_delete=models.CASCADE)
+
+class ResultadoConcurso(models.Model):
+    concurso = models.ForeignKey(Concurso, on_delete=models.CASCADE)
+    ganador = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_resultado = models.DateField()
+

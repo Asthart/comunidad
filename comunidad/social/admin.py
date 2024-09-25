@@ -3,7 +3,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Action, Clasificacion, Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
+from django.http import HttpResponse
+from django.urls import path
+from .models import Action, Clasificacion, Comunidad, Concurso, Premio, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
 
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
@@ -71,3 +73,29 @@ class ClasificacionAdmin(admin.ModelAdmin):
 class ActionAdmin(admin.ModelAdmin):
     list_display = ('id','name', 'points')
     search_fields = ('name',)
+    
+@admin.register(Premio)
+class PremioAdmin(admin.ModelAdmin):
+    list_display = ('nombre',)
+    search_fields = ('nombre',)
+    
+
+@admin.register(Concurso)
+class ConcursoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'fecha_inicio', 'fecha_fin', 'premio')
+    list_filter = ['fecha_inicio', 'fecha_fin']
+    search_fields = ['nombre']
+    
+    class Media:
+        css = {
+            'all': ('css/styles.css',)
+        }
+
+
+
+
+
+    def concurso_resultados(self, request):
+        # Aquí irá la lógica para mostrar los resultados del concurso actual
+        # Por ahora, solo mostraremos un mensaje
+        return HttpResponse("Resultados del concurso actual")

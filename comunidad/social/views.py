@@ -1,5 +1,6 @@
 # views.py
 
+from datetime import datetime
 from pyexpat.errors import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -374,7 +375,45 @@ def user_profile_view(request, user_id):
     return render(request, 'profile.html', {'user': user, 'profile': profile})
 
 
+@login_required
+def crear_concurso(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        fecha_inicio = request.POST['fecha_inicio']
+        fecha_fin = request.POST['fecha_fin']
+        
+        premio_id = request.POST['premio']
+        premio = Premio.objects.get(id=premio_id)
+        
+        Concurso.objects.create(
+            nombre=nombre,
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            premio=premio
+        )
+        return redirect('listar_concursos')
+    
+    premios = Premio.objects.all()
+    return render(request, 'crear_concurso.html', {'premios': premios})
 
+@login_required
+def listar_concursos(request):
+    concursos = Concurso.objects.all().order_by('-fecha_fin')
+    return render(request, 'listar_concursos.html', {'concursos': concursos})
+
+
+def concurso_resultados(request):
+    
+    concurso_actual = Concurso.objects.latest('fecha_fin')
+    # Ordenar por ranking y tomar el primero
+    ganador = PerfilUsuario.objects.order_by('-puntos').first()
+    
+
+    return render(request, 'admin/concurso_resultados.html', {
+        'concurso': concurso_actual,
+        'resultados': ganador
+    })
+    
 
 
 
