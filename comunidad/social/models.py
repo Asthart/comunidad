@@ -174,3 +174,33 @@ class UserAction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.ForeignKey(Action, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+class Campaign(models.Model):
+    activa = models.BooleanField(default=True)
+    desafio = models.OneToOneField(Desafio, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.desafio.titulo
+    
+    @property
+    def respuestas(self):
+        return Respuesta.objects.filter(campaign=self).order_by('-fecha')
+    
+class Respuesta(models.Model):
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    respuesta = models.CharField(max_length=300)
+    fecha = models.DateTimeField(auto_now_add=True)
+    puntuacion = models.IntegerField(default=0)
+    
+    def __str__(self):
+        return self.respuesta
+    
+    @property
+    def estrellas(self):
+        return range(self.puntuacion)
+
+class AdjuntoRespuesta(models.Model):
+    archivo = models.FileField(upload_to='respuestas/archivos/')
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE, related_name='adjuntos')
+    

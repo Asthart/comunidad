@@ -1,13 +1,13 @@
 # views.py
 
 from pyexpat.errors import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db.models import Q
 from .models import *
-from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
+from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm, RespuestaForm
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 
@@ -97,7 +97,6 @@ def detalle_proyecto(request, pk):
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
-#@permission_required('social.add_desafio', raise_exception=True)
 def crear_desafio(request):
     if request.method == 'POST':
         form = DesafioForm(request.POST)
@@ -105,6 +104,9 @@ def crear_desafio(request):
             desafio = form.save(commit=False)
             desafio.creador = request.user
             desafio.save()
+            
+            campaign = Campaign.objects.create(desafio=desafio)
+            
             ActividadUsuario.objects.create(
                 usuario=request.user,
                 tipo_actividad='crear_desafio',
@@ -112,9 +114,11 @@ def crear_desafio(request):
             )
             accion = Action.objects.filter(name='crear_desafio').first()
             update_user_points(request.user.id, accion.id, accion.points)
-            return redirect('detalle_desafio', pk=desafio.pk)
+            
+            return redirect('detalle_campaign', pk=campaign.pk)
     else:
         form = DesafioForm()
+    
     return render(request, 'crear_desafio.html', {'form': form})
 
 @login_required
@@ -373,8 +377,60 @@ def user_profile_view(request, user_id):
     profile, _ = PerfilUsuario.objects.get_or_create(user=user)
     return render(request, 'profile.html', {'user': user, 'profile': profile})
 
+@login_required
+def detalle_campaign(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    
+    if request.method == 'POST' and campaign.activa:
+        respuesta_form = RespuestaForm(request.POST)
+        if respuesta_form.is_valid():
+            respuesta = respuesta_form.save(commit=False)
+            respuesta.autor = request.user
+            respuesta.campaign = campaign
+            respuesta.save()
+            
+            ActividadUsuario.objects.create(
+                usuario=request.user,
+                tipo_actividad='responder_campaign',
+                puntos_ganados=20
+            )
+            accion = Action.objects.filter(name='responder_campaign').first()
+            update_user_points(request.user.id, accion.id, accion.points)
+            
+            return redirect('detalle_campaign', pk=campaign.pk)
+    else:
+        respuesta_form = RespuestaForm()
+    
+    puntuaciones = Action.objects.filter(name__startswith='puntos')
+    
+    return render(request, 'detalle_campaign.html', {
+        'campaign': campaign,
+        'respuesta_form': respuesta_form,
+        'puntuaciones': puntuaciones,
+        'is_creador': request.user == campaign.desafio.creador,
+        'campaign_activa': campaign.activa
+    })
 
-
-
-
-
+@login_required
+def lista_campaigns(request):
+    campaigns = Campaign.objects.all().order_by('-id')
+    filtro = request.GET.get('filtro', 'todas')
+    
+    if filtro == 'activas':
+        campaigns = campaigns.filter(activa=True)
+    elif filtro == 'no_activas':
+        campaigns = campaigns.filter(activa=False)
+    
+    return render(request, 'lista_campaigns.html', {
+        'campaigns': campaigns,
+        'filtro_actual': filtro
+    })
+    
+@login_required
+def puntuar_respuesta(request, pk, estrellas):
+    respuesta = get_object_or_404(Respuesta, pk=pk)
+    if request.method == 'POST' and request.user == respuesta.campaign.desafio.creador:
+        respuesta.puntuacion = int(estrellas)
+        respuesta.save()
+        return JsonResponse({'status': 'success', 'puntuacion': respuesta.puntuacion})
+    return JsonResponse({'status': 'error'}, status=400)

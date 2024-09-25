@@ -30,4 +30,7 @@ urlpatterns = [
     path('dejar_de_seguir/<pk>/', views.dejar_de_seguir_usuario, name='dejar_de_seguir_usuario'),
     path('buscar_usuarios/', views.buscar_usuarios, name='buscar_usuarios'),
     path('actions/<int:action_id>/', views.update_user_points, name='action'),
+    path('campaign/<int:pk>/', views.detalle_campaign, name='detalle_campaign'),
+    path('campaigns/', views.lista_campaigns, name='lista_campaigns'),
+    path('puntuar/<int:pk>/<int:estrellas>/', views.puntuar_respuesta, name='puntuar_respuesta'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

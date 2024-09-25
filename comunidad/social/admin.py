@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Action, Clasificacion, Comunidad, Proyecto, Desafio, PerfilUsuario, MensajeChat, ActividadUsuario, Publicacion, Tag,TerminosCondiciones
+from .models import *
 
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
@@ -15,6 +15,7 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+admin.site.register(Campaign)
 
 @admin.register(Comunidad)
 class ComunidadAdmin(admin.ModelAdmin):

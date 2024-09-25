@@ -94,3 +94,8 @@ class PublicacionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['archivos'].required = True
+        
+class RespuestaForm(forms.ModelForm):
+    class Meta:
+        model = Respuesta
+        fields = ('respuesta',)

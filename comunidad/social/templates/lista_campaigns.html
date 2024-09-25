@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <h1>Campaigns</h1>
+    
+    <div class="filtros">
+        <a href="{% url 'lista_campaigns' %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %}">Ver todas</a>
+        <a href="{% url 'lista_campaigns' %}?filtro=activas" class="btn {% if filtro_actual == 'activas' %}btn-active{% endif %}">Ver solo activas</a>
+        <a href="{% url 'lista_campaigns' %}?filtro=no_activas" class="btn {% if filtro_actual == 'no_activas' %}btn-active{% endif %}">Ver solo no activas</a>
+    </div>
+    
+    <ul>
+        {% for campaign in campaigns %}
+            <li>
+                <a href="{% url 'detalle_campaign' campaign.pk %}">{{ campaign.desafio.titulo }}</a>
+                ({% if campaign.activa %}Activa{% else %}No activa{% endif %})
+            </li>
+        {% empty %}
+            <li>No hay campaigns.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+{% include 'footer.html' %}

@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% include 'header.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="campaign-detail">
+    <h1>{{ campaign.desafio.titulo }}</h1>
+    <p>{{ campaign.desafio.descripcion }}</p>
+    
+    {% if request.user == campaign.desafio.creador %}
+        <a href="{% url 'admin:social_campaign_change' campaign.pk %}">Ir al panel de administración</a>
+    {% endif %}
+    
+    <h2>Respuestas:</h2>
+    
+    {% if campaign_activa %}
+        <form method="post">
+            {% csrf_token %}
+            {{ respuesta_form.as_p }}
+            <button type="submit">Enviar respuesta</button>
+        </form>
+    {% else %}
+        <p>Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
+    {% endif %}
+    
+    {% for respuesta in campaign.respuestas %}
+        <div class="respuesta">
+            <p>{{ respuesta.autor.username }}: {{ respuesta.respuesta }}</p>
+            
+            <div class="rating" data-respuesta-id="{{ respuesta.pk }}" data-puntuacion="{{ respuesta.puntuacion }}">
+                {% for i in "54321" %}
+                    <span class="star" data-value="{{ forloop.counter }}">&#9733;</span>
+                {% endfor %}
+            </div>
+            
+            <p class="puntuacion">Puntos: <span class="puntos-valor">{{ respuesta.puntuacion }}</span> estrellas</p>
+        </div>
+    {% empty %}
+        <p>No hay respuestas aún.</p>
+    {% endfor %}
+</div>
+
+<style>
+    .rating {
+        unicode-bidi: bidi-override;
+        direction: rtl;
+        text-align: left;
+    }
+    .rating .star {
+        display: inline-block;
+        position: relative;
+        width: 1.1em;
+        font-size: 1.5em;
+        cursor: pointer;
+        color: #ccc;
+    }
+    .rating .star.checked,
+    .rating:hover .star:hover,
+    .rating:hover .star:hover ~ .star {
+        color: gold;
+    }
+    .rating:hover .star {
+        color: #ccc;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ratings = document.querySelectorAll('.rating');
+        var isCreador = {{ is_creador|yesno:"true,false" }};
+        
+        ratings.forEach(function(rating) {
+            var stars = rating.querySelectorAll('.star');
+            var respuestaId = rating.dataset.respuestaId;
+            var currentRating = parseInt(rating.dataset.puntuacion) || 0;
+
+            function updateStars(value) {
+                stars.forEach(function(star, index) {
+                    star.classList.toggle('checked', index >= (5 - value));
+                });
+                rating.nextElementSibling.querySelector('.puntos-valor').textContent = value;
+            }
+
+            updateStars(currentRating);
+
+            if (isCreador) {
+                stars.forEach(function(star, index) {
+                    star.addEventListener('click', function() {
+                        var value = 5 - index;
+                        
+                        fetch(`/puntuar/${respuestaId}/${value}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            }
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                updateStars(data.puntuacion);
+                                currentRating = data.puntuacion;
+                            }
+                        });
+                    });
+                });
+
+                rating.addEventListener('mouseleave', function() {
+                    updateStars(currentRating);
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% include 'footer.html' %}
