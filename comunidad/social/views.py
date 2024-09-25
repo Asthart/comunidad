@@ -1,5 +1,7 @@
 # views.py
 
+from datetime import datetime
+import os
 from pyexpat.errors import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -10,7 +12,7 @@ from .models import *
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm, RespuestaForm
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
-
+from django.views.generic import ListView
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
@@ -41,10 +43,11 @@ def crear_comunidad(request):
                 tipo_actividad='crear_comunidad',
                 puntos_ganados=50
             )
+            ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
             send_mail(
                 'Nueva solicitud de cuenta',
                 f'El usuario {request.user} ha solicitado una comunidad. Con el nombre de {comunidad.nombre}.',
-                'cespedesalejandro247@gmail.com',
+                ADMIN_EMAIL,
                 ['cespedesalejandro247@gmail.com'],
                 fail_silently=False,
             )
@@ -180,6 +183,7 @@ def perfil_usuario(request, username):
     clasificacion = get_clasificacion(perfil.puntos)
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
     sigue_a = perfil.sigue_a(request.user)
+    yo= not usuario==request.user
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
@@ -187,6 +191,7 @@ def perfil_usuario(request, username):
         'actividades': actividades,
         'sigue_a': sigue_a,
         'clasificacion': clasificacion,
+        'yo':yo,
     })
     
 from .forms import CustomUserCreationForm
@@ -376,6 +381,56 @@ def user_profile_view(request, user_id):
     user = User.objects.get(id=user_id)
     profile, _ = PerfilUsuario.objects.get_or_create(user=user)
     return render(request, 'profile.html', {'user': user, 'profile': profile})
+
+
+@login_required
+def crear_concurso(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        fecha_inicio = request.POST['fecha_inicio']
+        fecha_fin = request.POST['fecha_fin']
+        
+        premio_id = request.POST['premio']
+        premio = Premio.objects.get(id=premio_id)
+        
+        Concurso.objects.create(
+            nombre=nombre,
+            fecha_inicio=fecha_inicio,
+            fecha_fin=fecha_fin,
+            premio=premio
+        )
+        return redirect('listar_concursos')
+    
+    premios = Premio.objects.all()
+    return render(request, 'crear_concurso.html', {'premios': premios})
+
+@login_required
+def listar_concursos(request):
+    concursos = Concurso.objects.all().order_by('-fecha_fin')
+    return render(request, 'listar_concursos.html', {'concursos': concursos})
+
+
+def concurso_resultados(request):
+    
+    concurso_actual = Concurso.objects.latest('fecha_fin')
+    # Ordenar por ranking y tomar el primero
+    ganador = PerfilUsuario.objects.order_by('-puntos').first()
+    usuario= User.objects.get(id=ganador.usuario_id)
+    top_usuarios = PerfilUsuario.objects.order_by('-puntos')[:10]
+    return render(request, 'concurso_resultados.html', {
+        'concurso': concurso_actual,
+        'ganador': ganador,
+        'usuario':usuario,
+        'top_usuarios':top_usuarios,
+    })
+    
+
+def lista_comunidades(request):
+    comunidades_activas = Comunidad.objects.filter(activada=True)
+    return render(request, 'lista_comunidades.html', {'comunidades': comunidades_activas})
+
+
+
 
 @login_required
 def detalle_campaign(request, pk):

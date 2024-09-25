@@ -11,15 +11,16 @@
       <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil de {{ usuario.username }}" width="100" height="100" style="object-fit: cover; border-radius: 50%;">
       <h1 style="margin-left: 10px;">{{ usuario.first_name }} {{ usuario.last_name }}</h1>    
     {% else %}
-        <img src="{% static 'img/default_avatar.png' %}" alt="Foto de perfil de {{ usuario.username }}" width="100" height="100">
+        <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ usuario.username }}" width="100" height="100" style="object-fit: cover; border-radius: 50%;">
     {% endif %}
 </div>
-    
+{% if yo %}
     {% if sigue_a %}
         <a href="{% url 'dejar_de_seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-secondary">Dejar de seguir</a>
     {% else %}
         <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary">Seguir</a>
     {% endif %}
+{% endif %}
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="foto_perfil" accept="image/*">

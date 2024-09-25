@@ -1,4 +1,4 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Ranking de Usuarios - Hubinab Reward{% endblock %}
@@ -15,12 +15,14 @@
         <a href="{% url 'perfil_usuario' perfil.usuario.username %}">
           {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
         </a> - {{ perfil.puntos }} puntos 
-        </a> - {{ perfil.clasificacion }} 
-
       </li>
     {% empty %}
       <li>No hay usuarios en el ranking.</li>
     {% endfor %}
   </ol>
 </div>
+
+<!-- Agregando el botón aquí -->
+<button class="btn btn-primary" onclick="window.location.href='{% url 'concurso_resultados' %}'">Ver Concursos Actuales</button>
+
 {% endblock %}

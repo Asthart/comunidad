@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Listado de Comunidades Activas</h1>
+
+<button onclick="location.href='{% url 'crear_comunidad' %}'">Crear nueva comunidad</button>
+
+<table>
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Administrador</th>
+            <th>Privacidad</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for comunidad in comunidades %}
+            <tr>
+                <td>{{ comunidad.nombre }}</td>
+                <td>{{ comunidad.administrador.username }}</td>
+                {% if comunidad.publica %}
+                    <td>Publica</td>
+                {% else %}
+                    <td>Privada</td>
+                {% endif %}
+                <td>
+                    <a href="{% url 'detalle_comunidad' comunidad.pk %}">Ver detalles</a>
+                </td>
+               
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
