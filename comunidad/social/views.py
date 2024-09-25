@@ -12,7 +12,7 @@ from .models import *
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
-
+from django.views.generic import ListView
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
@@ -420,6 +420,10 @@ def concurso_resultados(request):
         'top_usuarios':top_usuarios,
     })
     
+
+def lista_comunidades(request):
+    comunidades_activas = Comunidad.objects.filter(activada=True)
+    return render(request, 'lista_comunidades.html', {'comunidades': comunidades_activas})
 
 
 

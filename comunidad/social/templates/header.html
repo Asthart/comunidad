@@ -25,7 +25,7 @@
         </a></li>
           <li><a href="{% url 'inicio' %}" ><i  class="fas fa-home "></i><span class="texto">Inicio</span></a></li>
         {% if user.is_authenticated %}
-          <li><a href="{% url 'crear_comunidad' %}"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
+          <li><a href="{% url 'lista_comunidades' %}"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
           <li><a href="{% url 'crear_proyecto' %}"><i class="fas fa-project-diagram"></i><span class="texto">Proyecto</span></a></li>
           <li><a href="{% url 'crear_desafio' %}"><i class="fas fa-bolt"></i><span class="texto">Desafios</span></a></li>
           <li><a href="{% url 'ranking' %}"><i class="fas fa-ranking-star"></i><span class="texto">Ranking</span></a></li>

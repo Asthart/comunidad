@@ -21,11 +21,11 @@ admin.site.register(User, CustomUserAdmin)
 
 @admin.register(Comunidad)
 class ComunidadAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'administrador')
+    list_display = ('nombre', 'administrador','activada')
     search_fields = ('nombre', 'administrador__username')
     filter_horizontal = ('miembros',)
     
-    def make_active(self, request, queryset):
+    def Activar(self, request, queryset):
         updated = queryset.update(activada=True)
         if updated:
             self.send_activation_email(queryset.first())
@@ -45,7 +45,7 @@ class ComunidadAdmin(admin.ModelAdmin):
             fail_silently=False,
         )
         
-    actions = ['make_active']  # Agregar esta línea
+    actions = ['Activar']  # Agregar esta línea
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}

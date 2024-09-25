@@ -12,7 +12,7 @@ class Comunidad(models.Model):
     administrador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comunidades_administradas')
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
-    #publica = models.BooleanField(default=False)
+    publica = models.BooleanField(default=False)
     
     def __str__(self):
         return self.nombre

@@ -13,6 +13,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='inicio'), name='logout'),
     path('crear_comunidad/', views.crear_comunidad, name='crear_comunidad'),
     path('comunidad/<int:pk>/', views.detalle_comunidad, name='detalle_comunidad'),
+    path('comunidades/', views.lista_comunidades, name='lista_comunidades'),
     path('crear_proyecto/', views.crear_proyecto, name='crear_proyecto'),
     path('proyecto/<int:pk>/', views.detalle_proyecto, name='detalle_proyecto'),
     path('crear_desafio/', views.crear_desafio, name='crear_desafio'),

@@ -48,6 +48,8 @@ DEFAULT_APPS = [
 MY_APPS=[
     'social.apps.SocialConfig',
     'channels',
+    'tailwind',
+    'theme',
 ]
 INSTALLED_APPS=DEFAULT_APPS + MY_APPS
 
@@ -134,7 +136,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/theme/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Default primary key field type
@@ -163,3 +165,5 @@ EMAIL_HOST_USER = 'cespedesalejandro247@gmail.com'
 EMAIL_HOST_PASSWORD = 'apkw sfog sxay anub '
 DEFAULT_FROM_EMAIL = 'cespedesalejandro247@gmail.com'
 LOGIN_URL = 'login/'
+
+TAILWIND_APP_NAME = 'theme'
