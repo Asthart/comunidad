@@ -48,15 +48,12 @@ DEFAULT_APPS = [
 MY_APPS=[
     'social.apps.SocialConfig',
     'channels',
-    'rest_framework',
-    'corsheaders',
     'tailwind',
     'theme',
 ]
 INSTALLED_APPS=DEFAULT_APPS + MY_APPS
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -170,28 +167,3 @@ DEFAULT_FROM_EMAIL = 'cespedesalejandro247@gmail.com'
 LOGIN_URL = 'login/'
 
 TAILWIND_APP_NAME = 'theme'
-
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer',
-    ],
-    'DEFAULT_PARSER_CLASSES': [
-        'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.MultiPartParser'
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ]
-}
-
-#CORS_ALLOWED_ORIGINS = [
-#    "http://localhost:5173",
-#]
-
-CORS_ALLOW_ALL_ORIGINS = True 
-CORS_ALLOW_CREDENTIALS = True

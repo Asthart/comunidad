@@ -5,10 +5,9 @@ from django.contrib.auth import views as auth_views
 from comunidad import settings
 from . import views
 from django.conf.urls.static import static
-from .views import *
 
 urlpatterns = [
-    path('', InicioView.as_view(), name='inicio'),
+    path('', views.inicio, name='inicio'),
     path('register/', views.register, name='register'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='inicio'), name='logout'),
