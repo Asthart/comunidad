@@ -49,6 +49,7 @@ MY_APPS=[
     'social.apps.SocialConfig',
     'channels',
     'tailwind',
+    'bootstrap5',
     'theme',
 ]
 INSTALLED_APPS=DEFAULT_APPS + MY_APPS
