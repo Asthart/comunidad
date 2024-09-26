@@ -449,7 +449,7 @@ def detalle_campaign(request, pk):
                 tipo_actividad='responder_campaign',
                 puntos_ganados=20
             )
-            accion = Action.objects.filter(name='responder_campaign').first()
+            accion: Action | None= Action.objects.filter(name='responder_campaign').first()
             update_user_points(request.user.id, accion.id, accion.points)
             
             return redirect('detalle_campaign', pk=campaign.pk)
