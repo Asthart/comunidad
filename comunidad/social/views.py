@@ -2,31 +2,45 @@
 
 from datetime import datetime
 import os
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
 from pyexpat.errors import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db.models import Q
+from django.contrib.auth.models import AnonymousUser
+from rest_framework.permissions import IsAuthenticated
+from .serializers import *
 from .models import *
 from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm, RespuestaForm
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 from django.views.generic import ListView
-@login_required
-def inicio(request):
-    comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
-    proyectos = Proyecto.objects.filter(comunidad__in=comunidades)
-    desafios = Desafio.objects.filter(comunidad__in=comunidades)
-    
-    accion = Action.objects.filter(name='inicio').first()
-    update_user_points(request.user.id, accion.id, accion.points)
-    
-    return render(request, 'inicio.html', {
-        'comunidades': comunidades,
-        'proyectos': proyectos,
-        'desafios': desafios,
-    })
+
+class InicioView(APIView):
+    #@login_required
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        if isinstance(request.user, AnonymousUser):
+            return Response({"error": "Debes estar autenticado"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        comunidades = Comunidad.objects.filter(miembros=request.user, activada=True)
+        proyectos = Proyecto.objects.filter(comunidad__in=comunidades).order_by('-fecha_creacion')[:5]
+        desafios = Desafio.objects.filter(comunidad__in=comunidades).filter(fecha_fin__gte=datetime.now()).order_by('-fecha_inicio')[:5]
+        
+        accion = Action.objects.filter(name='inicio').first()
+        update_user_points(request.user.id, accion.id, accion.points)
+        
+        data = {
+            'comunidades': ComunidadSerializer(comunidades, many=True).data,
+            'proyectos': ProyectoSerializer(proyectos, many=True).data,
+            'desafios': DesafioSerializer(desafios, many=True).data,
+        }
+        
+        return Response(data, status=status.HTTP_200_OK)
 
 @login_required
 #@permission_required('social.add_comunidad', raise_exception=True)
