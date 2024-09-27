@@ -1,37 +1,291 @@
+{% load bootstrap5 %}
 {% load static %}
+
 {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'fonts/poppins.css' %}" rel="stylesheet">
+<link href="{% static 'css/all.min.css' %}" rel="stylesheet">
+<style>
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    .login-container {
+        animation: fadeInUp 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+    
+    .social-links a {
+        animation: pulse 2s infinite;
+    }
+    
+    .social-links a:hover {
+        animation-duration: 1.5s;
+    }
+    
+    body {
+        background-image: url("{% static 'images/register-background.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        font-family: 'Poppins', sans-serif;
+    }
+
+   .login-container {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        max-width: 450px;
+        margin: 80px auto;
+    }
+
+   .logo img {
+        width: 150px;
+        height: auto;
+        object-fit: cover;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+   .login-form {
+        background-color: #ffffff;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        weight: 100%;
+    }
+
+   .form-title {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+   .form-title h2 {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+   .form-title span {
+        color: #3490dc;
+        font-weight: bold;
+    }
+
+   .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+   .form-group label {
+       font-weight: 500;
+       margin-bottom: 0.5rem;
+   }
+
+   .form-control {
+       border: none;
+       border-bottom: 1px solid #dee2e6;
+       border-radius: 0;
+       padding-left: 0;
+       padding-right: 0;
+       transition: all 0.3s ease;
+   }
+
+   .form-control:focus {
+       outline: none;
+       border-color: #3490dc;
+       box-shadow: 0 0 0 0.2rem rgba(52, 144, 220, 0.25);
+   }
+
+   .btn-primary {
+       background-color: #3490dc;
+       border-color: #3490dc;
+       transition: all 0.3s ease;
+   }
+
+   .btn-primary:hover {
+       background-color: #2c5282;
+       border-color: #2c5282;
+   }
+
+   .social-links {
+       margin-top: 2rem;
+   }
+
+   .social-links ul {
+       list-style-type: none;
+       padding: 0;
+   }
+
+   .social-links li {
+       display: inline-block;
+       margin-right: 15px;
+   }
+
+   .social-links a {
+       color: #333;
+       font-size: 18px;
+       transition: all 0.3s ease;
+   }
+
+   .social-links a:hover {
+       color: #3490dc;
+   }
+
+   .password-field {
+       position: relative;
+   }
+   
+   .password-eye-toggle {
+       position: absolute;
+       right: 30px;
+       top: 50%;
+       transform: translateY(-50%);
+       cursor: pointer;
+       color: #3490dc;
+   }
+   
+   .password-field:focus ~.password-eye-toggle {
+       color: #2c5282;
+   }
+
+   .container-fluid {
+       opacity:86%;
+   }
+
+   .text-center {
+       font-weight: 600;
+       margin-bottom: 1rem;
+       font-family: 'Poppins', sans-serif;
+   }
+</style>
 {% endblock %}
-{% block title %}Registro - Hubinab Reward{% endblock %}
 
 {% block content %}
-<div class="container">
-    <div class="register-container">
-        <h1 class="register-title">Registro de Usuario</h1>
-        <form method="post" class="register-form">
-            {% csrf_token %}
-            {{ form.as_p }}
-            
-            <!-- Agregar esto al final del formulario -->
-            <div class="alert alert-danger" style="display: none;">
-                Las contraseñas no coinciden. Por favor, verifica y vuelve a intentar.
-            </div>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="login-container" style="opacity: 100%; background:#e6f3fc">
+                <img src="{% static 'images/logo.png' %}" alt="Logo" class="logo" style="width: 100%">
+                <div class="login-form" style="opacity: 95%; background:#f7fbfe">
+                    <div class="form-title">
+                        <h2>Registro de Usuario</h2>
+                        <!-- <span>Sistema de Gestión</span> -->
+                    </div>
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label" for="username">Nombre de Usuario</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><img src="{% static 'images/username.svg' %}" alt="icono" style="width: 20px; height: 20px;"></span>
+                                <input type="text" id="username" name="username" class="form-control" required>
+                            </div>
+                            <small class="form-text text-muted">Ingrese su nombre de usuario.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="first_name">Nombre/s</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><img src="{% static 'images/name.svg' %}" alt="icono" style="width: 20px; height: 20px;"></span>
+                                <input type="text" id="first_name" name="first_name" class="form-control" required>
+                            </div>
+                            <small class="form-text text-muted">Ingrese su/s nombre/s.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="last_name">Apellidos</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><img src="{% static 'images/name.svg' %}" alt="icono" style="width: 20px; height: 20px;"></span>
+                                <input type="text" id="last_name" name="last_name" class="form-control" required>
+                            </div>
+                            <small class="form-text text-muted">Ingrese sus apellidos.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="email">Correo Electrónico</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><img src="{% static 'images/email.svg' %}" alt="icono" style="width: 20px; height: 20px;"></span>
+                                <input type="text" id="email" name="email" class="form-control" required>
+                            </div>
+                            <small class="form-text text-muted">Ingrese su correo electrónico.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password1">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><img src="{% static 'images/password.svg' %}" alt="icono" style="width: 20px; height: 20px;"></span>
+                                <input type="password" id="password1" name="password1" class="form-control password-field" required>
+                                <span class="password-eye-toggle">
+                                    <i class="bi bi-eye-slash-fill"></i>
+                                </span>
+                            </div>
+                            <small class="form-text text-muted">Ingrese su contraseña.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="password2">Confirmar Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><img src="{% static 'images/password2.svg' %}" alt="icono" style="width: 20px; height: 20px;"></span>
+                                <input type="password" id="password2" name="password2" class="form-control password-field" required>
+                                <span class="password-eye-toggle">
+                                    <i class="bi bi-eye-slash-fill"></i>
+                                </span>
+                            </div>
+                            <small class="form-text text-muted">Repita su contraseña.</small>
+                        </div>
+                        <!-- Alerta para contraseñas diferentes -->
+                        <div class="alert alert-danger" style="display: none;">
+                            Las contraseñas no coinciden. Por favor, verifica y vuelve a intentar.
+                        </div>
 
-            <div class="terms-container">
-                <p>Al hacer clic en "Registrarse", usted acepta nuestros <a href="{% url 'aceptar_terminos' %}">Términos y Condiciones</a>.</p>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="aceptado_terminos" name="aceptado_terminos" required>
-                    <label for="aceptado_terminos">Acepto los Términos y Condiciones</label>
+                        <div class="terms-container mt-4">
+                            <p>Al hacer clic en "Registrarse", usted acepta nuestros <a href="{% url 'aceptar_terminos' %}">Términos y Condiciones</a>.</p>
+                            <div class="checkbox-container">
+                                <input type="checkbox" id="aceptado_terminos" name="aceptado_terminos" required>
+                                <label for="aceptado_terminos">Acepto los Términos y Condiciones</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary w-100 mt-4" type="submit">Registrarse</button>
+                    </form>
+                    
+                    <div class="mt-4 text-center">
+                        ¿Ya tienes una cuenta? <a href="{% url 'login' %}" class="text-decoration-none">Inicia sesión aquí</a>
+                    </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Registrarse</button>
-        </form>
-        <p class="login-link">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+        </div>
     </div>
 </div>
-{% endblock %}
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    var forms = document.querySelectorAll('.needs-validation');
+    
+    var formList = Array.from(forms);
+    formList.forEach(function(form) {
+      form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+});
+
 document.getElementById('id_password2').addEventListener('blur', function() {
     var password1 = document.getElementById('id_password1').value;
     var password2 = this.value;
@@ -43,3 +297,4 @@ document.getElementById('id_password2').addEventListener('blur', function() {
     }
 });
 </script>
+{% endblock %}

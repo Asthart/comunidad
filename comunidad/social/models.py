@@ -131,8 +131,51 @@ class Publicacion(models.Model):
     comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
     fecha_publicacion = models.DateTimeField(auto_now_add=True)
 
+    def likes(self):
+        return Like.objects.filter(publicacion=self).count()
+
+    def like(self):
+        like = Like(publicacion=self, autor=self.autor, fecha_like=timezone.now())
+        like.save()
+        return self.likes
+        
+    def comentarios(self):
+        return Comentario.objects.filter(publicacion=self).order_by('-fecha_comentarios')
     def __str__(self):
         return f"Publicación de {self.autor.username} en {self.fecha_publicacion}"
+    
+class Like(models.Model):
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_like = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Like de {self.autor.username} en {self.publicacion}"
+
+class Comentario(models.Model):
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    contenido = models.TextField()
+    fecha_comentario = models.DateTimeField(auto_now_add=True)
+    
+    def likes(self):
+        return Like_Comentario.objects.filter(comentario=self).count()
+
+    def like(self):
+        like = Like_Comentario(comentario=self, autor=self.autor, fecha_like=timezone.now())
+        like.save()
+        return self.likes
+    
+    def __str__(self):
+        return f"Comentario de {self.autor.username} en {self.publicacion}"
+    
+class Like_Comentario(models.Model):
+    comentario = models.ForeignKey(Comentario, on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_like = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Like de {self.autor.username} en {self.comentario}"
     
 class Tag(models.Model):
     nombre = models.CharField(max_length=255)

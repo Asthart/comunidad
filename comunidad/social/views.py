@@ -13,6 +13,8 @@ from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm, Re
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 from django.views.generic import ListView
+
+'''
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
@@ -27,6 +29,54 @@ def inicio(request):
         'proyectos': proyectos,
         'desafios': desafios,
     })
+'''
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Comunidad, PerfilUsuario, Publicacion
+
+@login_required
+def inicio(request):
+    user = request.user
+    profile = PerfilUsuario.objects.get(usuario=user)
+    
+    # Obtener las comunidades del usuario
+    comunidades = Comunidad.objects.filter(miembros=user, activada=True)
+    
+    # Obtener los perfiles que el usuario sigue
+    seguidos = profile.seguidos.all()
+    
+    # Obtener todas las publicaciones relevantes
+    todas_publicaciones = Publicacion.objects.filter(
+        Q(comunidad__in=comunidades) | 
+        Q(autor__in=[seguido.usuario for seguido in seguidos])
+    ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
+    
+    # Agrupar las publicaciones por tipo
+    publicaciones_comunidades = []
+    publicaciones_seguidos = []
+    
+    for pub in todas_publicaciones:
+        if pub.comunidad in comunidades:
+            publicaciones_comunidades.append(pub)
+        else:
+            publicaciones_seguidos.append(pub)
+    
+    # Mezclar las listas manteniendo el orden general
+    publicaciones = []
+    while publicaciones_comunidades or publicaciones_seguidos:
+        if publicaciones_comunidades:
+            publicaciones.append(publicaciones_comunidades.pop(0))
+        if publicaciones_seguidos:
+            publicaciones.append(publicaciones_seguidos.pop(0))
+    
+    # Actualizar puntos del usuario
+    accion = Action.objects.filter(name='inicio').first()
+    update_user_points(user.id, accion.id, accion.points)
+    
+    return render(request, 'inicio.html', {
+        'publicaciones': publicaciones,
+    })
+
 
 @login_required
 #@permission_required('social.add_comunidad', raise_exception=True)
