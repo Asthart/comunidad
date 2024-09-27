@@ -1,3 +1,4 @@
+from arrow import now
 from django.db import models
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save
@@ -49,21 +50,54 @@ class ArchivoProyecto(models.Model):
         return self.nombre
     
 class Desafio(models.Model):
+    TIPOS_DESAFIO = (
+        ('donacion', 'Donación'),
+        ('votacion', 'Votación'),
+    )
+    
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
-    comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
-    fecha_inicio = models.DateTimeField()
-    fecha_fin = models.DateTimeField()
+    comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE)
+    fecha_inicio = models.DateTimeField(default=now)
+    fecha_fin = models.DateTimeField(null=True, blank=True)
+    tipo_desafio = models.CharField(max_length=10, choices=TIPOS_DESAFIO, default='donacion')
+    min_donaciones = models.IntegerField(null=True, blank=True)
+    max_donaciones = models.IntegerField(null=True, blank=True)
+    proyecto = models.URLField(null=True, blank=True)
+    votos_positivos = models.IntegerField(default=0)
+    votos_negativos = models.IntegerField(default=0)
     def __str__(self):
         return self.titulo
+    @classmethod
+    def verificar_min_max_donaciones(cls):
+        for desafio in cls.objects.all():
+            if desafio.tipo_desafio == 'donacion':
+                donaciones = Donacion.objects.filter(desafio=desafio)
+                if len(donaciones) < desafio.min_donaciones:
+                    raise ValueError(f"El desafío '{desafio.titulo}' requiere al menos {desafio.min_donaciones} donaciones.")
+                elif len(donaciones) > desafio.max_donaciones:
+                    raise ValueError(f"El desafío '{desafio.titulo}' solo permite hasta {desafio.max_donaciones} donaciones.")
 
-'''class Rol(models.Model):
-    nombre = models.CharField(max_length=50, unique=True)
-    permisos = models.ManyToManyField(Permission)
+    @classmethod
+    def actualizar_votos(cls):
+        for desafio in cls.objects.all():
+            if desafio.tipo_desafio == 'votacion':
+                votos = Voto.objects.filter(desafio=desafio)
+                desafio.votos_positivos = votos.filter(es_positivo=True).count()
+                desafio.votos_negativos = votos.filter(es_positivo=False).count()
 
-    def __str__(self):
-        return self.nombre'''
+class Donacion(models.Model):
+    desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='donaciones')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha = models.DateTimeField(auto_now_add=True)
+
+class Voto(models.Model):
+    desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='votos')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha = models.DateTimeField(auto_now_add=True)
+    es_positivo = models.BooleanField(default=False)
 
 class PerfilUsuario(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
