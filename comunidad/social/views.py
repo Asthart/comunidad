@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db.models import Q
 from .models import *
-from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm, RespuestaForm
+from .forms import *
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 from django.views.generic import ListView
@@ -264,7 +264,6 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
-@login_required
 def crear_publicacion(request):
     if request.method == 'POST':
         form = PublicacionForm(request.POST, request.FILES)
@@ -284,8 +283,6 @@ def crear_publicacion(request):
                 publicacion.tags.set(tags)
                 
             # Guarda los adjuntos después de guardar la publicación
-            for archivo in form.cleaned_data['archivos']:
-                Adjunto.objects.create(publicacion=publicacion, archivo=archivo)
             accion = Action.objects.filter(name='publicar').first()
             update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
@@ -294,7 +291,59 @@ def crear_publicacion(request):
     
     return render(request, 'crear_publicacion.html', {'form': form})
 
+@login_required
+def dar_like(request, pk):
+    publicacion = Publicacion.objects.get(pk=pk)
+    like, created = Like.objects.get_or_create(publicacion=publicacion, autor=request.user)
+    if not created:
+        like.delete()
+    return redirect('inicio')
 
+def like(request, pk):
+    publicacion = get_object_or_404(Publicacion, pk=pk)
+    if request.method == 'POST':
+        like, created = Like.objects.get_or_create(
+            publicacion=publicacion,
+            autor=request.user
+        )
+        if created:
+            publicacion.like
+        else:
+            publicacion.like
+        publicacion.save()
+        return JsonResponse({'likes': publicacion.likes})
+    return HttpResponse(status=405)
+
+def like_comentario(request, pk):
+    comentario = get_object_or_404(Comentario, pk=pk)
+    if request.method == 'POST':
+        like, created = Like_Comentario.objects.get_or_create(
+            comentario=comentario,
+            autor=request.user
+        )
+        if created:
+            comentario.like
+        else:
+            comentario.like
+        comentario.save()
+        return JsonResponse({'likes': comentario.likes})
+    return HttpResponse(status=405)
+
+
+@login_required
+def crear_comentario(request, pk):
+    publicacion = Publicacion.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.publicacion = publicacion
+            comentario.autor = request.user
+            comentario.save()
+            return redirect('inicio')
+    else:
+        form = ComentarioForm()
+    return render(request, 'crear_comentario.html', {'form': form, 'publicacion': publicacion})
 
 @login_required
 def mostrar_publicaciones(request):

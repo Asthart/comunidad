@@ -77,7 +77,7 @@ class CustomUserCreationForm(UserCreationForm):
         return user
 
 class PublicacionForm(forms.ModelForm):
-    archivos = MultiFileField(min_num=1, max_num=5, max_file_size=1920*1920*5)
+    imagen = forms.ImageField(required=False)
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple
@@ -89,13 +89,14 @@ class PublicacionForm(forms.ModelForm):
     
     class Meta:
         model = Publicacion
-        fields = ('contenido', 'tags', 'archivos', 'comunidad')
+        fields = ('contenido', 'tags', 'imagen', 'comunidad')
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['archivos'].required = True
-        
 class RespuestaForm(forms.ModelForm):
     class Meta:
         model = Respuesta
         fields = ('respuesta',)
+
+class ComentarioForm(forms.ModelForm):        
+    class Meta:
+        model = Comentario
+        fields = ('contenido',)

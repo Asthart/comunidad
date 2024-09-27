@@ -1,150 +1,242 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>Inicio - Tu Plataforma Social</title>
     <style>
-        /* Estilos generales */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
         body {
             font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
         }
+        
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        nav li {
+            margin-right: 20px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+        
         main {
-            max-width: 1200px;
-            margin: 40px auto;
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
+        }
+        
+        .publication {
             background-color: white;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .publication {
-            background-color: #fff;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            overflow: hidden;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            padding: 20px;
         }
-        .publication:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
+        
         .publication-header {
             display: flex;
             align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
         }
+        
         .profile-picture {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            margin-right: 15px;
+            object-fit: cover;
+            margin-right: 10px;
         }
+        
         .author-info {
             flex-grow: 1;
         }
+        
         .author-name {
-            font-weight: 600;
-            color: #2196F3;
-            text-decoration: none;
+            font-weight: bold;
+            color: #333;
         }
-        .author-name:hover {
-            text-decoration: underline;
-        }
+        
         .publication-date {
             color: #666;
             font-size: 14px;
         }
-        .publication-content {
-            padding: 15px;
-        }
-        .publication-content img {
-            width: 100%;
-            height: auto;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-        .publication-actions {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-top: 1px solid #eee;
-        }
-        .action-button {
-            display: flex;
-            align-items: center;
-            color: #666;
-            cursor: pointer;
-            transition: color 0.3s ease;
-        }
-        .action-button:hover {
-            color: #333;
-        }
-        .action-icon {
-            margin-right: 5px;
-        }
+        
         .community-tag {
             background-color: #f0f0f0;
             padding: 5px 10px;
             border-radius: 20px;
-            font-size: 14px;
-            color: #888;
-            margin-top: 10px;
             display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .publication-content {
+            margin-bottom: 15px;
+        }
+        
+        .publication-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .action-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+        
+        .action-button i {
+            margin-right: 5px;
+        }
+        
+        #comentarios-{{ pub.id }} {
+            margin-top: 15px;
+        }
+        
+        .comment {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .comment h4 {
+            margin-top: 0;
+        }
+        
+        .comment small {
+            color: #888;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 60px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
+
+    <!-- Contenido principal -->
     <main>
-        {% for publication in publicaciones %}
-        <article class="publication">
-            <header class="publication-header">
-                <img src="{{ publication.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
-                <div class="author-info">
-                    <a href="#" class="author-name">{{ publication.autor.username }}</a>
-                    <span class="publication-date">{{ publication.fecha_publicacion|date:"d M Y H:i" }}</span>
+        <h1>Publicaciones Recientes</h1>
+        
+        {% if publicaciones %}
+            {% for pub in publicaciones %}
+                <div class="publication">
+                    <div class="publication-header">
+                        {% if pub.autor.perfilusuario.foto_perfil.url %}
+                            <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                        {% endif %}
+                        <div class="author-info">
+                            <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.username }}</a>
+                            <span class="publication-date">{{ pub.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if pub.comunidad %}
+                        <p class="community-tag">Publicado en {{ pub.comunidad.nombre }}</p>
+                    {% endif %}
+                    
+                    <div class="publication-content">
+                        <p>{{ pub.contenido }}</p>
+                        {% if pub.imagen %}
+                            <img src="{{ pub.imagen }}" alt="Imagen de publicación" style="max-width: 100%; height: auto;">
+                        {% endif %}
+                    </div>
+                    
+                    
+                    <div class="publication-actions">
+                        <button onclick="mostrarComentarios({{ pub.id }})" class="action-button">
+                            <i class="fas fa-comment"></i> Comentarios
+                            <span class="comment-count">{{ pub.comentarios.count }}</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Sección de comentarios -->
+                    <div id="comentarios-{{ pub.id }}" style="display: none;">
+                        {% for comentario in pub.comentarios.all %}
+                            <div class="comment">
+                                <div class="author-info">
+                                {% if comentario.autor.perfilusuario.foto_perfil.url %}
+                                    <img src="{{ comentario.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                                {% endif %}
+                                <a href="{% url 'perfil_usuario' comentario.autor.username %}" class="author-name">{{ comentario.autor.username }}</a>
+                                </div>
+                                <p>{{ comentario.contenido }}</p>
+                                <small>{{ comentario.fecha_comentario|date:"d/m/Y H:i:s" }}</small>
+                            </div>
+                        {% endfor %}
+                        <form action="{% url 'crear_comentario' pub.id %}" method="post">
+                            {% csrf_token %}
+                            <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
+                            <button type="submit">Enviar</button>
+                        </form>
+                    </div>
                 </div>
-            </header>
-            <div class="publication-content">
-                {{ publication.contenido|safe }}
-                {% if publication.archivos %}
-                <img src="{{ publication.archivos.first.url }}" alt="Imagen de la publicación">
-                {% endif %}
-            </div>
-            <footer class="publication-actions">
-                <div class="action-button">
-                    <i class="fas fa-thumbs-up action-icon"></i>
-                    <span>Me gusta</span>
-                </div>
-                <div class="action-button">
-                    <i class="fas fa-comment-alt action-icon"></i>
-                    <span>Comentar</span>
-                </div>
-                <div class="action-button">
-                    <i class="fas fa-share action-icon"></i>
-                    <span>Compartir</span>
-                </div>
-            </footer>
-            {% if publication.comunidad %}
-            <div class="community-tag">
-                {{ publication.comunidad.nombre }}
-            </div>
-            {% endif %}
-        </article>
-        {% empty %}
-        <p>No hay publicaciones disponibles.</p>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <p>No hay publicaciones para mostrar.</p>
+        {% endif %}
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        
+        
+        function getCookie(name) {
+            let value = "; " + document.cookie;
+            let parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").pop();
+        }        
+
+        function mostrarComentarios(publicacionId) {
+            var comentariosDiv = document.getElementById('comentarios-' + publicacionId);
+            if (comentariosDiv.style.display === 'none') {
+                comentariosDiv.style.display = 'block';
+            } else {
+                comentariosDiv.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
