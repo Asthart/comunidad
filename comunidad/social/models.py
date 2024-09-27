@@ -222,14 +222,7 @@ class UserAction(models.Model):
 class Premio(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
-    tipo = models.CharField(max_length=50, choices=[
-        ('metalico', 'Premio metálico'),
-        ('experiencia', 'Experiencia'),
-        ('producto', 'Producto'),
-        ('merchandising', 'Merchandising'),
-        ('reconocimiento', 'Reconocimiento'),
-        ('surpresa', 'Surpresa')
-    ])
+    tipo = models.CharField(max_length=50)
     def __str__(self):
         return f"{self.nombre}"
 
