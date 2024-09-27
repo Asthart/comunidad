@@ -9,10 +9,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db.models import Q
 from .models import *
-from .forms import ComunidadForm, ProyectoForm, DesafioForm, PublicacionForm, RespuestaForm
+from .forms import *
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 from django.views.generic import ListView
+
+'''
 @login_required
 def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
@@ -27,6 +29,54 @@ def inicio(request):
         'proyectos': proyectos,
         'desafios': desafios,
     })
+'''
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Comunidad, PerfilUsuario, Publicacion
+
+@login_required
+def inicio(request):
+    user = request.user
+    profile = PerfilUsuario.objects.get(usuario=user)
+    
+    # Obtener las comunidades del usuario
+    comunidades = Comunidad.objects.filter(miembros=user, activada=True)
+    
+    # Obtener los perfiles que el usuario sigue
+    seguidos = profile.seguidos.all()
+    
+    # Obtener todas las publicaciones relevantes
+    todas_publicaciones = Publicacion.objects.filter(
+        Q(comunidad__in=comunidades) | 
+        Q(autor__in=[seguido.usuario for seguido in seguidos])
+    ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
+    
+    # Agrupar las publicaciones por tipo
+    publicaciones_comunidades = []
+    publicaciones_seguidos = []
+    
+    for pub in todas_publicaciones:
+        if pub.comunidad in comunidades:
+            publicaciones_comunidades.append(pub)
+        else:
+            publicaciones_seguidos.append(pub)
+    
+    # Mezclar las listas manteniendo el orden general
+    publicaciones = []
+    while publicaciones_comunidades or publicaciones_seguidos:
+        if publicaciones_comunidades:
+            publicaciones.append(publicaciones_comunidades.pop(0))
+        if publicaciones_seguidos:
+            publicaciones.append(publicaciones_seguidos.pop(0))
+    
+    # Actualizar puntos del usuario
+    accion = Action.objects.filter(name='inicio').first()
+    update_user_points(user.id, accion.id, accion.points)
+    
+    return render(request, 'inicio.html', {
+        'publicaciones': publicaciones,
+    })
+
 
 @login_required
 #@permission_required('social.add_comunidad', raise_exception=True)
@@ -214,7 +264,6 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
-@login_required
 def crear_publicacion(request):
     if request.method == 'POST':
         form = PublicacionForm(request.POST, request.FILES)
@@ -234,8 +283,6 @@ def crear_publicacion(request):
                 publicacion.tags.set(tags)
                 
             # Guarda los adjuntos después de guardar la publicación
-            for archivo in form.cleaned_data['archivos']:
-                Adjunto.objects.create(publicacion=publicacion, archivo=archivo)
             accion = Action.objects.filter(name='publicar').first()
             update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
@@ -244,7 +291,59 @@ def crear_publicacion(request):
     
     return render(request, 'crear_publicacion.html', {'form': form})
 
+@login_required
+def dar_like(request, pk):
+    publicacion = Publicacion.objects.get(pk=pk)
+    like, created = Like.objects.get_or_create(publicacion=publicacion, autor=request.user)
+    if not created:
+        like.delete()
+    return redirect('inicio')
 
+def like(request, pk):
+    publicacion = get_object_or_404(Publicacion, pk=pk)
+    if request.method == 'POST':
+        like, created = Like.objects.get_or_create(
+            publicacion=publicacion,
+            autor=request.user
+        )
+        if created:
+            publicacion.like
+        else:
+            publicacion.like
+        publicacion.save()
+        return JsonResponse({'likes': publicacion.likes})
+    return HttpResponse(status=405)
+
+def like_comentario(request, pk):
+    comentario = get_object_or_404(Comentario, pk=pk)
+    if request.method == 'POST':
+        like, created = Like_Comentario.objects.get_or_create(
+            comentario=comentario,
+            autor=request.user
+        )
+        if created:
+            comentario.like
+        else:
+            comentario.like
+        comentario.save()
+        return JsonResponse({'likes': comentario.likes})
+    return HttpResponse(status=405)
+
+
+@login_required
+def crear_comentario(request, pk):
+    publicacion = Publicacion.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.publicacion = publicacion
+            comentario.autor = request.user
+            comentario.save()
+            return redirect('inicio')
+    else:
+        form = ComentarioForm()
+    return render(request, 'crear_comentario.html', {'form': form, 'publicacion': publicacion})
 
 @login_required
 def mostrar_publicaciones(request):

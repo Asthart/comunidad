@@ -105,7 +105,7 @@ class PerfilUsuario(models.Model):
     #rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
-    foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True)
+    foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='static/images/default-avatar.svg')
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
@@ -113,6 +113,7 @@ class PerfilUsuario(models.Model):
         sigue = perfil_usuario.seguidos.filter(id=self.usuario.id).exists()
         print(f"Resultado: {sigue}")
         return sigue
+    
     def seguir_usuario(self, usuario_a_seguir):
         perfil_usuario_a_seguir = PerfilUsuario.objects.get(usuario=usuario_a_seguir)
         self.seguidos.add(perfil_usuario_a_seguir)
@@ -120,6 +121,7 @@ class PerfilUsuario(models.Model):
     def dejar_de_seguir_usuario(self, usuario_a_dejar_de_seguir):
         perfil_usuario_a_dejar_de_seguir = PerfilUsuario.objects.get(usuario=usuario_a_dejar_de_seguir)
         self.seguidos.remove(perfil_usuario_a_dejar_de_seguir)
+    
     def __str__(self):
         return self.usuario.username
 
@@ -161,12 +163,56 @@ class Publicacion(models.Model):
     contenido = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag')
-    archivos = MultiFileField(min_num=1, max_num=5)
+    imagen = models.ImageField(blank=True, null=True, upload_to='media/publicaciones/imagenes/')
+    #archivos = MultiFileField(min_num=1, max_num=5)
     comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
     fecha_publicacion = models.DateTimeField(auto_now_add=True)
 
+    def likes(self):
+        return Like.objects.filter(publicacion=self).count()
+
+    def like(self):
+        like = Like(publicacion=self, autor=self.autor, fecha_like=timezone.now())
+        like.save()
+        return self.likes
+        
+    def comentarios(self):
+        return Comentario.objects.filter(publicacion=self).order_by('-fecha_comentarios')
     def __str__(self):
         return f"Publicación de {self.autor.username} en {self.fecha_publicacion}"
+    
+class Like(models.Model):
+    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_like = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Like de {self.autor.username} en {self.publicacion}"
+
+class Comentario(models.Model):
+    publicacion = models.ForeignKey(Publicacion, related_name='comentarios', on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    contenido = models.TextField()
+    fecha_comentario = models.DateTimeField(auto_now_add=True)
+    
+    def likes(self):
+        return Like_Comentario.objects.filter(comentario=self).count()
+
+    def like(self):
+        like = Like_Comentario(comentario=self, autor=self.autor, fecha_like=timezone.now())
+        like.save()
+        return self.likes
+    
+    def __str__(self):
+        return f"Comentario de {self.autor.username} en {self.publicacion}"
+    
+class Like_Comentario(models.Model):
+    comentario = models.ForeignKey(Comentario, on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_like = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Like de {self.autor.username} en {self.comentario}"
     
 class Tag(models.Model):
     nombre = models.CharField(max_length=255)
