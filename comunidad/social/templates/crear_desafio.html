@@ -29,6 +29,34 @@
             {{ form.fecha_fin.label }} 
             <input type="datetime-local" name="fecha_fin" id="id_fechafin" />
         </div>
+        <select id="tipo_desafio" name="tipo_desafio">
+            <option value="donacion" {% if form.tipo_desafio.value == 'donacion' %}selected{% endif %}>Donación</option>
+            <option value="votacion" {% if form.tipo_desafio.value == 'votacion' %}selected{% endif %}>Votación</option>
+        </select>
+        <div id="montos" style="display:none;">
+            <div class="form-group normal-nums">
+                {{ form.objetivo_monto.label }} {{ form.objetivo_monto }}
+            </div>
+            <div class="form-group">
+                {{ form.min_monto.label }} {{ form.min_monto }}
+            </div>
+            <div class="form-group">
+                {{ form.max_monto.label }} {{ form.max_monto }}
+            </div>
+        </div>
+        <script>
+            document.getElementById('tipo_desafio').addEventListener('change', function() {
+                var montosDiv = document.getElementById('montos');
+                if (this.value === 'votacion') {
+                    montosDiv.style.display = 'none';
+                } else {
+                    montosDiv.style.display = 'block';
+                }
+            });
+        </script>
+  
+    
+       
         <button type="submit" class="btn btn-primary">Crear Desafío</button>
     </form>
 </div>
