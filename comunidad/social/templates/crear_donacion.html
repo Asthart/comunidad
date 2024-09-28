@@ -1,0 +1,11 @@
+<!-- crear_donacion.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Hacer una Donación</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Enviar Donación</button>
+</form>
+{% endblock %}

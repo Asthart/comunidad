@@ -138,3 +138,8 @@ class ConcursoAdmin(admin.ModelAdmin):
         # Aquí irá la lógica para mostrar los resultados del concurso actual
         # Por ahora, solo mostraremos un mensaje
         return HttpResponse("Resultados del concurso actual")
+    
+@admin.register(DonacionComunidad)
+class DonacionComunidadAdmin(admin.ModelAdmin):
+    list_display = ('id','nombre', 'identificador_transferencia','cantidad')
+    search_fields = ('cantidad',)

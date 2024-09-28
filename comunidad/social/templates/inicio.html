@@ -219,11 +219,17 @@
                         <p class="community-tag">Publicado en {{ pub.comunidad.nombre }}</p>
                     {% endif %}
                     
-                    <div class="publication-content">
+                    <div class="publication-content" >        
+
                         <p>{{ pub.contenido }}</p>
+                        <div style=" display: grid;
+                        place-items: center;
+                        height: 100%; ">
                         {% if pub.imagen %}
-                            <img src="{{ pub.imagen }}" alt="Imagen de publicación" style="max-width: 100%; height: auto;">
+                            <img src="{{ pub.imagen }}" alt="Imagen de publicación" style=" max-width: 60%;
+    height: auto;">
                         {% endif %}
+                    </div>
                     </div>
                     
                     
