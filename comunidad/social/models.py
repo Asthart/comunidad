@@ -48,7 +48,9 @@ class ArchivoProyecto(models.Model):
 
     def __str__(self):
         return self.nombre
-    
+from django.contrib.auth.models import User
+from django.utils.timezone import now
+
 class Desafio(models.Model):
     TIPOS_DESAFIO = (
         ('donacion', 'Donación'),
@@ -62,30 +64,42 @@ class Desafio(models.Model):
     fecha_inicio = models.DateTimeField(default=now)
     fecha_fin = models.DateTimeField(null=True, blank=True)
     tipo_desafio = models.CharField(max_length=10, choices=TIPOS_DESAFIO, default='donacion')
-    min_donaciones = models.IntegerField(null=True, blank=True)
-    max_donaciones = models.IntegerField(null=True, blank=True)
-    proyecto = models.URLField(null=True, blank=True)
-    votos_positivos = models.IntegerField(default=0)
-    votos_negativos = models.IntegerField(default=0)
+    objetivo_monto = models.DecimalField(max_digits=10, decimal_places=2,default=0)
+    min_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
+    max_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
+    
     def __str__(self):
         return self.titulo
+    
+    def calcular_porcentaje_objetivo(self):
+        total_donado = sum(d.monto for d in self.donaciones.all())
+        if self.objetivo_monto > 0:
+            return ((total_donado / self.objetivo_monto) * 100).toFixed(2)
+        return 0
+    
     @classmethod
     def verificar_min_max_donaciones(cls):
         for desafio in cls.objects.all():
             if desafio.tipo_desafio == 'donacion':
+                min_monto = desafio.min_monto or 0
+                max_monto = desafio.max_monto or float('inf')
+                
                 donaciones = Donacion.objects.filter(desafio=desafio)
-                if len(donaciones) < desafio.min_donaciones:
-                    raise ValueError(f"El desafío '{desafio.titulo}' requiere al menos {desafio.min_donaciones} donaciones.")
-                elif len(donaciones) > desafio.max_donaciones:
-                    raise ValueError(f"El desafío '{desafio.titulo}' solo permite hasta {desafio.max_donaciones} donaciones.")
+                total_donado = sum(d.monto for d in donaciones)
+                
+                if total_donado < min_monto:
+                    raise ValueError(f"El desafío '{desafio.titulo}' requiere al menos {min_monto}€.")
+                elif total_donado > max_monto:
+                    raise ValueError(f"El desafío '{desafio.titulo}' solo permite hasta {max_monto}€.")
 
-    @classmethod
-    def actualizar_votos(cls):
-        for desafio in cls.objects.all():
-            if desafio.tipo_desafio == 'votacion':
-                votos = Voto.objects.filter(desafio=desafio)
-                desafio.votos_positivos = votos.filter(es_positivo=True).count()
-                desafio.votos_negativos = votos.filter(es_positivo=False).count()
+@classmethod
+def actualizar_votos(cls):
+    for desafio in cls.objects.all():
+        if desafio.tipo_desafio == 'votacion':
+            votos = Voto.objects.filter(desafio=desafio)
+            desafio.votos_positivos = votos.filter(es_positivo=True).count()
+            desafio.votos_negativos = votos.filter(es_positivo=False).count()
+
 
 class Donacion(models.Model):
     desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='donaciones')
@@ -97,7 +111,7 @@ class Voto(models.Model):
     desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='votos')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
-    es_positivo = models.BooleanField(default=False)
+    puntuacion = models.IntegerField(default=0)
 
 class PerfilUsuario(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)

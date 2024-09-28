@@ -17,10 +17,29 @@ class ArchivoProyectoForm(forms.ModelForm):
     class Meta:
         model = ArchivoProyecto
         fields = ['archivo', 'tipo', 'nombre']
-class DesafioForm(forms.ModelForm):
+        from django import forms
+from django.forms import ModelForm, HiddenInput
+
+class DesafioForm(ModelForm):
     class Meta:
         model = Desafio
-        fields = ['titulo', 'descripcion', 'comunidad', 'fecha_inicio', 'fecha_fin']
+        fields = ['titulo', 'descripcion','tipo_desafio', 'objetivo_monto', 'min_monto', 'max_monto']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+            
+        if self.instance.pk:  # Verificar si existe un ID primario
+            if self.instance.tipo_desafio == 'donacion':
+                self.fields['min_monto'].widget.attrs['readonly'] = True
+                self.fields['max_monto'].widget.attrs['readonly'] = True
+            else:
+                self.fields['min_monto'].widget.attrs['readonly'] = True
+                self.fields['max_monto'].widget.attrs['readonly'] = True
+
+
+
+# Para crear el formulario
+form = DesafioForm(instance=Desafio)
 
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(label='Nombre de usuario', max_length=30, required=True)
