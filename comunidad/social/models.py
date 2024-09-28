@@ -53,8 +53,8 @@ from django.utils.timezone import now
 
 class Desafio(models.Model):
     TIPOS_DESAFIO = (
-        ('donacion', 'Donación'),
         ('votacion', 'Votación'),
+        ('donacion', 'Donación'),
     )
     
     titulo = models.CharField(max_length=200)

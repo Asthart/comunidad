@@ -30,10 +30,10 @@
             <input type="datetime-local" name="fecha_fin" id="id_fechafin" />
         </div>
         <select id="tipo_desafio" name="tipo_desafio">
-            <option value="donacion" {% if form.tipo_desafio.value == 'donacion' %}selected{% endif %}>Donación</option>
             <option value="votacion" {% if form.tipo_desafio.value == 'votacion' %}selected{% endif %}>Votación</option>
+            <option value="donacion" {% if form.tipo_desafio.value == 'donacion' %}selected{% endif %}>Donación</option>
         </select>
-        <div id="montos" style="display:none;">
+        <div id="montos" style="display:block;">
             <div class="form-group normal-nums">
                 {{ form.objetivo_monto.label }} {{ form.objetivo_monto }}
             </div>
