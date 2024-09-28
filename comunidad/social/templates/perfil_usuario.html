@@ -1,10 +1,8 @@
-{% extends 'base.html' %} 
+{% load bootstrap5 %}
 {% load static %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block content %}
 
+{% include 'header.html' %}
+<main>
 <div class="profile-page">
 <div class="user-info" style="display: flex;">
     {% if perfil.foto_perfil %}
@@ -54,5 +52,14 @@
     {% endfor %}
   </ul>
 </div>
-
-{% endblock %}
+</main>
+<style>
+  main {
+    max-width: 80%;
+    margin-top: 80px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: auto;
+    padding: 20px;
+}
+</style>

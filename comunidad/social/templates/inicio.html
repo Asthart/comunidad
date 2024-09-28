@@ -18,30 +18,6 @@
             background-attachment: fixed;
         }
         
-        header {
-            position: fixed;
-            z-index: 1000;
-            width: 100%;
-            top: 0;
-            text-align: center;
-        }
-        
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        nav li {
-            margin-right: 20px;
-        }
-        
-        nav a {
-            color: white;
-            text-decoration: none;
-        }
-        
         main {
             max-width: 80%;
             margin-top: 60px;
@@ -200,7 +176,6 @@
             }
         }
     </style>
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 </head>
 {% include 'header.html' %}
 <body>
@@ -229,8 +204,10 @@
             {% for pub in publicaciones %}
                 <div class="publication">
                     <div class="publication-header">
+                        {% if pub.autor.perfilusuario.foto_perfil %}
                         {% if pub.autor.perfilusuario.foto_perfil.url %}
                             <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                        {% endif %}
                         {% endif %}
                         <div class="author-info">
                             <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.first_name }} {{ pub.autor.last_name }}</a>
@@ -252,8 +229,7 @@
                     
                     <div class="publication-actions">
                         <button onclick="mostrarComentarios({{ pub.id }})" class="action-button">
-                            <i class="fas fa-comment"></i> Comentarios
-                            <span class="comment-count">{{ pub.comentarios.count }}</span>
+                            <span class="comment-count">{{ pub.comentarios.count }} Comentarios</span>
                         </button>
                     </div>
                     <br>
