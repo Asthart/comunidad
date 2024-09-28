@@ -14,7 +14,7 @@ class Comunidad(models.Model):
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
     publica = models.BooleanField(default=False)
-    
+    donaciones = models.BooleanField(default=False)
     def __str__(self):
         return self.nombre
     @property

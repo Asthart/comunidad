@@ -6,7 +6,7 @@ from django.forms import ValidationError
 class ComunidadForm(forms.ModelForm):
     class Meta:
         model = Comunidad
-        fields = ['nombre', 'descripcion']
+        fields = ['nombre', 'descripcion','donaciones']
 
 class ProyectoForm(forms.ModelForm):
     class Meta:
