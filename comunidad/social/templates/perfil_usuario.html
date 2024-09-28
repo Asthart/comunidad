@@ -20,12 +20,14 @@
     {% else %}
         <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary">Seguir</a>
     {% endif %}
-{% endif %}
+{% else %}
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="foto_perfil" accept="image/*">
-        <button type="submit">Cambiar foto de perfil</button>
-    </form>
+      {% csrf_token %}
+      <input type="file" name="foto_perfil" accept="image/*">
+      <button type="submit">Cambiar foto de perfil</button>
+  </form>
+{% endif %}
+
     <p>Biografía: {{ perfil.biografia }}</p>
     <p>Rol: {{ perfil.rol }}</p>
     <p>Puntos: {{ perfil.puntos }}</p>
