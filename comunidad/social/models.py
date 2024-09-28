@@ -268,6 +268,20 @@ class Concurso(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE)
+    
+    @classmethod
+    def ultimo_concurso(cls):
+        return cls.objects.order_by('-fecha_inicio').first()
+
+    def tiempo_restante(self):
+        ahora = timezone.now().date()
+        if ahora > self.fecha_fin:
+            return "Concurso finalizado"
+        elif ahora < self.fecha_inicio:
+            return "Concurso aún no ha comenzado"
+        else:
+            dias_restantes = (self.fecha_fin - ahora).days
+            return f"{dias_restantes} días restantes"
 
 class ResultadoConcurso(models.Model):
     concurso = models.ForeignKey(Concurso, on_delete=models.CASCADE)

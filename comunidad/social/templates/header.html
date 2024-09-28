@@ -1,46 +1,59 @@
 {% load static %}
+<!--
+<li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Dropdown
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </li>
+-->
 <header>
-  <nav class="navbar">
-    <div class="logo">
-      <a href="{% url 'inicio' %}">
-        <img src="{% static 'images/logo2.png' %}" alt="CTInnovate Logo"><link rel="stylesheet" >
-        <link rel="stylesheet" href="{% static 'css/css/all.min.css' %}">
-        <link rel="stylesheet" href="{% static 'css/style.css' %}">
-      </a>
-    </div>
-    <div class="menu-container">
-      <button class="menu-toggle" aria-label="Abrir menú">
-        <span>h</span>
-        <span>j</span>
-        <span></span>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'inicio' %}"><img src="{% static 'images/logo2.png' %}" alt="" width="30" height="24" style="margin-right: 5px;" class="d-inline-block align-text-top">Inicio</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
       </button>
-      <ul class="menu"  style="height: 60px;">
-        <li><a href="{% url 'perfil_usuario' user.username %}">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a href="{% url 'lista_comunidades' %}" class="nav-link active"><img src="{% static 'images/comunidad1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
+          <li class="nav-item"><a href="{% url 'crear_proyecto' %}" class="nav-link active"><img src="{% static 'images/proyecto1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-project-diagram"></i><span class="texto">Proyecto</span></a></li>
+          <li class="nav-item"><a href="{% url 'crear_desafio' %}" class="nav-link active"><img src="{% static 'images/desafio1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-bolt"></i><span class="texto">Desafios</span></a></li>
+          <li class="nav-item"><a href="{% url 'ranking' %}" class="nav-link active"><img src="{% static 'images/ranking1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-ranking-star"></i><span class="texto">Ranking</span></a></li>
+          <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link active"><img src="{% static 'images/logout1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-out-alt"></i><span class="texto">Cerrar Sesión</span></a></li>
+        {% else %}
+          <li class="nav-item"><a href="{% url 'login' %}" class="nav-link active"><img src="{% static 'images/login1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-in-alt"></i><span class="texto">Iniciar Sesión</span></a></li>
+          <li class="nav-item"><a href="{% url 'register' %}" class="nav-link active"><img src="{% static 'images/register1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-user-plus"></i><span class="texto">Registrarse</span></a></li>
+        {% endif %}
+        </ul>
+        {% if user.is_authenticated %}
+        <li class="nav-item"><a href="{% url 'perfil_usuario' user.username %}">
           {% if user.perfilusuario.foto_perfil %}
             <img src="{{ user.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% else %}
             <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% endif %}
-          <span class="texto"></span>
-        </a></li>
-          <li><a href="{% url 'inicio' %}" ><i  class="fas fa-home "></i><span class="texto">Inicio</span></a></li>
-        {% if user.is_authenticated %}
-          <li><a href="{% url 'lista_comunidades' %}"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
-          <li><a href="{% url 'crear_proyecto' %}"><i class="fas fa-project-diagram"></i><span class="texto">Proyecto</span></a></li>
-          <li><a href="{% url 'crear_desafio' %}"><i class="fas fa-bolt"></i><span class="texto">Desafios</span></a></li>
-          <li><a href="{% url 'ranking' %}"><i class="fas fa-ranking-star"></i><span class="texto">Ranking</span></a></li>
-          <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i><span class="texto"></span></a></li>
-        {% else %}
-          <li><a href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i><span class="texto">Iniciar Sesión</span></a></li>
-          <li><a href="{% url 'register' %}"><i class="fas fa-user-plus"></i><span class="texto">Registrarse</span></a></li>
         {% endif %}
-        <li>
-          <form action="{% url 'buscar' %}" method="get">
-            <input type="search" name="q" placeholder="Buscar...">
-            <button type="submit"><i class="fas fa-search"></i></button>
-          </form>
-        </li>
-      </ul>
+          <span class="texto">{{ user.first_name }} {{ user.last_name }}</span>
+        </a></li>
+        <form class="d-flex" action="{% url 'buscar' %}" method="get" style="padding: 0;">
+          <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Buscar">
+          <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+      </div>
     </div>
   </nav>
 </header>
+<style>
+  .icono-svg {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+  }
+</style>

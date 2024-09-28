@@ -1,3 +1,4 @@
+{% load bootstrap5 %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
@@ -10,13 +11,18 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-image: url("{% static 'images/background3.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
         }
         
         header {
-            background-color: #333;
-            color: white;
-            padding: 1rem;
+            position: fixed;
+            z-index: 1000;
+            width: 100%;
+            top: 0;
             text-align: center;
         }
         
@@ -37,8 +43,11 @@
         }
         
         main {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 80%;
+            margin-top: 60px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: auto;
             padding: 20px;
         }
         
@@ -123,6 +132,7 @@
             padding: 10px;
             border-radius: 5px;
             margin-bottom: 10px;
+            width: 98%;
         }
         
         .comment h4 {
@@ -134,10 +144,12 @@
         }
         
         textarea {
-            width: 100%;
             height: 60px;
+            width: 98%;
             padding: 10px;
             margin-bottom: 10px;
+            resize: vertical;
+            border-radius: 5px;
         }
         
         button[type="submit"] {
@@ -153,14 +165,66 @@
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+
+        .title{
+            text-align: center;
+        }
+
+        .countdown-container {
+            background: linear-gradient(145deg, white, white);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+    
+        .contador {
+            background: linear-gradient(45deg, #007bff, #00bfff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+        }
+    
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    
+        @media (max-width: 768px) {
+            .countdown {
+                font-size: 1.5rem;
+            }
+        }
     </style>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
 </head>
+{% include 'header.html' %}
 <body>
 
     <!-- Contenido principal -->
     <main>
-        <h1>Publicaciones Recientes</h1>
-        
+        <div class="container mt-5 primero">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-lg">
+                        <div class="card-body text-center">
+                            <h1 class="card-title mb-4 fw-bold">Último Concurso: {{ concurso.nombre }}</h1>
+                            <div class="countdown-container p-4 bg-light rounded">
+                                <div id="contador" class="contador display-4 text-primary fw-bold"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="publication">
+        <h1 class="title fw-bold">Publicaciones Recientes</h1>
+        </div>  
         {% if publicaciones %}
             {% for pub in publicaciones %}
                 <div class="publication">
@@ -169,7 +233,7 @@
                             <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
                         {% endif %}
                         <div class="author-info">
-                            <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.username }}</a>
+                            <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.first_name }} {{ pub.autor.last_name }}</a>
                             <span class="publication-date">{{ pub.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
                         </div>
                     </div>
@@ -192,16 +256,17 @@
                             <span class="comment-count">{{ pub.comentarios.count }}</span>
                         </button>
                     </div>
-                    
+                    <br>
                     <!-- Sección de comentarios -->
                     <div id="comentarios-{{ pub.id }}" style="display: none;">
                         {% for comentario in pub.comentarios.all %}
-                            <div class="comment">
+                            <div class="comment" id="comment{{ comentario.id }}">
                                 <div class="author-info">
+                                    <a href="{% url 'perfil_usuario' comentario.autor.username %}" class="author-name">
                                 {% if comentario.autor.perfilusuario.foto_perfil.url %}
                                     <img src="{{ comentario.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
                                 {% endif %}
-                                <a href="{% url 'perfil_usuario' comentario.autor.username %}" class="author-name">{{ comentario.autor.username }}</a>
+                                {{ comentario.autor.first_name }} {{ comentario.autor.last_name }}</a>
                                 </div>
                                 <p>{{ comentario.contenido }}</p>
                                 <small>{{ comentario.fecha_comentario|date:"d/m/Y H:i:s" }}</small>
@@ -209,7 +274,7 @@
                         {% endfor %}
                         <form action="{% url 'crear_comentario' pub.id %}" method="post">
                             {% csrf_token %}
-                            <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
+                            <textarea name="contenido" id="content" placeholder="Escribe un comentario..."></textarea>
                             <button type="submit">Enviar</button>
                         </form>
                     </div>
@@ -219,9 +284,9 @@
             <p>No hay publicaciones para mostrar.</p>
         {% endif %}
     </main>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+    <script src="{% static 'js/jquery.min.js'%}"></script>
     <script>
-        
         
         function getCookie(name) {
             let value = "; " + document.cookie;
@@ -237,6 +302,38 @@
                 comentariosDiv.style.display = 'none';
             }
         }
+
+        // Obtener las fechas del concurso
+        var fechaInicio = new Date("{{ concurso.fecha_inicio|date:'Y-m-d' }}");
+        var fechaFin = new Date("{{ concurso.fecha_fin|date:'Y-m-d' }}");
+
+        function actualizarContador() {
+            var ahora = new Date();
+            var tiempoRestante;
+
+            if (ahora > fechaFin) {
+                tiempoRestante = "Concurso finalizado";
+            } else if (ahora < fechaInicio) {
+                tiempoRestante = "Concurso aún no ha comenzado";
+            } else {
+                var diferencia = fechaFin - ahora;
+                var dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
+                var horas = Math.floor((diferencia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+                var segundos = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+                tiempoRestante = dias + " días, " + horas + " horas, " + minutos + " minutos, " + segundos + " segundos restantes";
+            }
+
+            document.getElementById('contador').innerHTML = tiempoRestante;
+        }
+
+        // Actualizar el contador cada segundo
+        setInterval(actualizarContador, 1000);
+
+        // Llamar a la función inmediatamente para evitar el retraso inicial
+        actualizarContador();
     </script>
 </body>
+{% include 'footer.html' %}
 </html>

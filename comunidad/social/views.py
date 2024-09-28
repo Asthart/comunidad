@@ -38,6 +38,7 @@ from .models import Comunidad, PerfilUsuario, Publicacion
 def inicio(request):
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
+    contador = Concurso.ultimo_concurso()
     
     # Obtener las comunidades del usuario
     comunidades = Comunidad.objects.filter(miembros=user, activada=True)
@@ -75,6 +76,7 @@ def inicio(request):
     
     return render(request, 'inicio.html', {
         'publicaciones': publicaciones,
+        'concurso': contador,
     })
 
 

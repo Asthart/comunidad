@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+
 {% load static %}
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
@@ -21,21 +21,21 @@
 <h2>Comunidades</h2>
 <ul>
   {% for comunidad in comunidades %}
-    <li><a href="{% url 'comunidad_detalle' comunidad.id %}">{{ comunidad.nombre }}</a></li>
+    <li><a href="{% url 'detalle_comunidad' comunidad.id %}">{{ comunidad.nombre }}</a></li>
   {% endfor %}
 </ul>
 
 <h2>Proyectos</h2>
 <ul>
   {% for proyecto in proyectos %}
-    <li><a href="{% url 'proyecto_detalle' proyecto.id %}">{{ proyecto.titulo }}</a></li>
+    <li><a href="{% url 'detalle_proyecto' proyecto.id %}">{{ proyecto.titulo }}</a></li>
   {% endfor %}
 </ul>
 
 <h2>Desafíos</h2>
 <ul>
   {% for desafio in desafios %}
-    <li><a href="{% url 'desafio_detalle' desafio.id %}">{{ desafio.titulo }}</a></li>
+    <li><a href="{% url 'detalle_desafio' desafio.id %}">{{ desafio.titulo }}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}
