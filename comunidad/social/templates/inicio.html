@@ -208,6 +208,7 @@
                         {% if pub.autor.perfilusuario.foto_perfil.url %}
                             <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
                         {% endif %}
+                        {% endif %}
                         <div class="author-info">
                             <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.first_name }} {{ pub.autor.last_name }}</a>
                             <span class="publication-date">{{ pub.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
@@ -238,12 +239,9 @@
                             <div class="comment" id="comment{{ comentario.id }}">
                                 <div class="author-info">
                                     <a href="{% url 'perfil_usuario' comentario.autor.username %}" class="author-name">
-                                        {% if comentario.autor.perfilusuario.foto_perfil %}
-                                        {% if comentario.autor.perfilusuario.foto_perfil.url %}
+                                {% if comentario.autor.perfilusuario.foto_perfil.url %}
                                     <img src="{{ comentario.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
                                 {% endif %}
-                                {% endif %}
-
                                 {{ comentario.autor.first_name }} {{ comentario.autor.last_name }}</a>
                                 </div>
                                 <p>{{ comentario.contenido }}</p>
