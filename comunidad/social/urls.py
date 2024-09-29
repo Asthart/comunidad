@@ -43,4 +43,5 @@ urlpatterns = [
     path('guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
     path('chat-comunidad/<int:comunidad_id>/', views.chat_comunidad, name='chat_comunidad'),
     path('desafio/<int:pk>/guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
+    path('editar-perfil/', views.editar_perfil, name='editar_perfil'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

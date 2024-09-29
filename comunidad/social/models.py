@@ -134,7 +134,6 @@ class Voto(models.Model):
 class PerfilUsuario(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     biografia = models.TextField(blank=True)
-    #rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='static/images/default-avatar.svg')

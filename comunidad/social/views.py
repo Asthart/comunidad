@@ -660,3 +660,26 @@ def chat_comunidad(request, comunidad_id):
         'comunidad': comunidad,
         'mensajes': mensajes,
     })
+    
+
+@login_required
+def editar_perfil(request):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    user = request.user
+    
+    if request.method == 'POST':
+        perfil_form = EditUserProfileForm(request.POST, request.FILES, instance=perfil_usuario)
+        user_form = EditUserForm(request.POST, instance=user)
+        
+        if perfil_form.is_valid() and user_form.is_valid():
+            perfil_form.save()
+            user_form.save()
+    else:
+        perfil_form = EditUserProfileForm(instance=perfil_usuario)
+        user_form = EditUserForm(instance=user)
+    
+    return render(request, 'editar_perfil.html', {
+        'form_perfil': perfil_form,
+        'form_usuario': user_form,
+        'user': user,
+    })

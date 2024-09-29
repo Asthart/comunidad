@@ -131,3 +131,15 @@ class DonacionComunidadForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['nombre'].widget.attrs['readonly'] = True    
+class EditUserProfileForm(forms.ModelForm):
+    class Meta:
+        model = PerfilUsuario
+        fields = ['biografia', 'puntos', 'foto_perfil']
+        widgets = {
+            'biografia': forms.Textarea(attrs={'rows': 4}),
+        }
+
+class EditUserForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
