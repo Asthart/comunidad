@@ -29,6 +29,7 @@ class Comunidad(models.Model):
         return Publicacion.objects.filter(comunidad=self).order_by('-fecha_publicacion')
     def es_miembro(self, usuario):
         return self.miembros.filter(id=usuario.id).exists()
+    
 
 class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
     titulo = models.CharField(max_length=200)

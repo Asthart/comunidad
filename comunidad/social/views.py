@@ -124,7 +124,7 @@ def detalle_comunidad(request, pk):
     
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
-        Q(comunidad__in=comunidad) | 
+        Q(comunidad=comunidad) | 
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
     
@@ -683,3 +683,13 @@ def editar_perfil(request):
         'form_usuario': user_form,
         'user': user,
     })
+    
+@login_required
+def unirse_comunidad(request, pk):
+    comunidad = Comunidad.objects.get(pk=pk)
+    if comunidad.publica:
+        comunidad.miembros.add(request.user)
+        print(f"El usuario {request.user.username} se unió a la comunidad {comunidad.nombre}")
+        return redirect('detalle_comunidad', pk=pk)
+    else:
+        return redirect('inicio')

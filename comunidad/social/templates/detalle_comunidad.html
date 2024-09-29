@@ -28,6 +28,9 @@
   <li>No hay desafíos en esta comunidad.</li>
   {% endfor %}
 </ul>
+<!-- {% if comunidad.publica %}
+    <button><a href="{% url 'unirse_comunidad' comunidad.pk %}">Unirse a la comunidad</a></button>
+{% endif %}-->
 {% endblock %}
 
 {% include 'footer.html' %}
