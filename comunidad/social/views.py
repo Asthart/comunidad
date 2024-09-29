@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 import os
 from pyexpat.errors import messages
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
@@ -114,11 +114,23 @@ def crear_comunidad(request):
 
 @login_required
 def detalle_comunidad(request, pk):
+    user = request.user
+    profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad)
     desafios = Desafio.objects.filter(comunidad=comunidad)
     es_admin = comunidad.administrador == request.user
+    seguidos = profile.seguidos.all()
+    
+    # Obtener todas las publicaciones relevantes
+    publicaciones = Publicacion.objects.filter(
+        Q(comunidad__in=comunidad) | 
+        Q(autor__in=[seguido.usuario for seguido in seguidos])
+    ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
+    
+    
     return render(request, 'detalle_comunidad.html', {
+    'publicaciones': publicaciones,
     'comunidad': comunidad,
     'proyectos': proyectos,
     'desafios': desafios,
@@ -629,3 +641,22 @@ def guardar_donacion(request,pk):
     })
     
     return render(request, 'crear_donacion.html', {'form': form,'qr':qr})
+
+
+@login_required
+def chat_comunidad(request, comunidad_id):
+    comunidad = get_object_or_404(Comunidad, id=comunidad_id)
+    if request.user not in comunidad.miembros.all():
+        return HttpResponseForbidden("No eres miembro de esta comunidad.")
+    
+    mensajes = MensajeChatComunidad.objects.filter(comunidad=comunidad).order_by('fecha_envio')
+    
+    # Marcar mensajes como leídos
+    for mensaje in mensajes:
+        if request.user not in mensaje.leido_por.all():
+            mensaje.marcar_como_leido(request.user)
+    
+    return render(request, 'chat_comunidad.html', {
+        'comunidad': comunidad,
+        'mensajes': mensajes,
+    })
