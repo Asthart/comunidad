@@ -613,7 +613,7 @@ def guardar_donacion(request):
         
         # Si todo salió bien, redirige al usuario a la lista de donaciones
         return redirect('inicio')
-    
+    qr = Cuenta.objects.first()
     # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados
     form = DonacionComunidadForm(initial={
         'nombre': f"{request.user.first_name} {request.user.last_name}",
@@ -621,4 +621,4 @@ def guardar_donacion(request):
         'cantidad': ''
     })
     
-    return render(request, 'crear_donacion.html', {'form': form})
+    return render(request, 'crear_donacion.html', {'form': form,'qr':qr})

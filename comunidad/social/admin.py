@@ -143,3 +143,6 @@ class ConcursoAdmin(admin.ModelAdmin):
 class DonacionComunidadAdmin(admin.ModelAdmin):
     list_display = ('id','nombre', 'identificador_transferencia','cantidad')
     search_fields = ('cantidad',)
+@admin.register(Cuenta)
+class CuentaAdmin(admin.ModelAdmin):
+    list_display = ('id','qr_code', 'numero_cuenta')

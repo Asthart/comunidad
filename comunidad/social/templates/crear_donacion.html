@@ -2,10 +2,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Hacer una Donación</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Enviar Donación</button>
-</form>
+<div style="display: flex;">
+    <div style="flex: 1;">
+        <h2>Hacer una Donación</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar Donación</button>
+        </form>
+    </div>
+    <div style="flex: 1; text-align: center;">
+        {% if qr.qr_code %}
+            <img src="{{ qr.qr_code.url }}" alt="QR Code" style="max-width: 100%;">
+        {% endif %}
+        {% if qr.numero_cuenta %}
+            <p>Número de Cuenta: {{ qr.numero_cuenta }}</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
+
