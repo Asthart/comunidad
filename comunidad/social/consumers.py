@@ -2,7 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.contrib.auth.models import User
-from .models import MensajeChat
+from .models import MensajeChat, MensajeChatComunidad, Comunidad
 from django.utils import timezone
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -85,3 +85,74 @@ class ChatConsumer(AsyncWebsocketConsumer):
             read_message_ids.append(message.id)
         print(f"Marked messages as read: {read_message_ids}")
         return read_message_ids
+
+
+class ChatComunidadConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.comunidad_id = self.scope['url_route']['kwargs']['comunidad_id']
+        self.room_group_name = f'chat_comunidad_{self.comunidad_id}'
+        self.user = self.scope["user"]
+
+        # Verificar si el usuario es miembro de la comunidad
+        is_member = await self.is_community_member()
+        if not is_member:
+            await self.close()
+            return
+
+        await self.channel_layer.group_add(
+            self.room_group_name,
+            self.channel_name
+        )
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(
+            self.room_group_name,
+            self.channel_name
+        )
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        message_type = data['type']
+        if message_type == 'chat_message':
+            message = data['message']
+            username = data['username']
+            mensaje = await self.save_message(username, message)
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'chat_message',
+                    'message': message,
+                    'username': username,
+                    'fecha_envio': mensaje.fecha_envio.isoformat(),
+                    'id': mensaje.id,
+                }
+            )
+        elif message_type == 'mark_as_read':
+            await self.mark_messages_as_read()
+
+    async def chat_message(self, event):
+        await self.send(text_data=json.dumps(event))
+
+    @sync_to_async
+    def save_message(self, username, message):
+        user = User.objects.get(username=username)
+        comunidad = Comunidad.objects.get(id=self.comunidad_id)
+        return MensajeChatComunidad.objects.create(emisor=user, comunidad=comunidad, contenido=message)
+
+    @sync_to_async
+    def mark_messages_as_read(self):
+        comunidad = Comunidad.objects.get(id=self.comunidad_id)
+        unread_messages = MensajeChatComunidad.objects.filter(
+            comunidad=comunidad
+        ).exclude(leido_por=self.user)
+        for message in unread_messages:
+            message.marcar_como_leido(self.user)
+
+    @sync_to_async
+    def is_community_member(self):
+        try:
+            comunidad = Comunidad.objects.get(id=self.comunidad_id)
+            return comunidad.miembros.filter(id=self.user.id).exists()
+        except Comunidad.DoesNotExist:
+            return False

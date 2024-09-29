@@ -1,0 +1,76 @@
+{% load static %}
+{% include 'header.html' %}
+<style>
+    main {
+        max-width: 80%;
+        margin-top: 60px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: auto;
+        padding: 20px;
+    }
+</style>
+<main>
+<div class="chat-container">
+    <h1>Chat de la comunidad: {{ comunidad.nombre }}</h1>
+    <div id="chat-messages" class="chat-messages">
+        {% for mensaje in mensajes %}
+            <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
+                <strong>{{ mensaje.emisor.username }}:</strong> 
+                {{ mensaje.contenido }}
+                <small class="message-time">
+                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
+                </small>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="chat-input">
+        <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
+        <button id="chat-message-submit">Enviar</button>
+    </div>
+</div>
+</main>
+<script>
+    const comunidadId = '{{ comunidad.id }}';
+    const username = '{{ request.user.username }}';
+    const chatSocket = new WebSocket(
+        'ws://' + window.location.host + '/ws/chat/comunidad/' + comunidadId + '/'
+    );
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'chat_message') {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message');
+            messageElement.classList.add(data.username === username ? 'sent' : 'received');
+            messageElement.dataset.id = data.id;
+            messageElement.innerHTML = `
+                <strong>${data.username}:</strong> 
+                ${data.message}
+                <small class="message-time">
+                    (Enviado: ${new Date(data.fecha_envio).toLocaleString()})
+                </small>
+            `;
+            document.querySelector('#chat-messages').appendChild(messageElement);
+        }
+    };
+
+    document.querySelector('#chat-message-submit').onclick = function(e) {
+        const messageInputDom = document.querySelector('#chat-message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'type': 'chat_message',
+            'message': message,
+            'username': username
+        }));
+        messageInputDom.value = '';
+    };
+
+    // Marcar mensajes como leídos cuando la ventana obtiene el foco
+    window.onfocus = function() {
+        chatSocket.send(JSON.stringify({
+            'type': 'mark_as_read'
+        }));
+    };
+</script>
+{% include 'footer.html' %}

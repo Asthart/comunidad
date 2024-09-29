@@ -41,4 +41,5 @@ urlpatterns = [
     path('publicacion/<int:pk>/like/', views.like, name='like_publicacion'),
     path('comentario/<int:pk>/like/', views.like_comentario, name='like_comentario'),
     path('guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
+    path('chat-comunidad/<int:comunidad_id>/', views.chat_comunidad, name='chat_comunidad'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

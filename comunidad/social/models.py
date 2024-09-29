@@ -340,3 +340,17 @@ class AdjuntoRespuesta(models.Model):
     archivo = models.FileField(upload_to='respuestas/archivos/')
     respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE, related_name='adjuntos')
     
+    
+class MensajeChatComunidad(models.Model):
+    emisor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_comunidad_enviados')
+    comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE, related_name='mensajes')
+    contenido = models.TextField()
+    fecha_envio = models.DateTimeField(default=timezone.now)
+    leido_por = models.ManyToManyField(User, related_name='mensajes_comunidad_leidos', blank=True)
+
+    def __str__(self):
+        return f'{self.emisor.username} en {self.comunidad.nombre}: {self.contenido[:20]}'
+
+    def marcar_como_leido(self, usuario):
+        self.leido_por.add(usuario)
+        self.save()

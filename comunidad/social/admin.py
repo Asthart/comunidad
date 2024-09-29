@@ -143,3 +143,15 @@ class ConcursoAdmin(admin.ModelAdmin):
 class DonacionComunidadAdmin(admin.ModelAdmin):
     list_display = ('id','nombre', 'identificador_transferencia','cantidad')
     search_fields = ('cantidad',)
+
+
+@admin.register(MensajeChatComunidad)
+class MensajeChatComunidadAdmin(admin.ModelAdmin):
+    list_display = ('emisor', 'comunidad', 'contenido_truncado', 'fecha_envio')
+    list_filter = ('comunidad', 'fecha_envio')
+    search_fields = ('emisor__username', 'comunidad__nombre', 'contenido')
+    actions = ['delete_selected']
+
+    def contenido_truncado(self, obj):
+        return obj.contenido[:50] + '...' if len(obj.contenido) > 50 else obj.contenido
+    contenido_truncado.short_description = 'Contenido'
