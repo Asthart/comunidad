@@ -1,6 +1,6 @@
-{% extends 'base.html' %}
+{% load static %}
+{% include 'header.html' %}
 
-{% block content %}
 <h1>Listado de Comunidades Activas</h1>
 
 <button onclick="location.href='{% url 'crear_comunidad' %}'">Crear nueva comunidad</button>
@@ -32,4 +32,3 @@
         {% endfor %}
     </tbody>
 </table>
-{% endblock %}

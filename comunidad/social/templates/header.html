@@ -1,6 +1,6 @@
 {% load static %}
 <!--
-<li class="nav-item dropdown">
+          <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               Dropdown
             </a>
@@ -22,11 +22,21 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {% if user.is_authenticated %}
-          <li class="nav-item"><a href="{% url 'lista_comunidades' %}" class="nav-link active"><img src="{% static 'images/comunidad1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-users"></i><span class="texto">Comunidad</span></a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="{% static 'images/comunidad1.svg' %}" alt="Icono" class="icono-svg">Comunidades
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'lista_comunidades' %}"><img src="{% static 'images/allcommunities.svg' %}" alt="Icono" class="icono-svg">Ver Comunidades</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'crear_comunidad' %}"><img src="{% static 'images/newcommunity.svg' %}" alt="Icono" class="icono-svg">Solicitar Comunidad</a></li>
+          </ul>
+        </li>
           <li class="nav-item"><a href="{% url 'crear_proyecto' %}" class="nav-link active"><img src="{% static 'images/proyecto1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-project-diagram"></i><span class="texto">Proyecto</span></a></li>
           <li class="nav-item"><a href="{% url 'crear_desafio' %}" class="nav-link active"><img src="{% static 'images/desafio1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-bolt"></i><span class="texto">Desafios</span></a></li>
           <li class="nav-item"><a href="{% url 'ranking' %}" class="nav-link active"><img src="{% static 'images/ranking1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-ranking-star"></i><span class="texto">Ranking</span></a></li>
           <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link active"><img src="{% static 'images/logout1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-out-alt"></i><span class="texto">Cerrar Sesión</span></a></li>
+          <li class="nav-item"><a href="#" class="nav-link active"><img src="{% static 'images/marketplace1.svg' %}" alt="Icono" class="icono-svg"><i class="fas"></i><span class="texto">Marketplace</span></a></li>
         {% else %}
           <li class="nav-item"><a href="{% url 'login' %}" class="nav-link active"><img src="{% static 'images/login1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-in-alt"></i><span class="texto">Iniciar Sesión</span></a></li>
           <li class="nav-item"><a href="{% url 'register' %}" class="nav-link active"><img src="{% static 'images/register1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-user-plus"></i><span class="texto">Registrarse</span></a></li>
@@ -81,5 +91,47 @@ nav a {
     text-decoration: none;
 }
 
+.navbar-expand {
+  @each $breakpoint in map-keys($grid-breakpoints) {
+    $next: breakpoint-next($breakpoint, $grid-breakpoints);
+    $infix: breakpoint-infix($next, $grid-breakpoints);
+
+    // stylelint-disable-next-line scss/selector-no-union-class-name
+    &#{$infix} {
+      @include media-breakpoint-up($next) {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+
+        .navbar-nav {
+          flex-direction: row;
+
+          .dropdown-menu {
+            position: absolute;
+          }
+
+          .nav-link {
+            padding-right: $navbar-nav-link-padding-x;
+            padding-left: $navbar-nav-link-padding-x;
+          }
+        }
+
+        .navbar-nav-scroll {
+          overflow: visible;
+        }
+
+        .navbar-collapse {
+          display: flex !important; // stylelint-disable-line declaration-no-important
+          flex-basis: auto;
+        }
+
+        .navbar-toggler {
+          display: none;
+        }
+      }
+    }
+  }
+}
 </style>
 <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+<script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
