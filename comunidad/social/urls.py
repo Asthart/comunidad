@@ -40,5 +40,5 @@ urlpatterns = [
     path('comentar/<pk>/', views.crear_comentario, name='crear_comentario'),
     path('publicacion/<int:pk>/like/', views.like, name='like_publicacion'),
     path('comentario/<int:pk>/like/', views.like_comentario, name='like_comentario'),
-    path('guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
+    path('desafio/<int:pk>/guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

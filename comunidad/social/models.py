@@ -76,7 +76,7 @@ class Desafio(models.Model):
     objetivo_monto = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     min_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
     max_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
-    
+    cantidad_donada = models.DecimalField(max_digits=10, decimal_places=2, null=True,default=0)
     def __str__(self):
         return self.titulo
     

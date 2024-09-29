@@ -1,6 +1,7 @@
 # views.py
 
 from datetime import datetime
+from decimal import Decimal
 import os
 from pyexpat.errors import messages
 from django.http import HttpResponse, JsonResponse
@@ -598,17 +599,18 @@ def puntuar_respuesta(request, pk, estrellas):
 
 
 @login_required
-def guardar_donacion(request):
+def guardar_donacion(request,pk):
     if request.method == 'POST':
         nombre = request.POST['nombre']
         identificador_transferencia = request.POST['identificador_transferencia']
         cantidad = request.POST['cantidad']
-        
+        desafio= Desafio.objects.get(id=pk)
         # Aquí deberías validar los datos antes de guardarlos
         # Por ejemplo:
-        if not nombre.strip():
-            return render(request, 'crear_donacion.html', {'error': 'Por favor, ingresa un nombre.'})
-        
+        desafio.cantidad_donada+=Decimal(cantidad)
+        if (float(cantidad)<desafio.min_monto or float(cantidad)>desafio.max_monto or desafio.cantidad_donada>desafio.objetivo_monto):
+            return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {desafio.max_monto}'})
+        desafio.save()
         # Guardar la donación en la base de datos
         DonacionComunidad.objects.create(
             nombre=nombre,
