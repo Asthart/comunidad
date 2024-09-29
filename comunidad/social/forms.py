@@ -6,7 +6,7 @@ from django.forms import ValidationError
 class ComunidadForm(forms.ModelForm):
     class Meta:
         model = Comunidad
-        fields = ['nombre', 'descripcion']
+        fields = ['nombre', 'descripcion','donaciones']
 
 class ProyectoForm(forms.ModelForm):
     class Meta:
@@ -119,3 +119,15 @@ class ComentarioForm(forms.ModelForm):
     class Meta:
         model = Comentario
         fields = ('contenido',)
+        
+class DonacionComunidadForm(forms.ModelForm):
+    class Meta:
+        model = DonacionComunidad
+        fields = ['nombre', 'identificador_transferencia', 'cantidad']
+
+    widgets = {
+        'cantidad': forms.NumberInput(attrs={'step': 'any'}),
+    }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['nombre'].widget.attrs['readonly'] = True    

@@ -590,3 +590,35 @@ def puntuar_respuesta(request, pk, estrellas):
         respuesta.save()
         return JsonResponse({'status': 'success', 'puntuacion': respuesta.puntuacion})
     return JsonResponse({'status': 'error'}, status=400)
+
+
+@login_required
+def guardar_donacion(request):
+    if request.method == 'POST':
+        nombre = request.POST['nombre']
+        identificador_transferencia = request.POST['identificador_transferencia']
+        cantidad = request.POST['cantidad']
+        
+        # Aquí deberías validar los datos antes de guardarlos
+        # Por ejemplo:
+        if not nombre.strip():
+            return render(request, 'crear_donacion.html', {'error': 'Por favor, ingresa un nombre.'})
+        
+        # Guardar la donación en la base de datos
+        DonacionComunidad.objects.create(
+            nombre=nombre,
+            identificador_transferencia=identificador_transferencia,
+            cantidad=cantidad,
+        )
+        
+        # Si todo salió bien, redirige al usuario a la lista de donaciones
+        return redirect('inicio')
+    
+    # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados
+    form = DonacionComunidadForm(initial={
+        'nombre': f"{request.user.first_name} {request.user.last_name}",
+        'identificador_transferencia': '',
+        'cantidad': ''
+    })
+    
+    return render(request, 'crear_donacion.html', {'form': form})
