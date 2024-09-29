@@ -11,7 +11,7 @@ class ComunidadForm(forms.ModelForm):
 class ProyectoForm(forms.ModelForm):
     class Meta:
         model = Proyecto
-        fields = ['titulo', 'descripcion', 'comunidad', 'imagenes', 'videos', 'documentos']
+        fields = ['titulo', 'descripcion', 'imagenes', 'videos', 'documentos']
 
 class ArchivoProyectoForm(forms.ModelForm):
     class Meta:

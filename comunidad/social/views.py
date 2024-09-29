@@ -127,11 +127,14 @@ def detalle_comunidad(request, pk):
 
 @login_required
 #@permission_required('social.add_proyecto', raise_exception=True)
-def crear_proyecto(request):
+def crear_proyecto(request,pk):
     if request.method == 'POST':
         form = ProyectoForm(request.POST)
         if form.is_valid():
             proyecto = form.save(commit=False)
+            comunidad = Comunidad.objects.get(id=pk)
+            proyecto.comunidad=comunidad
+            
             proyecto.creador = request.user
             proyecto.save()
             ActividadUsuario.objects.create(
@@ -152,11 +155,13 @@ def detalle_proyecto(request, pk):
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
-def crear_desafio(request):
+def crear_desafio(request,pk):
     if request.method == 'POST':
         form = DesafioForm(request.POST)
         if form.is_valid():
             desafio = form.save(commit=False)
+            comunidad = Comunidad.objects.get(id=pk)
+            desafio.comunidad=comunidad
             desafio.creador = request.user
             desafio.save()
             

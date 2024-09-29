@@ -42,15 +42,3 @@ def calcular_ganador():
     else:
         print("No se pudo determinar un ganador")
 
-# Ejecuta esta función periódicamente (por ejemplo, cada hora)
-#import schedule
-#import time
-
-#def job():
- #   calcular_ganador()
-
-#schedule.every().hour.do(job)
-
-#while True:
-#    schedule.run_pending()
-#    time.sleep(60)

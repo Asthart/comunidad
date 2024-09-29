@@ -45,6 +45,11 @@ class ComunidadAdmin(admin.ModelAdmin):
             [comunidad.administrador.email],
             fail_silently=False,
         )
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(administrador=request.user)
         
     actions = ['Activar']  # Agregar esta línea
 
@@ -68,12 +73,23 @@ class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_creacion')
     list_filter = ('comunidad', 'fecha_creacion')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(comunidad__administrador=request.user)
 
 @admin.register(Desafio)
 class DesafioAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_inicio', 'fecha_fin')
     list_filter = ('comunidad', 'fecha_inicio', 'fecha_fin')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(comunidad__administrador=request.user)
 
 @admin.register(MensajeChat)
 class MensajeChatAdmin(admin.ModelAdmin):
