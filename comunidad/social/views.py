@@ -1,6 +1,6 @@
 # views.py
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 import os
 from pyexpat.errors import messages
@@ -8,13 +8,12 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.db.models import Q
+from django.db.models import Q,Sum
 from .models import *
 from .forms import *
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 from django.views.generic import ListView
-
 '''
 @login_required
 def inicio(request):
@@ -729,3 +728,30 @@ def solicitar_membresia(request, comunidad_id):
             return render(request, 'solicitud_existente.html', {'comunidad': comunidad})
 
     return render(request, 'solicitud_membresia.html', {'comunidad': comunidad})
+
+
+
+def ranking_usuarios(request):
+    ranking = []
+    form = RangoFechaForm(request.POST or None)
+
+    # Definir un rango de fechas predeterminado si no se proporciona
+    if request.method == 'POST' and form.is_valid():
+        fecha_inicio = form.cleaned_data['fecha_inicio']
+        fecha_fin = form.cleaned_data['fecha_fin']
+    else:
+        # Establecer un rango de fechas predeterminado (por ejemplo, los últimos 30 días)
+        fecha_fin = timezone.now()
+        fecha_inicio = fecha_fin - timedelta(days=30)
+
+    # Obtener el ranking de usuarios en base al rango de fechas
+    ranking = (
+        ActividadUsuario.objects.filter(
+            fecha_hora__range=(fecha_inicio, fecha_fin)
+        )
+        .values('usuario__username')
+        .annotate(total_puntos=Sum('puntos_ganados'))
+        .order_by('-total_puntos')
+    )
+
+    return render(request, 'ranking.html', {'ranking': ranking, 'form': form})

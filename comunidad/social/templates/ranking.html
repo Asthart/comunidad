@@ -1,28 +1,54 @@
-{% extends 'base.html' %}
 {% load static %}
+{% load bootstrap5 %}
+
+{% include 'header.html' %}
 
 {% block title %}Ranking de Usuarios - Hubinab Reward{% endblock %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
 
+<body>
+
+  <!-- Contenido principal -->
+  <main>
 {% block content %}
 <div class="ranking-page">
-  <h1>Ranking de Usuarios</h1>
-  <ol>
-    {% for perfil in top_usuarios %}
-      <li>
-        <a href="{% url 'perfil_usuario' perfil.usuario.username %}">
-          {{ perfil.usuario.first_name }} {{ perfil.usuario.last_name }}
-        </a> - {{ perfil.puntos }} puntos 
-      </li>
-    {% empty %}
-      <li>No hay usuarios en el ranking.</li>
-    {% endfor %}
-  </ol>
+    <div class="container mt-5">
+        <h1 class="text-center fw-bold">Ranking de Usuarios</h1>
+
+        <!-- Formulario para seleccionar el rango de fechas -->
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col">
+                    {{ form.fecha_inicio.label }} {{ form.fecha_inicio }}
+                </div>
+                <div class="col">
+                    {{ form.fecha_fin.label }} {{ form.fecha_fin }}
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Ver Ranking</button>
+                </div>
+            </div>
+        </form>
+
+        <ol class="list-group list-group-flush">
+            {% for entry in ranking %}
+                <li class="list-group-item">
+                    <a href="{% url 'perfil_usuario' entry.usuario__username %}">
+                        {{ entry.usuario__username }}
+                    </a> - {{ entry.total_puntos }} puntos 
+                </li>
+            {% empty %}
+                <li class="list-group-item">No hay usuarios en el ranking para este rango de fechas.</li>
+            {% endfor %}
+        </ol>
+    </div>
+
+    <!-- Botón para ver concursos actuales -->
+    <div class="text-center mt-4">
+        <button class="btn btn-primary" onclick="window.location.href='{% url 'concurso_resultados' %}'">Ver Concursos Actuales</button>
+    </div>
 </div>
-
-<!-- Agregando el botón aquí -->
-<button class="btn btn-primary" onclick="window.location.href='{% url 'concurso_resultados' %}'">Ver Concursos Actuales</button>
-
+</main>
+</body>
 {% endblock %}
+{% include 'footer.html' %}

@@ -143,3 +143,7 @@ class EditUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
+        
+class RangoFechaForm(forms.Form):
+    fecha_inicio = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
+    fecha_fin = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
