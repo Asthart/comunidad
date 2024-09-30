@@ -82,7 +82,7 @@ class ProyectoAdmin(admin.ModelAdmin):
 
 @admin.register(Desafio)
 class DesafioAdmin(admin.ModelAdmin):
-    list_display = ('titulo', 'creador', 'comunidad', 'fecha_inicio', 'fecha_fin')
+    list_display = ('id','titulo', 'creador', 'comunidad', 'fecha_inicio', 'fecha_fin')
     list_filter = ('comunidad', 'fecha_inicio', 'fecha_fin')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
     def get_queryset(self, request):

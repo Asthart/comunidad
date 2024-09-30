@@ -42,4 +42,7 @@ urlpatterns = [
     path('comentario/<int:pk>/like/', views.like_comentario, name='like_comentario'),
     path('guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
     path('chat-comunidad/<int:comunidad_id>/', views.chat_comunidad, name='chat_comunidad'),
+    path('desafio/<int:pk>/guardar-donacion/', views.guardar_donacion, name='guardar_donacion'),
+    path('editar-perfil/', views.editar_perfil, name='editar_perfil'),
+    path('comunidades/<pk>/unirse/', views.unirse_comunidad, name='unirse_comunidad'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

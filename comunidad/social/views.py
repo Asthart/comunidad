@@ -1,6 +1,7 @@
 # views.py
 
 from datetime import datetime
+from decimal import Decimal
 import os
 from pyexpat.errors import messages
 from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
@@ -610,17 +611,18 @@ def puntuar_respuesta(request, pk, estrellas):
 
 
 @login_required
-def guardar_donacion(request):
+def guardar_donacion(request,pk):
     if request.method == 'POST':
         nombre = request.POST['nombre']
         identificador_transferencia = request.POST['identificador_transferencia']
         cantidad = request.POST['cantidad']
-        
+        desafio= Desafio.objects.get(id=pk)
         # Aquí deberías validar los datos antes de guardarlos
         # Por ejemplo:
-        if not nombre.strip():
-            return render(request, 'crear_donacion.html', {'error': 'Por favor, ingresa un nombre.'})
-        
+        desafio.cantidad_donada+=Decimal(cantidad)
+        if (float(cantidad)<desafio.min_monto or float(cantidad)>desafio.max_monto or desafio.cantidad_donada>desafio.objetivo_monto):
+            return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {desafio.max_monto}'})
+        desafio.save()
         # Guardar la donación en la base de datos
         DonacionComunidad.objects.create(
             nombre=nombre,
@@ -658,3 +660,36 @@ def chat_comunidad(request, comunidad_id):
         'comunidad': comunidad,
         'mensajes': mensajes,
     })
+    
+
+@login_required
+def editar_perfil(request):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    user = request.user
+    
+    if request.method == 'POST':
+        perfil_form = EditUserProfileForm(request.POST, request.FILES, instance=perfil_usuario)
+        user_form = EditUserForm(request.POST, instance=user)
+        
+        if perfil_form.is_valid() and user_form.is_valid():
+            perfil_form.save()
+            user_form.save()
+    else:
+        perfil_form = EditUserProfileForm(instance=perfil_usuario)
+        user_form = EditUserForm(instance=user)
+    
+    return render(request, 'editar_perfil.html', {
+        'form_perfil': perfil_form,
+        'form_usuario': user_form,
+        'user': user,
+    })
+    
+@login_required
+def unirse_comunidad(request, pk):
+    comunidad = Comunidad.objects.get(pk=pk)
+    if comunidad.publica:
+        comunidad.miembros.add(request.user)
+        print(f"El usuario {request.user.username} se unió a la comunidad {comunidad.nombre}")
+        return redirect('detalle_comunidad', pk=pk)
+    else:
+        return redirect('inicio')

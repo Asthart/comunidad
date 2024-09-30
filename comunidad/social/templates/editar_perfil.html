@@ -1,0 +1,29 @@
+perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    
+if request.method == 'POST':
+    form = EditUserProfileForm(request.POST, request.FILES, instance=perfil_usuario)
+    if form.is_valid():
+        form.save()
+        return redirect('profile')  # Asume que tienes una vista 'profile' para mostrar el perfil actualizado
+else:
+    form = EditUserProfileForm(instance=perfil_usuario)
+
+return render(request, 'editar_perfil.html', {'form': form}){% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h2>Edita tu perfil y información de cuenta</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-md-6">
+            {{ form_perfil.as_p }}
+        </div>
+        <div class="col-md-6">
+            {{ form_usuario.as_p }}
+        </div>
+    </div>
+    <button type="submit">Actualizar perfil y cuenta</button>
+</form>
+{% endblock %}

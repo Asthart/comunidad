@@ -32,6 +32,7 @@ class Comunidad(models.Model):
         return Publicacion.objects.filter(comunidad=self).order_by('-fecha_publicacion')
     def es_miembro(self, usuario):
         return self.miembros.filter(id=usuario.id).exists()
+    
 
 class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
     titulo = models.CharField(max_length=200)
@@ -79,7 +80,7 @@ class Desafio(models.Model):
     objetivo_monto = models.DecimalField(max_digits=10, decimal_places=2,default=0)
     min_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
     max_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
-    
+    cantidad_donada = models.DecimalField(max_digits=10, decimal_places=2, null=True,default=0)
     def __str__(self):
         return self.titulo
     
@@ -137,7 +138,6 @@ class Voto(models.Model):
 class PerfilUsuario(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
     biografia = models.TextField(blank=True)
-    #rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='static/images/default-avatar.svg')
