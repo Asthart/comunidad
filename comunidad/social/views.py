@@ -37,6 +37,22 @@ from .models import Comunidad, PerfilUsuario, Publicacion
 
 @login_required
 def inicio(request):
+    
+    ''' 
+    sessionid = request.COOKIES.get('sessionid')
+
+    if sessionid:
+        # Lógica para validar el sessionid con la aplicación externa
+        user = validate_session_with_external_app(sessionid)
+        if user:
+            # Iniciar sesión en tu aplicación
+            login(request, user)
+            return redirect('home')  # Redirigir a la página de inicio
+
+    return redirect('login')  
+    '''
+    
+    
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     contador = Concurso.ultimo_concurso()
@@ -693,3 +709,23 @@ def unirse_comunidad(request, pk):
         return redirect('detalle_comunidad', pk=pk)
     else:
         return redirect('inicio')
+
+@login_required
+def solicitar_membresia(request, comunidad_id):
+    comunidad = get_object_or_404(Comunidad, id=comunidad_id)
+
+    if request.method == 'POST':
+        # Verificar que la comunidad es privada
+        if comunidad.publica:
+            return redirect('detalle_comunidad', comunidad_id=comunidad_id)
+
+        # Crear la solicitud de membresía
+        solicitud, created = SolicitudMembresia.objects.get_or_create(comunidad=comunidad, usuario=request.user)
+        if created:
+            # Notificar que la solicitud fue enviada
+            return redirect('detalle_comunidad', comunidad_id)
+        else:
+            # Si ya existe una solicitud pendiente
+            return render(request, 'solicitud_existente.html', {'comunidad': comunidad})
+
+    return render(request, 'solicitud_membresia.html', {'comunidad': comunidad})

@@ -175,3 +175,33 @@ class MensajeChatComunidadAdmin(admin.ModelAdmin):
     def contenido_truncado(self, obj):
         return obj.contenido[:50] + '...' if len(obj.contenido) > 50 else obj.contenido
     contenido_truncado.short_description = 'Contenido'
+
+
+
+class SolicitudMembresiaAdmin(admin.ModelAdmin):
+    list_display = ('usuario', 'comunidad', 'fecha_solicitud', 'estado')
+    list_filter = ('estado',)
+    actions = ['aceptar_solicitud', 'rechazar_solicitud']
+
+    def aceptar_solicitud(self, request, queryset):
+        for solicitud in queryset:
+            # Cambiar el estado de la solicitud a 'aceptada'
+            solicitud.estado = 'aceptada'
+            # Agregar el usuario a la comunidad
+            solicitud.comunidad.miembros.add(solicitud.usuario)
+            solicitud.save()  # Guardar los cambios en la solicitud
+            solicitud.delete()
+        self.message_user(request, "Las solicitudes seleccionadas han sido aceptadas y los usuarios han sido añadidos a la comunidad.")
+
+    def rechazar_solicitud(self, request, queryset):
+        for solicitud in queryset:
+            # Cambiar el estado de la solicitud a 'rechazada'
+            solicitud.estado = 'rechazada'
+            solicitud.save()  # Guardar los cambios en la solicitud
+            solicitud.delete()
+        self.message_user(request, "Las solicitudes seleccionadas han sido rechazadas.")
+
+    aceptar_solicitud.short_description = "Aceptar solicitudes seleccionadas"
+    rechazar_solicitud.short_description = "Rechazar solicitudes seleccionadas"
+
+admin.site.register(SolicitudMembresia, SolicitudMembresiaAdmin)

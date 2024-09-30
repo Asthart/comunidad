@@ -31,6 +31,9 @@
 <!-- {% if comunidad.publica %}
     <button><a href="{% url 'unirse_comunidad' comunidad.pk %}">Unirse a la comunidad</a></button>
 {% endif %}-->
+{% if not comunidad.publica %}
+    <button><a href="{% url 'solicitar_membresia' comunidad.pk %}">Unirse a la comunidad</a></button>
+{% endif %}
 {% endblock %}
 
 {% include 'footer.html' %}

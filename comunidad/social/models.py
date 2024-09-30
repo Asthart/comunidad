@@ -367,3 +367,13 @@ class MensajeChatComunidad(models.Model):
 class Cuenta(models.Model):
     qr_code = models.ImageField(upload_to='comunidades/qr_codes/', null=True, blank=True)
     numero_cuenta = models.CharField(max_length=100, null=True, blank=True)
+    
+
+class SolicitudMembresia(models.Model):
+    comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_solicitud = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=10, choices=[('pendiente', 'Pendiente'), ('aceptada', 'Aceptada'), ('rechazada', 'Rechazada')], default='pendiente')
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.comunidad.nombre} ({self.estado})"

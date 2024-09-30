@@ -1,0 +1,6 @@
+<h1>Solicitar Membresía</h1>
+<p>Estás solicitando unirte a la comunidad {{ comunidad.nombre }}.</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Enviar Solicitud</button>
+</form>
