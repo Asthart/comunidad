@@ -123,7 +123,7 @@ def detalle_comunidad(request, pk):
     
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
-        Q(comunidad__in=comunidad) | 
+        Q(comunidad=comunidad) | 
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
     
