@@ -1,4 +1,4 @@
-<!-- templates/detalle_comunidad.html -->
+<!--
 {% extends 'base.html' %} 
 {% include 'header.html' %}
 
@@ -37,3 +37,325 @@
 {% endblock %}
 
 {% include 'footer.html' %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% load bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ comunidad.nombre }} - Detalle de Comunidad</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url("{% static 'images/background3.jpg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        main {
+            max-width: 80%;
+            margin-top: 60px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: auto;
+            padding: 20px;
+        }
+        
+        .community-header {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .community-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+        
+        .community-info {
+            flex-grow: 1;
+        }
+        
+        .community-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .community-description {
+            margin-bottom: 15px;
+        }
+        
+        .community-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .community-content {
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .publications-section {
+            width: 70%;
+        }
+        
+        .sidebar {
+            width: 25%;
+        }
+        
+        .publication {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        
+        .publication-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        
+        .author-info {
+            flex-grow: 1;
+        }
+        
+        .author-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .publication-date {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .publication-content {
+            margin-bottom: 15px;
+        }
+        
+        .publication-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .action-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .action-button:hover {
+            background-color: #0056b3;
+        }
+        
+        .comment {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 98%;
+        }
+        
+        textarea {
+            height: 60px;
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 10px;
+            resize: vertical;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="community-header">
+            <img src="{{ comunidad.foto_perfil.url }}" alt="Foto de la comunidad" class="community-photo">
+            <div class="community-info">
+                <h1 class="community-name">{{ comunidad.nombre }}</h1>
+                <p class="community-description">{{ comunidad.descripcion }}</p>
+                <div class="community-stats">
+                    <span>Miembros: {{ comunidad.miembros.count }}</span>
+                    <span>Proyectos: {{ comunidad.proyectos.count }}</span>
+                    <span>Desafíos: {{ comunidad.desafios.count }}</span>
+                </div>
+                <button class="action-button">Unirse a la comunidad</button>
+            </div>
+        </div>
+        
+        <div class="community-content">
+            <div class="publications-section">
+                <h2>Publicaciones de la Comunidad</h2>
+                {% if publicaciones %}
+                    {% for pub in publicaciones %}
+                        <div class="publication">
+                            <div class="publication-header">
+                                {% if pub.autor.perfilusuario.foto_perfil %}
+                                    <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                                {% endif %}
+                                <div class="author-info">
+                                    <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.first_name }} {{ pub.autor.last_name }}</a>
+                                    <span class="publication-date">{{ pub.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="publication-content">        
+                                <p>{{ pub.contenido }}</p>
+                                {% if pub.imagen %}
+                                    <img src="{{ pub.imagen.url }}" alt="Imagen de publicación" style="max-width: 100%; height: auto;">
+                                {% endif %}
+                            </div>
+                            
+                            <div class="publication-actions">
+                                <button onclick="mostrarComentarios({{ pub.id }})" class="action-button">
+                                    <span class="comment-count">{{ pub.comentarios.count }} Comentarios</span>
+                                </button>
+                            </div>
+                            
+                            <div id="comentarios-{{ pub.id }}" style="display: none;">
+                                {% for comentario in pub.comentarios.all %}
+                                    <div class="comment" id="comment{{ comentario.id }}">
+                                        <div class="author-info">
+                                            <a href="{% url 'perfil_usuario' comentario.autor.username %}" class="author-name">
+                                                {% if comentario.autor.perfilusuario.foto_perfil %}
+                                                    <img src="{{ comentario.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                                                {% endif %}
+                                                {{ comentario.autor.first_name }} {{ comentario.autor.last_name }}
+                                            </a>
+                                        </div>
+                                        <p>{{ comentario.contenido }}</p>
+                                        <small>{{ comentario.fecha_comentario|date:"d/m/Y H:i:s" }}</small>
+                                    </div>
+                                {% endfor %}
+                                <form action="{% url 'crear_comentario' pub.id %}" method="post">
+                                    {% csrf_token %}
+                                    <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
+                                    <button type="submit" class="action-button">Enviar</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No hay publicaciones para mostrar.</p>
+                {% endif %}
+            </div>
+            
+            <div class="sidebar">
+                <div class="publication">
+                    <h3>Miembros ({{ comunidad.miembros.count }})</h3>
+                    {% for miembro in comunidad.miembros.all|slice:":5" %}
+                        <div class="member-item">
+                            {% if miembro.perfilusuario.foto_perfil %}
+                                <img src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="profile-picture">
+                            {% endif %}
+                            <span>{{ miembro.first_name }} {{ miembro.last_name }}</span>
+                        </div>
+                    {% endfor %}
+                    {% if comunidad.miembros.count > 5 %}
+                        <a href="#" class="action-button">Ver todos los miembros</a>
+                    {% endif %}
+                </div>
+                
+                <div class="publication">
+                    <h3>Proyectos</h3>
+                    {% for proyecto in comunidad.proyectos.all|slice:":3" %}
+                        <div class="project-item">
+                            <h4>{{ proyecto.nombre }}</h4>
+                            <p>{{ proyecto.descripcion|truncatechars:100 }}</p>
+                        </div>
+                    {% empty %}
+                        <p>No hay proyectos para mostrar.</p>
+                    {% endfor %}
+                    <a href="#" class="action-button">Ver todos los proyectos</a>
+                </div>
+                
+                <div class="publication">
+                    <h3>Desafíos</h3>
+                    {% for desafio in comunidad.desafios.all|slice:":3" %}
+                        <div class="challenge-item">
+                            <h4>{{ desafio.nombre }}</h4>
+                            <p>{{ desafio.descripcion|truncatechars:100 }}</p>
+                        </div>
+                    {% empty %}
+                        <p>No hay desafíos para mostrar.</p>
+                    {% endfor %}
+                    <a href="#" class="action-button">Ver todos los desafíos</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+    <script src="{% static 'bootstrap/js/jquery.min.js'%}"></script>
+    <script>
+        function mostrarComentarios(publicacionId) {
+            var comentariosDiv = document.getElementById('comentarios-' + publicacionId);
+            if (comentariosDiv.style.display === 'none') {
+                comentariosDiv.style.display = 'block';
+            } else {
+                comentariosDiv.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
+-->

@@ -18,11 +18,14 @@ class Comunidad(models.Model):
     activada = models.BooleanField(default=False)
     publica = models.BooleanField(default=False)
     donaciones = models.BooleanField(default=False)
-    foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True)
-    banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True)
+    foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='static/images/default-avatar.svg')
+    banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='static/images/backgroud1.jpg')
 
     def __str__(self):
         return self.nombre
+    
+    def cant_miembros(self):
+        return self.miembros.count()
 
     @property
     def publicaciones(self):
