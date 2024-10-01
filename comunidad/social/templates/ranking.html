@@ -2,13 +2,16 @@
 {% load bootstrap5 %}
 
 {% include 'header.html' %}
-
-{% block title %}Ranking de Usuarios - Hubinab Reward{% endblock %}
 <head>
+
+
 <style>
   body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
       font-family: 'Poppins', sans-serif;
-      margin: 0;
       padding: 0;
       background-image: url("{% static 'images/background3.jpg' %}");
       background-size: cover;
@@ -27,7 +30,7 @@
   .card-title {
       color: #007bff; /* Color de texto azul para el título */
   }
-  .main {
+  main {
       flex: 1; /* Permite que la sección principal crezca y ocupe el espacio restante */
       flex-direction: column;
       min-height: 100vh;    
@@ -38,7 +41,6 @@
 
   <!-- Contenido principal -->
   <main>
-{% block content %}
 
 <div class="ranking-page">
     <div class="container mt-5">
@@ -80,5 +82,4 @@
 </div>
 </main>
 </body>
-{% endblock %}
 {% include 'footer.html' %}

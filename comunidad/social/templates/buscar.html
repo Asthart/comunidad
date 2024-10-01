@@ -1,9 +1,8 @@
-
 {% load static %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block content %}
+
+<body>
+  <main>
+
   <h1>Resultados de la búsqueda</h1>
   <h2>Usuarios</h2>
   <ul>
@@ -38,4 +37,22 @@
     <li><a href="{% url 'detalle_desafio' desafio.id %}">{{ desafio.titulo }}</a></li>
   {% endfor %}
 </ul>
-{% endblock %}
+</main>
+</body>
+
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>
+

@@ -1,12 +1,7 @@
-{% extends 'base.html' %}
-{% include 'header.html' %}
 {% load static %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block title %}Crear Comunidad - Hubinab Reward{% endblock %}
 
-{% block content %}
+<body>
+    <main>
 <div class="login-container">
     <h1 class="login-title">Solicitar Nueva Comunidad</h1>
     <form method="post" class="login-form">
@@ -27,6 +22,20 @@
         <button type="submit" class="btn btn-primary">Crear Comunidad</button>
     </form>
 </div>
-{% endblock %}
+</main>
+</body>
 
+{% include 'header.html' %}
 {% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

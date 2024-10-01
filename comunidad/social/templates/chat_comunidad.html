@@ -1,35 +1,33 @@
 {% load static %}
-{% include 'header.html' %}
-<style>
-    main {
-        max-width: 80%;
-        margin-top: 60px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: auto;
-        padding: 20px;
-    }
-</style>
-<main>
-<div class="chat-container">
-    <h1>Chat de la comunidad: {{ comunidad.nombre }}</h1>
-    <div id="chat-messages" class="chat-messages">
-        {% for mensaje in mensajes %}
-            <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
-                <strong>{{ mensaje.emisor.username }}:</strong> 
-                {{ mensaje.contenido }}
-                <small class="message-time">
-                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
-                </small>
+<body>
+    <main>
+        <div class="chat-container">
+            <h1>Chat de la comunidad: {{ comunidad.nombre }}</h1>
+            <div id="chat-messages" class="chat-messages">
+                {% for mensaje in mensajes %}
+                    <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
+                        <strong>{{ mensaje.emisor.username }}:</strong> 
+                        {{ mensaje.contenido }}
+                        <small class="message-time">
+                            (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
+                        </small>
+                    </div>
+                {% endfor %}
+                <div class="scroll-to-bottom-btn" id="scroll-to-bottom-btn" title="Ir al fondo">
+                    <img src="{% static 'images/bajar.svg' %}" alt="Ir al fondo">
+                </div>
             </div>
-        {% endfor %}
-    </div>
-    <div class="chat-input">
-        <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
-        <button id="chat-message-submit">Enviar</button>
-    </div>
-</div>
-</main>
+            <div class="chat-input">
+                <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
+                <button id="chat-message-submit">Enviar</button>
+            </div>
+        </div>
+    </main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+
 <script>
     const comunidadId = '{{ comunidad.id }}';
     const username = '{{ request.user.username }}';
@@ -52,6 +50,7 @@
                 </small>
             `;
             document.querySelector('#chat-messages').appendChild(messageElement);
+            scrollToBottom();
         }
     };
 
@@ -72,5 +71,159 @@
             'type': 'mark_as_read'
         }));
     };
+
+    function scrollToBottom() {
+        const chatMessages = document.querySelector('#chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        toggleScrollButton();
+    }
+
+    function toggleScrollButton() {
+        const chatMessages = document.querySelector('#chat-messages');
+        const scrollButton = document.getElementById('scroll-to-bottom-btn');
+        
+        if (chatMessages.scrollTop + chatMessages.clientHeight < chatMessages.scrollHeight - 20) {
+            scrollButton.style.display = 'block';
+        } else {
+            scrollButton.style.display = 'none';
+        }
+    }
+
+    document.getElementById('scroll-to-bottom-btn').addEventListener('click', function() {
+        scrollToBottom();
+    });
+
+    document.querySelector('#chat-messages').addEventListener('scroll', toggleScrollButton);
+
+    // Restaurar la posición de desplazamiento después de recargar
+    window.onload = function() {
+        const scrollPosition = localStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            document.querySelector('#chat-messages').scrollTop = scrollPosition;
+        }
+        toggleScrollButton();
+    };
+
+    // Llamar a toggleScrollButton inicialmente y cada segundo
+    toggleScrollButton();
+    setInterval(toggleScrollButton, 1000);
+
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    function scrollToBottom() {
+        const chatMessages = document.querySelector('#chat-messages');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        toggleScrollButton();
+    }
+    toggleScrollButton();
+    setInterval(toggleScrollButton, 1000);
+    function toggleScrollButton() {
+        const chatMessages = document.querySelector('#chat-messages');
+        const scrollButton = document.getElementById('scroll-to-bottom-btn');
+        
+        if (chatMessages.scrollTop + chatMessages.clientHeight < chatMessages.scrollHeight - 20) {
+            scrollButton.style.display = 'block';
+        } else {
+            scrollButton.style.display = 'none';
+        }
+    }
 </script>
-{% include 'footer.html' %}
+
+<style>
+    body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        flex: 1;
+    }
+
+    .chat-container {
+        position: relative;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .chat-messages {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .scroll-to-bottom-btn {
+        position: absolute;
+        bottom: 102px;
+        right: 37px;
+        display: none;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+    
+    
+    .scroll-to-bottom-btn img {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .chat-input {
+        display: flex;
+        margin-top: 10px;
+    }
+    
+    .chat-input input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px 0 0 5px;
+    }
+    
+    .chat-input button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+    }
+    
+    .chat-input button:hover {
+        background-color: #0056b3;
+    }
+
+    .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .sent {
+        background-color: #e6f3ff;
+        text-align: right;
+    }
+
+    .received {
+        background-color: #f0f0f0;
+    }
+
+    .message-time {
+        font-size: 0.8em;
+        color: #888;
+    }
+</style>

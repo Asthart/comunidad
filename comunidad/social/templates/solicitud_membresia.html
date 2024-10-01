@@ -1,6 +1,29 @@
+{% load static %}
+
+<body>
+    <main>
+        <div>
 <h1>Solicitar Membresía</h1>
 <p>Estás solicitando unirte a la comunidad {{ comunidad.nombre }}.</p>
 <form method="post">
     {% csrf_token %}
     <button type="submit">Enviar Solicitud</button>
 </form>
+</div>
+</main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

@@ -1,8 +1,6 @@
-{% extends 'base.html' %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block content %}
+{% load static %}
+<body>
+  <main>
   <h1>Buscar usuarios</h1>
   <ul>
     {% for usuario in usuarios %}
@@ -16,4 +14,20 @@
   </li>
 {% endfor %}
   </ul>
-{% endblock %}
+  </main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

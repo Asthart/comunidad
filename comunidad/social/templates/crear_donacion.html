@@ -1,16 +1,6 @@
-<!-- crear_donacion.html -->
-<style>
+{% load static %}
 
-    
-    main {
-        max-width: 80%;
-        margin-top: 60px;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: auto;
-        padding: 20px;
-    }
-</style>
+<body>
 <main>
 <div style="display: flex;">
     <div style="flex: 1;">
@@ -30,5 +20,20 @@
         {% endif %}
     </div>
 </div>
-
 </main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

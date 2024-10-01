@@ -246,7 +246,7 @@
                     {% elif not es_miembro and comunidad.publica %}
                         <a href="{% url 'unirse_comunidad' comunidad.pk %}" class="action-button">Unirse a la comunidad</a>
                     {% else %}
-                        <button class="action-button">Solicitar unirse a la comunidad</button>
+                        <a href="{% url 'solicitar_membresia' comunidad.pk %}" class="action-button">Solicitar unirse a la comunidad</a>
                     {% endif %}
                 </div>
             </div>
@@ -259,33 +259,38 @@
             {% if es_miembro or comunidad.publica  %}
 
             <div class="sidebar-left">
+
+                <div class="publication">
+                    <h3>Campañas</h3>
+                    {% for campaign in campaigns %}
+                    <div class="project-item">
+                        <a href="{% url 'detalle_campaign' campaign.pk %}">
+                            <h4>{{ campaign.desafio.titulo }}</h4>
+                        </a>
+                    </div>
+                    {% empty %}
+                        <p>No hay campañas para mostrar.</p>
+                    {% endfor %}
+                    <br>
+                    {% if es_miembro %}
+                        <a href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
+                    {% endif %}
+                </div>
+
                 <div class="publication">
                     <h3>Proyectos</h3>
                     {% for proyecto in comunidad.proyectos.all %}
                         <div class="project-item">
-                            <h4>{{ proyecto.nombre }}</h4>
-                            <p>{{ proyecto.descripcion|truncatechars:100 }}</p>
+                            <a href="{% url 'detalle_proyecto' proyecto.pk %}">
+                                <h4>{{ proyecto }}</h4>
+                            </a>
                         </div>
                     {% empty %}
                         <p>No hay proyectos para mostrar.</p>
                     {% endfor %}
+                    <br>
                     {% if es_miembro %}
                         <a href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Crear proyecto</a>
-                    {% endif %}
-                </div>
-                
-                <div class="publication">
-                    <h3>Desafíos</h3>
-                    {% for desafio in comunidad.desafios.all %}
-                        <div class="challenge-item">
-                            <h4>{{ desafio.nombre }}</h4>
-                            <p>{{ desafio.descripcion|truncatechars:100 }}</p>
-                        </div>
-                    {% empty %}
-                        <p>No hay desafíos para mostrar.</p>
-                    {% endfor %}
-                    {% if es_miembro %}
-                        <a href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear desafío</a>
                     {% endif %}
                 </div>
             </div>

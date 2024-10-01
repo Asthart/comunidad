@@ -1,7 +1,6 @@
 {% load bootstrap5 %}
 {% load static %}
-
-{% include 'header.html' %}
+<body>
 <main>
 <div class="profile-page">
 <div class="user-info" style="display: flex;">
@@ -55,14 +54,19 @@
   </ul>
 </div>
 </main>
-<style>
-  main {
-    max-width: 80%;
-    margin-top: 80px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: auto;
-    padding: 20px;
-}
-</style>
+</body>
+
+{% include 'header.html' %}
 {% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

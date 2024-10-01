@@ -41,6 +41,10 @@ class Comunidad(models.Model):
         self.miembros.remove(usuario)
         return self.miembros.filter(id=usuario.id).exists()
     
+    @property
+    def proyectos(self):
+        return Proyecto.objects.filter(comunidad=self)
+    
     
 
 class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
@@ -82,7 +86,7 @@ class Desafio(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
-    comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE)
+    comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
     fecha_inicio = models.DateTimeField(default=now)
     fecha_fin = models.DateTimeField(null=True, blank=True)
     tipo_desafio = models.CharField(max_length=10, choices=TIPOS_DESAFIO, default='donacion')
@@ -115,13 +119,13 @@ class Desafio(models.Model):
                 elif total_donado > max_monto:
                     raise ValueError(f"El desafío '{desafio.titulo}' solo permite hasta {max_monto}€.")
 
-@classmethod
-def actualizar_votos(cls):
-    for desafio in cls.objects.all():
-        if desafio.tipo_desafio == 'votacion':
-            votos = Voto.objects.filter(desafio=desafio)
-            desafio.votos_positivos = votos.filter(es_positivo=True).count()
-            desafio.votos_negativos = votos.filter(es_positivo=False).count()
+    @classmethod
+    def actualizar_votos(cls):
+        for desafio in cls.objects.all():
+            if desafio.tipo_desafio == 'votacion':
+                votos = Voto.objects.filter(desafio=desafio)
+                desafio.votos_positivos = votos.filter(es_positivo=True).count()
+                desafio.votos_negativos = votos.filter(es_positivo=False).count()
 
 
 class Donacion(models.Model):
@@ -342,6 +346,10 @@ class Campaign(models.Model):
     @property
     def respuestas(self):
         return Respuesta.objects.filter(campaign=self).order_by('-fecha')
+    
+    @property
+    def comunidad(self):
+        return self.desafio.comunidad
     
 class Respuesta(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)

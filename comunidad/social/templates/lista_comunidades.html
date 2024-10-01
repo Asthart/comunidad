@@ -1,6 +1,8 @@
 {% load static %}
-{% include 'header.html' %}
 
+<body>
+    <main>
+        <div>
 <h1>Listado de Comunidades Activas</h1>
 
 <button onclick="location.href='{% url 'crear_comunidad' %}'">Crear nueva comunidad</button>
@@ -32,4 +34,22 @@
         {% endfor %}
     </tbody>
 </table>
+        </div>
+    </main>
+</body>
+
+{% include 'header.html' %}
 {% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>
+

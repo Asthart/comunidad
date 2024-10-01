@@ -168,6 +168,12 @@
     // Llamar a toggleScrollButton inicialmente y cada segundo
     toggleScrollButton();
     setInterval(toggleScrollButton, 1000);
+
+    document.querySelector('#chat-message-input').onkeyup = function(e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
 </script>
 
 {% include 'header.html' %}
@@ -204,10 +210,6 @@
         z-index: 1000;
     }
     
-    .scroll-to-bottom-btn:hover {
-        background-color: #0056b3;
-    }
-    
     .scroll-to-bottom-btn img {
         width: 55px;
         height: 55px;
@@ -236,5 +238,16 @@
     
     .chat-input button:hover {
         background-color: #0056b3;
+    }
+
+    body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+    main{
+        flex: 1;
     }
 </style>

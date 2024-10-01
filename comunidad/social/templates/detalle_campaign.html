@@ -1,41 +1,7 @@
-{% extends 'base.html' %}
-{% include 'header.html' %}
 {% load static %}
 
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-
-{% block content %}
-<style>
-.promedio-rating {
-    display: inline-block;
-    position: relative;
-    font-size: 1.5em;
-}
-
-.promedio-stars-outer {
-    display: inline-block;
-    position: relative;
-    unicode-bidi: bidi-override;
-    direction: rtl;
-    color: #ccc; /* Color de las estrellas vacías */
-    width: 5em; /* Ancho para 5 estrellas */
-    height: 1em; /* Altura fija */
-}
-
-.promedio-stars-inner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    color: gold; /* Color de las estrellas rellenas */
-    width: 0; /* Se actualizará dinámicamente */
-    height: 100%;
-}
-
-</style>
+<body>
+    <main>
 <div class="campaign-detail">
     <h1>{{ campaign.desafio.titulo }}</h1>
     <p>{{ campaign.desafio.descripcion }}</p>
@@ -79,8 +45,50 @@
         <p>No hay respuestas aún.</p>
     {% endfor %}
 </div>
+</main>
+</body>
 
+{% include 'header.html' %}
+{% include 'footer.html' %}
 <style>
+    body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+      main{
+        flex: 1;
+      }
+
+    .promedio-rating {
+        display: inline-block;
+        position: relative;
+        font-size: 1.5em;
+    }
+    
+    .promedio-stars-outer {
+        display: inline-block;
+        position: relative;
+        unicode-bidi: bidi-override;
+        direction: rtl;
+        color: #ccc; /* Color de las estrellas vacías */
+        width: 5em; /* Ancho para 5 estrellas */
+        height: 1em; /* Altura fija */
+    }
+    
+    .promedio-stars-inner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        color: gold; /* Color de las estrellas rellenas */
+        width: 0; /* Se actualizará dinámicamente */
+        height: 100%;
+    }
+
     .rating {
         unicode-bidi: bidi-override;
         direction: rtl;
@@ -150,5 +158,3 @@
         });
     });
 </script>
-{% endblock %}
-{% include 'footer.html' %}

@@ -1,43 +1,14 @@
 {% load static %}
 {% load bootstrap5 %}
-{% include 'header.html' %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ desafio.titulo }} - Hubinab Reward</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url("{% static 'images/background3.jpg' %}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            height: 100%; /* Asegúrate de que el html y el body ocupen el 100% de la altura */
-        }
-        
-        .card {
-            background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente para la tarjeta */
-            border-radius: 10px; /* Bordes redondeados */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Sombra para un efecto de profundidad */
-        }
-
-        .card-title {
-            color: #007bff; /* Color de texto azul para el título */
-        }
-        .main {
-            flex: 1; /* Permite que la sección principal crezca y ocupe el espacio restante */
-            flex-direction: column;
-            min-height: 100vh;    
-        }
-    </style>
 </head>
 <body>
-
+<main>
 <div class="container mt-5">
     <div class="card shadow-lg">
         <div class="card-body">
@@ -54,7 +25,22 @@
         </div>
     </div>
 </div>
-
+</main>
 </body>
 </html>
+{% include 'header.html' %}
 {% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>
+
+

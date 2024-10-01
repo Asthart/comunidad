@@ -5,52 +5,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}"> <!-- Si tienes un CSS adicional -->
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-image: url("{% static 'images/background3.jpg' %}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        main {
-            max-width: 80%;
-            margin: 60px auto; /* Se adapta al espacio superior */
-            padding: 20px;
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semi-transparente */
-            border-radius: 10px; /* Bordes redondeados */
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Sombra */
-        }
-    </style>
 </head>
 <body>
-    {% include 'header.html' %}
-    
     <main>
         <h1 class="text-center fw-bold">{{ proyecto.titulo }}</h1>
         <p><strong>Creado por:</strong> {{ proyecto.creador.username }}</p>
         <p><strong>Fecha de creación:</strong> {{ proyecto.fecha_creacion }}</p>
         <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
         <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}">{{ proyecto.comunidad.nombre }}</a></p>
-    </main>
-
-    <div class="bg-dark" style="background: #f8f9fa; width: 100%; margin: 0;">
-        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 border-top">
-            <p class="col-md-4 mb-0 text-body-secondary" style="color: #f8f9fa; padding: 20px">&copy; 2024 CTInnovate Technology</p>
-            <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-                <img class="bi me-2" width="20%" height="20%" src="{% static 'images/logo.png' %}">
-            </a>
-            <ul class="nav col-md-4 justify-content-end">
-                <li class="nav-item"><a href="{% url 'inicio' %}" class="nav-link px-2 text-body-secondary" style="color: white">Inicio</a></li>
-            </ul>
-        </footer>
     </div>
-
-    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+</main>
 </body>
 </html>
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>
+
+

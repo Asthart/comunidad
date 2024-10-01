@@ -188,7 +188,11 @@ class SolicitudMembresiaAdmin(admin.ModelAdmin):
             # Cambiar el estado de la solicitud a 'aceptada'
             solicitud.estado = 'aceptada'
             # Agregar el usuario a la comunidad
-            solicitud.comunidad.miembros.add(solicitud.usuario)
+            #solicitud.comunidad.miembros.add(solicitud.usuario)
+            comunidad = solicitud.comunidad
+            print(comunidad)
+            nuevo_miembro = solicitud.usuario
+            comunidad.miembros.add(nuevo_miembro)
             solicitud.save()  # Guardar los cambios en la solicitud
             solicitud.delete()
         self.message_user(request, "Las solicitudes seleccionadas han sido aceptadas y los usuarios han sido añadidos a la comunidad.")

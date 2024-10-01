@@ -134,6 +134,7 @@ def detalle_comunidad(request, pk):
     comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad)
     desafios = Desafio.objects.filter(comunidad=comunidad)  
+    campaigns = Campaign.objects.filter(desafio__comunidad=comunidad)
     es_admin = comunidad.administrador == request.user
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
@@ -152,6 +153,7 @@ def detalle_comunidad(request, pk):
     'desafios': desafios,
     'es_admin': es_admin,
     'es_miembro': es_miembro,
+    'campaigns': campaigns,
 })
 
 @login_required
@@ -241,7 +243,7 @@ def buscar(request):
             Q(first_name__icontains=q) |
             Q(last_name__icontains=q)
         ).select_related('perfilusuario')
-        comunidades = Comunidad.objects.filter( Q(nombre__icontains=q))
+        comunidades = Comunidad.objects.filter( Q(nombre__icontains=q) & Q(activada=True))
         proyectos = Proyecto.objects.filter( Q(titulo__icontains=q))
         desafios = Desafio.objects.filter(Q(titulo__icontains=q))
         return render(request, 'buscar.html', {'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
@@ -748,6 +750,7 @@ def solicitar_membresia(request, comunidad_id):
 
         # Crear la solicitud de membresía
         solicitud, created = SolicitudMembresia.objects.get_or_create(comunidad=comunidad, usuario=request.user)
+        solicitud.save()
         if created:
             # Notificar que la solicitud fue enviada
             return redirect('detalle_comunidad', comunidad_id)

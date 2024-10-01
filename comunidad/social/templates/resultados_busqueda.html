@@ -1,7 +1,7 @@
-{% extends 'base.html' %} 
-{% include 'header.html' %}
-
-{% block title %}Resultados de Búsqueda - Hubinab Reward{% endblock %} {% block content %}
+{% load static %}
+<body>
+  <main>
+<div>
 <h1>Resultados de Búsqueda</h1>
 <section>
   <h2>Proyectos</h2>
@@ -45,6 +45,21 @@
     {% endfor %}
   </ul>
 </section>
-{% endblock %}
+</div>
+</main>
+</body>
 
+{% include 'header.html' %}
 {% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

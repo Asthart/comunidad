@@ -1,3 +1,4 @@
+<!--
 perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     
 if request.method == 'POST':
@@ -8,10 +9,13 @@ if request.method == 'POST':
 else:
     form = EditUserProfileForm(instance=perfil_usuario)
 
-return render(request, 'editar_perfil.html', {'form': form}){% extends 'base.html' %}
+return render(request, 'editar_perfil.html', {'form': form})
+-->
 {% load static %}
 
-{% block content %}
+<body>
+    <main>
+        <div>
 <h2>Edita tu perfil y información de cuenta</h2>
 
 <form method="post" enctype="multipart/form-data">
@@ -26,4 +30,22 @@ return render(request, 'editar_perfil.html', {'form': form}){% extends 'base.htm
     </div>
     <button type="submit">Actualizar perfil y cuenta</button>
 </form>
-{% endblock %}
+        </div>
+    </main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>
+
