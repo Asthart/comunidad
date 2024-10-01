@@ -1,40 +1,42 @@
-{% extends 'base.html' %} {% load static %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block content %}
-<div class="chat-container">
-    <div class="scroll-to-bottom-btn" id="scroll-to-bottom-btn" title="Ir al fondo">
-        <img src="https://cdn-icons-png.flaticon.com/512/6687/6687957.png" alt="Ir al fondo">
-    </div>
-    <h1>Chat con {{ receptor.username }}</h1>
-    <div id="chat-messages" class="chat-messages">
-        {% for mensaje in mensajes %}
-            <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
-                <strong>{{ mensaje.emisor.username }}:</strong> 
-                {{ mensaje.contenido }}
-                <small class="message-time">
-                    (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
-                    <span class="read-status">
-                        {% if mensaje.leido %}
-                            (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y, H:i:s" }})
-                        {% endif %}
-                    </span>
-                </small>
+{% load static %}
+<body>
+<main>
+    <div class="chat-container">
+        <h1>Chat con {{ receptor.username }}</h1>
+        <div id="chat-messages" class="chat-messages">
+            {% for mensaje in mensajes %}
+                <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
+                    <strong>{{ mensaje.emisor.username }}:</strong> 
+                    {{ mensaje.contenido }}
+                    <small class="message-time">
+                        (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
+                        <span class="read-status">
+                            {% if mensaje.leido %}
+                                (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y, H:i:s" }})
+                            {% endif %}
+                        </span>
+                    </small>
+                </div>
+            {% endfor %}
+            <div class="scroll-to-bottom-btn" id="scroll-to-bottom-btn" title="Ir al fondo">
+                <img src="{% static 'images/bajar.svg' %}" alt="Ir al fondo">
             </div>
-        {% endfor %}
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
+            <button id="chat-message-submit">Enviar</button>
+        </div>
     </div>
-    <div class="chat-input">
-        <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
-        <button id="chat-message-submit">Enviar</button>
-    </div>
-</div>
+</main>
+</body>
+
 <script>
     const roomName = '{{ room_name }}';
     const username = '{{ request.user.username }}';
     const chatSocket = new WebSocket(
         'ws://' + window.location.host + '/ws/chat/' + roomName + '/'
     );
+
     function formatDate(dateString) {
         const date = new Date(dateString);
         return date.toLocaleString('es-ES', { 
@@ -47,9 +49,11 @@
             hour12: false
         });
     }
+
     chatSocket.onopen = function(e) {
         console.log('WebSocket connection established');
     };
+
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         if (data.type === 'chat_message') {
@@ -73,6 +77,8 @@
                     'type': 'mark_as_read'
                 }));
             }
+            // Desplazar al fondo del chat
+            scrollToBottom();
         } else if (data.type === 'messages_marked_as_read') {
             data.message_ids.forEach(id => {
                 const messageElement = document.querySelector(`.message[data-id="${id}"]`);
@@ -94,44 +100,141 @@
             'username': username
         }));
         messageInputDom.value = '';
-        location.reload(); // Esta línea refresca la página
+        // Desplazar al fondo del chat
+        scrollToBottom();
     };
+
     window.onfocus = function() {
         chatSocket.send(JSON.stringify({
             'type': 'mark_as_read'
         }));
     };
 
-    // Evento para cuando la página se está cerrando
     window.onbeforeunload = function() {
         chatSocket.close();
     };
 
-    // Función para comprobar periódicamente si hay mensajes no leídos
     function checkUnreadMessages() {
         chatSocket.send(JSON.stringify({
             'type': 'mark_as_read'
         }));
     }
 
-    // Comprobar mensajes no leídos cada 5 segundos
     setInterval(checkUnreadMessages, 5000);
 
-    // Función para actualizar la página automáticamente cada 5 segundos
     function autoRefresh() {
         const messageInputDom = document.querySelector('#chat-message-input');
         if (messageInputDom.value === '') {
+            // Guardar la posición de desplazamiento antes de recargar
+            localStorage.setItem('scrollPosition', document.querySelector('#chat-messages').scrollTop);
             location.reload();
         }
     }
 
-    // Actualizar la página cada 5 segundos si el input está vacío
     setInterval(autoRefresh, 7000);
-    
-    document.getElementById('scroll-to-bottom-btn').addEventListener('click', function() {
+
+    function scrollToBottom() {
         const chatMessages = document.querySelector('#chat-messages');
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        toggleScrollButton();
+    }
+
+    function toggleScrollButton() {
+        const chatMessages = document.querySelector('#chat-messages');
+        const scrollButton = document.getElementById('scroll-to-bottom-btn');
+        
+        if (chatMessages.scrollTop + chatMessages.clientHeight < chatMessages.scrollHeight - 20) {
+            scrollButton.style.display = 'block';
+        } else {
+            scrollButton.style.display = 'none';
+        }
+    }
+
+    document.getElementById('scroll-to-bottom-btn').addEventListener('click', function() {
+        scrollToBottom();
     });
 
+    document.querySelector('#chat-messages').addEventListener('scroll', toggleScrollButton);
+
+    // Restaurar la posición de desplazamiento después de recargar
+    window.onload = function() {
+        const scrollPosition = localStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            document.querySelector('#chat-messages').scrollTop = scrollPosition;
+        }
+        toggleScrollButton();
+    };
+
+    // Llamar a toggleScrollButton inicialmente y cada segundo
+    toggleScrollButton();
+    setInterval(toggleScrollButton, 1000);
 </script>
-{% endblock %}
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+    .chat-container {
+        position: relative;
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .chat-messages {
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .scroll-to-bottom-btn {
+        position: absolute;
+        bottom: 102px;  /* Ajusta este valor según sea necesario */
+        right: 37px;
+        display: none;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        text-align: center;
+        line-height: 40px;
+        cursor: pointer;
+        z-index: 1000;
+    }
+    
+    .scroll-to-bottom-btn:hover {
+        background-color: #0056b3;
+    }
+    
+    .scroll-to-bottom-btn img {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .chat-input {
+        display: flex;
+        margin-top: 10px;
+    }
+    
+    .chat-input input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px 0 0 5px;
+    }
+    
+    .chat-input button {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 0 5px 5px 0;
+        cursor: pointer;
+    }
+    
+    .chat-input button:hover {
+        background-color: #0056b3;
+    }
+</style>

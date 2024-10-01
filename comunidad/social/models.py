@@ -24,14 +24,23 @@ class Comunidad(models.Model):
     def __str__(self):
         return self.nombre
     
-    def cant_miembros(self):
-        return self.miembros.count()
-
     @property
     def publicaciones(self):
         return Publicacion.objects.filter(comunidad=self).order_by('-fecha_publicacion')
     def es_miembro(self, usuario):
         return self.miembros.filter(id=usuario.id).exists()
+    
+    def cant_miembros(self):
+        return self.miembros.count()
+    
+    def unirse(self, usuario):
+        self.miembros.add(usuario)
+        return self.miembros.filter(id=usuario.id).exists()
+
+    def salir(self, usuario):
+        self.miembros.remove(usuario)
+        return self.miembros.filter(id=usuario.id).exists()
+    
     
 
 class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
@@ -198,7 +207,7 @@ class Publicacion(models.Model):
     contenido = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     tags = models.ManyToManyField('Tag')
-    imagen = models.ImageField(blank=True, null=True, upload_to='media/publicaciones/imagenes/')
+    imagen = models.ImageField(blank=True, null=True, upload_to='publicaciones/imagenes/')
     #archivos = MultiFileField(min_num=1, max_num=5)
     comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
     fecha_publicacion = models.DateTimeField(auto_now_add=True)

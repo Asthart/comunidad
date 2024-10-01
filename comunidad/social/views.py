@@ -118,9 +118,10 @@ def detalle_comunidad(request, pk):
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad)
-    desafios = Desafio.objects.filter(comunidad=comunidad)
+    desafios = Desafio.objects.filter(comunidad=comunidad)  
     es_admin = comunidad.administrador == request.user
     seguidos = profile.seguidos.all()
+    es_miembro = comunidad.es_miembro(user)
     
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
@@ -135,7 +136,7 @@ def detalle_comunidad(request, pk):
     'proyectos': proyectos,
     'desafios': desafios,
     'es_admin': es_admin,
-
+    'es_miembro': es_miembro,
 })
 
 @login_required
@@ -692,4 +693,11 @@ def unirse_comunidad(request, pk):
         print(f"El usuario {request.user.username} se unió a la comunidad {comunidad.nombre}")
         return redirect('detalle_comunidad', pk=pk)
     else:
-        return redirect('inicio')
+        return redirect('detalle_comunidad', pk=pk)
+    
+@login_required
+def salir_comunidad(request, pk):
+    comunidad = Comunidad.objects.get(pk=pk)
+    comunidad.miembros.remove(request.user)
+    print("salio")
+    return redirect('detalle_comunidad', pk=pk)
