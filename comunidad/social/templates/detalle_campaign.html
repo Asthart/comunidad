@@ -7,6 +7,35 @@
 {% endblock %}
 
 {% block content %}
+<style>
+.promedio-rating {
+    display: inline-block;
+    position: relative;
+    font-size: 1.5em;
+}
+
+.promedio-stars-outer {
+    display: inline-block;
+    position: relative;
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    color: #ccc; /* Color de las estrellas vacías */
+    width: 5em; /* Ancho para 5 estrellas */
+    height: 1em; /* Altura fija */
+}
+
+.promedio-stars-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    color: gold; /* Color de las estrellas rellenas */
+    width: 0; /* Se actualizará dinámicamente */
+    height: 100%;
+}
+
+</style>
 <div class="campaign-detail">
     <h1>{{ campaign.desafio.titulo }}</h1>
     <p>{{ campaign.desafio.descripcion }}</p>
@@ -26,16 +55,23 @@
     {% else %}
         <p>Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}
+    <div class="rating" >
+        {% for i in "54321" %}
+            <a href="{% url 'puntuar_desafio' campaign.pk forloop.counter  %}"class="star" data-value="{{ forloop.counter }}">&#9733;</a>
+        {% endfor %}
+    </div>
+    <div class="promedio-rating">
+        <div class="promedio-stars-outer">
+            <div class="promedio-stars-inner" style="width: {{ puntos|floatformat:1 }}%;"></div>
+        </div>
+        <span>{{ puntos|floatformat:1 }} de 5 estrellas</span>
+    </div>
     
     {% for respuesta in campaign.respuestas %}
         <div class="respuesta">
             <p>{{ respuesta.autor.username }}: {{ respuesta.respuesta }}</p>
             
-            <div class="rating" data-respuesta-id="{{ respuesta.pk }}" data-puntuacion="{{ respuesta.puntuacion }}">
-                {% for i in "54321" %}
-                    <span class="star" data-value="{{ forloop.counter }}">&#9733;</span>
-                {% endfor %}
-            </div>
+            
             
             <p class="puntuacion">Puntos: <span class="puntos-valor">{{ respuesta.puntuacion }}</span> estrellas</p>
         </div>

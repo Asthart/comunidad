@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.db.models import Q,Sum
+from django.db.models import Q,Sum,Avg
 from .models import *
 from .forms import *
 from .utils import update_user_points,get_clasificacion
@@ -214,17 +214,35 @@ def detalle_desafio(request, pk):
     desafio = get_object_or_404(Desafio, pk=pk)
     return render(request, 'detalle_desafio.html', {'desafio': desafio})
 
+def puntuar_desafio(request, desafio_id, punto):
+    campaign = get_object_or_404(Campaign, id=desafio_id)
+    desafio = campaign.desafio
+    
+    puntaje_desafio, created = PuntajeDesafio.objects.update_or_create(
+            desafio=desafio,
+            usuario=request.user,
+            defaults={'puntaje': punto}
+        )
+    
+    # Calcula el promedio de puntajes
+    promedio_puntaje = PuntajeDesafio.objects.filter(desafio=desafio).aggregate(Avg('puntaje'))['puntaje__avg'] or 0
+    
+    # Actualiza el promedio de puntaje en el modelo Desafio (opcional)
+    desafio.puntaje = promedio_puntaje
+    desafio.save()
+    
+    return redirect('detalle_campaign', pk=desafio_id)
+
 def buscar(request):
     q = request.GET.get('q')
     if q:
         usuarios = User.objects.filter(
-            Q(username__icontains=q) |
             Q(first_name__icontains=q) |
             Q(last_name__icontains=q)
         ).select_related('perfilusuario')
-        comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
-        proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
-        desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
+        comunidades = Comunidad.objects.filter( Q(nombre__icontains=q))
+        proyectos = Proyecto.objects.filter( Q(titulo__icontains=q))
+        desafios = Desafio.objects.filter(Q(titulo__icontains=q))
         return render(request, 'buscar.html', {'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
     else:
         return redirect('inicio')
@@ -569,6 +587,7 @@ def lista_comunidades(request):
 @login_required
 def detalle_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
+    desafio=campaign.desafio
     
     if request.method == 'POST' and campaign.activa:
         respuesta_form = RespuestaForm(request.POST)
@@ -597,7 +616,8 @@ def detalle_campaign(request, pk):
         'respuesta_form': respuesta_form,
         'puntuaciones': puntuaciones,
         'is_creador': request.user == campaign.desafio.creador,
-        'campaign_activa': campaign.activa
+        'campaign_activa': campaign.activa,
+        'puntos':desafio.puntaje
     })
 
 @login_required

@@ -81,6 +81,7 @@ class Desafio(models.Model):
     min_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
     max_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
     cantidad_donada = models.DecimalField(max_digits=10, decimal_places=2, null=True,default=0)
+    puntaje = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True, default=None)
     def __str__(self):
         return self.titulo
     
@@ -326,7 +327,6 @@ class ResultadoConcurso(models.Model):
 class Campaign(models.Model):
     activa = models.BooleanField(default=True)
     desafio = models.OneToOneField(Desafio, on_delete=models.CASCADE)
-
     def __str__(self):
         return self.desafio.titulo
     
@@ -380,3 +380,15 @@ class SolicitudMembresia(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} - {self.comunidad.nombre} ({self.estado})"
+
+class PuntajeDesafio(models.Model):
+    desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='puntajes')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    puntaje = models.PositiveIntegerField()  # Asume que el puntaje es un entero positivo (1 a 5)
+    fecha = models.DateTimeField(auto_now_add=True)  # Fecha en la que se dio el puntaje
+
+    class Meta:
+        unique_together = ('desafio', 'usuario')  # Evita que el mismo usuario puntúe más de una vez
+
+    def __str__(self):
+        return f"{self.usuario} - {self.puntaje} estrellas para {self.desafio}"
