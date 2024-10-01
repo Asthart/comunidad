@@ -17,12 +17,17 @@
     {% else %}
         <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary">Seguir</a>
     {% endif %}
+    
+
 {% else %}
+<a href="{% url 'editar_perfil' %}" class="action-button">Editar Perfil</a>
+
     <form method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="file" name="foto_perfil" accept="image/*">
       <button type="submit">Cambiar foto de perfil</button>
   </form>
+  <a href="{% url 'chat' usuario.perfilusuario.id %}" class="action-button">Chatear</a>
 {% endif %}
 
     <p>Biografía: {{ perfil.biografia }}</p>
@@ -42,16 +47,9 @@
     {% endfor %}
   </ul>
 
-  <hr>
+  
 
-  <h2>Actividades Recientes</h2>
-  <ul>
-    {% for actividad in actividades %}
-      <li>{{ actividad.tipo_actividad }} - {{ actividad.fecha_hora }}</li>
-    {% empty %}
-      <li>No hay actividades recientes.</li>
-    {% endfor %}
-  </ul>
+  
 </div>
 </main>
 </body>

@@ -704,7 +704,7 @@ def chat_comunidad(request, comunidad_id):
 def editar_perfil(request):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     user = request.user
-    
+    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     if request.method == 'POST':
         perfil_form = EditUserProfileForm(request.POST, request.FILES, instance=perfil_usuario)
         user_form = EditUserForm(request.POST, instance=user)

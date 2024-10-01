@@ -242,6 +242,7 @@
                 </div>
                 <div class="boton-comunidad">
                     {% if es_miembro %}
+                        <a href="{% url 'chat_comunidad' comunidad.pk %}" class="action-button">Chat de la comunidad</a>
                         <a href="{% url 'salir_comunidad' comunidad.pk %}" class="action-button boton-condicional">Salir de la comunidad</a>
                     {% elif not es_miembro and comunidad.publica %}
                         <a href="{% url 'unirse_comunidad' comunidad.pk %}" class="action-button">Unirse a la comunidad</a>
