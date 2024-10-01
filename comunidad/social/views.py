@@ -1,6 +1,6 @@
 # views.py
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 import os
 from pyexpat.errors import messages
@@ -8,13 +8,12 @@ from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from django.db.models import Q
+from django.db.models import Q,Sum,Avg
 from .models import *
 from .forms import *
 from .utils import update_user_points,get_clasificacion
 from django.core.mail import send_mail
 from django.views.generic import ListView
-
 '''
 @login_required
 def inicio(request):
@@ -37,6 +36,22 @@ from .models import Comunidad, PerfilUsuario, Publicacion
 
 @login_required
 def inicio(request):
+    
+    ''' 
+    sessionid = request.COOKIES.get('sessionid')
+
+    if sessionid:
+        # Lógica para validar el sessionid con la aplicación externa
+        user = validate_session_with_external_app(sessionid)
+        if user:
+            # Iniciar sesión en tu aplicación
+            login(request, user)
+            return redirect('home')  # Redirigir a la página de inicio
+
+    return redirect('login')  
+    '''
+    
+    
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     contador = Concurso.ultimo_concurso()
@@ -200,17 +215,35 @@ def detalle_desafio(request, pk):
     desafio = get_object_or_404(Desafio, pk=pk)
     return render(request, 'detalle_desafio.html', {'desafio': desafio})
 
+def puntuar_desafio(request, desafio_id, punto):
+    campaign = get_object_or_404(Campaign, id=desafio_id)
+    desafio = campaign.desafio
+    
+    puntaje_desafio, created = PuntajeDesafio.objects.update_or_create(
+            desafio=desafio,
+            usuario=request.user,
+            defaults={'puntaje': punto}
+        )
+    
+    # Calcula el promedio de puntajes
+    promedio_puntaje = PuntajeDesafio.objects.filter(desafio=desafio).aggregate(Avg('puntaje'))['puntaje__avg'] or 0
+    
+    # Actualiza el promedio de puntaje en el modelo Desafio (opcional)
+    desafio.puntaje = promedio_puntaje
+    desafio.save()
+    
+    return redirect('detalle_campaign', pk=desafio_id)
+
 def buscar(request):
     q = request.GET.get('q')
     if q:
         usuarios = User.objects.filter(
-            Q(username__icontains=q) |
             Q(first_name__icontains=q) |
             Q(last_name__icontains=q)
         ).select_related('perfilusuario')
-        comunidades = Comunidad.objects.filter(Q(descripcion__icontains=q) | Q(nombre__icontains=q))
-        proyectos = Proyecto.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
-        desafios = Desafio.objects.filter(Q(descripcion__icontains=q) | Q(titulo__icontains=q))
+        comunidades = Comunidad.objects.filter( Q(nombre__icontains=q))
+        proyectos = Proyecto.objects.filter( Q(titulo__icontains=q))
+        desafios = Desafio.objects.filter(Q(titulo__icontains=q))
         return render(request, 'buscar.html', {'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
     else:
         return redirect('inicio')
@@ -555,6 +588,7 @@ def lista_comunidades(request):
 @login_required
 def detalle_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
+    desafio=campaign.desafio
     
     if request.method == 'POST' and campaign.activa:
         respuesta_form = RespuestaForm(request.POST)
@@ -583,7 +617,8 @@ def detalle_campaign(request, pk):
         'respuesta_form': respuesta_form,
         'puntuaciones': puntuaciones,
         'is_creador': request.user == campaign.desafio.creador,
-        'campaign_activa': campaign.activa
+        'campaign_activa': campaign.activa,
+        'puntos':desafio.puntaje
     })
 
 @login_required
@@ -701,3 +736,48 @@ def salir_comunidad(request, pk):
     comunidad.miembros.remove(request.user)
     print("salio")
     return redirect('detalle_comunidad', pk=pk)
+
+@login_required
+def solicitar_membresia(request, comunidad_id):
+    comunidad = get_object_or_404(Comunidad, id=comunidad_id)
+
+    if request.method == 'POST':
+        # Verificar que la comunidad es privada
+        if comunidad.publica:
+            return redirect('detalle_comunidad', comunidad_id=comunidad_id)
+
+        # Crear la solicitud de membresía
+        solicitud, created = SolicitudMembresia.objects.get_or_create(comunidad=comunidad, usuario=request.user)
+        if created:
+            # Notificar que la solicitud fue enviada
+            return redirect('detalle_comunidad', comunidad_id)
+        else:
+            # Si ya existe una solicitud pendiente
+            return render(request, 'solicitud_existente.html', {'comunidad': comunidad})
+
+    return render(request, 'solicitud_membresia.html', {'comunidad': comunidad})
+
+def ranking_usuarios(request):
+    ranking = []
+    form = RangoFechaForm(request.POST or None)
+
+    # Definir un rango de fechas predeterminado si no se proporciona
+    if request.method == 'POST' and form.is_valid():
+        fecha_inicio = form.cleaned_data['fecha_inicio']
+        fecha_fin = form.cleaned_data['fecha_fin']
+    else:
+        # Establecer un rango de fechas predeterminado (por ejemplo, los últimos 30 días)
+        fecha_fin = timezone.now()
+        fecha_inicio = fecha_fin - timedelta(days=30)
+
+    # Obtener el ranking de usuarios en base al rango de fechas
+    ranking = (
+        ActividadUsuario.objects.filter(
+            fecha_hora__range=(fecha_inicio, fecha_fin)
+        )
+        .values('usuario__username')
+        .annotate(total_puntos=Sum('puntos_ganados'))
+        .order_by('-total_puntos')
+    )
+
+    return render(request, 'ranking.html', {'ranking': ranking, 'form': form})

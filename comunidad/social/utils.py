@@ -1,3 +1,4 @@
+import requests
 from .models import Action, Clasificacion, Concurso, PerfilUsuario, ResultadoConcurso, UserAction, User
 from django.utils.timezone import now
 from django.db.models import F
@@ -42,3 +43,17 @@ def calcular_ganador():
     else:
         print("No se pudo determinar un ganador")
 
+def validate_session_with_external_app(sessionid):
+    response = requests.get('https://external.example.com/api/validate_session', params={'sessionid': sessionid})
+
+    if response.status_code == 200:
+        user_info = response.json()
+        # Aquí puedes buscar o crear el usuario en tu base de datos
+        user, created = User.objects.get_or_create(username=user_info['username'], defaults={
+            'email': user_info['email'],
+            'first_name': user_info['first_name'],
+            'last_name': user_info['last_name'],
+        })
+        return user
+
+    return None
