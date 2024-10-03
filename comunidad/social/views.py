@@ -58,10 +58,13 @@ def inicio(request):
     
     # Obtener las comunidades del usuario
     comunidades = Comunidad.objects.filter(miembros=user, activada=True)
-    
     # Obtener los perfiles que el usuario sigue
     seguidos = profile.seguidos.all()
     
+    todos_proyectos = Proyecto.objects.filter(
+        Q(comunidad__in=comunidades) |
+        Q(creador__in=[seguido.usuario for seguido in seguidos])
+    ).exclude(creador=user).distinct().order_by('-fecha_creacion')
     # Obtener todas las publicaciones relevantes
     todas_publicaciones = Publicacion.objects.filter(
         Q(comunidad__in=comunidades) | 
@@ -72,11 +75,27 @@ def inicio(request):
     publicaciones_comunidades = []
     publicaciones_seguidos = []
     
+    proyectos_comunidades = []
+    proyectos_seguidos = []
+    
+    for pro in todos_proyectos:
+        if pro.comunidad in comunidades:
+            proyectos_comunidades.append(pro)
+        else:
+            proyectos_seguidos.append(pro)
+    
     for pub in todas_publicaciones:
         if pub.comunidad in comunidades:
             publicaciones_comunidades.append(pub)
         else:
             publicaciones_seguidos.append(pub)
+    
+    proyectos = []
+    while proyectos_comunidades or proyectos_seguidos:
+        if proyectos_comunidades:
+            proyectos.append(proyectos_comunidades.pop(0))
+        if proyectos_seguidos:
+            proyectos.append(proyectos_seguidos.pop(0))
     
     # Mezclar las listas manteniendo el orden general
     publicaciones = []
@@ -91,7 +110,7 @@ def inicio(request):
     update_user_points(user.id, accion.id, accion.points)
     
     return render(request, 'inicio.html', {
-        'publicaciones': publicaciones,
+        'proyectos': proyectos,
         'concurso': contador,
     })
 
@@ -160,7 +179,7 @@ def detalle_comunidad(request, pk):
 #@permission_required('social.add_proyecto', raise_exception=True)
 def crear_proyecto(request,pk):
     if request.method == 'POST':
-        form = ProyectoForm(request.POST)
+        form = ProyectoForm(request.POST, request.FILES)
         if form.is_valid():
             proyecto = form.save(commit=False)
             comunidad = Comunidad.objects.get(id=pk)
@@ -183,6 +202,7 @@ def crear_proyecto(request,pk):
 @login_required
 def detalle_proyecto(request, pk):
     proyecto = get_object_or_404(Proyecto, pk=pk)
+    print("aaaaaaa: ",proyecto)
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
@@ -402,6 +422,21 @@ def crear_comentario(request, pk):
     return render(request, 'crear_comentario.html', {'form': form, 'publicacion': publicacion})
 
 @login_required
+def crear_comentario_pro(request, pk):
+    proyecto = Proyecto.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = ComentarioProyectoForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.proyecto = proyecto
+            comentario.autor = request.user
+            comentario.save()
+            return redirect('inicio')
+    else:
+        form = ComentarioProyectoForm()
+    return render(request, 'crear_comentario.html', {'form': form, 'proyecto': proyecto})
+
+@login_required
 def mostrar_publicaciones(request):
     publicaciones = obtener_publicaciones_no_vistas(request)
     for publicacion in publicaciones:
@@ -591,7 +626,9 @@ def lista_comunidades(request):
 def detalle_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     desafio=campaign.desafio
-    
+    tipo = False
+    if campaign.tipo=="donacion":
+        tipo=True
     if request.method == 'POST' and campaign.activa:
         respuesta_form = RespuestaForm(request.POST)
         if respuesta_form.is_valid():
@@ -620,7 +657,8 @@ def detalle_campaign(request, pk):
         'puntuaciones': puntuaciones,
         'is_creador': request.user == campaign.desafio.creador,
         'campaign_activa': campaign.activa,
-        'puntos':desafio.puntaje
+        'puntos':desafio.puntaje,
+        'tipo':tipo,
     })
 
 @login_required

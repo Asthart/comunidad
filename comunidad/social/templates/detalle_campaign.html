@@ -18,6 +18,9 @@
             {{ respuesta_form.as_p }}
             <button type="submit">Enviar respuesta</button>
         </form>
+        {% if request.user != campaign.desafio.creador and tipo %}
+            <a href="{% url 'guardar_donacion' campaign.desafio.pk %}">Realizar donación</a>
+        {% endif %}
     {% else %}
         <p>Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}

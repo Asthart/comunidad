@@ -38,6 +38,7 @@ urlpatterns = [
     path('puntuar/<int:pk>/<int:estrellas>/', views.puntuar_respuesta, name='puntuar_respuesta'),
     path('dar-like/<pk>/', views.dar_like, name='dar_like'),
     path('comentar/<pk>/', views.crear_comentario, name='crear_comentario'),
+    path('comentar_proyecto/<pk>/', views.crear_comentario_pro, name='crear_comentario_pro'),
     path('publicacion/<int:pk>/like/', views.like, name='like_publicacion'),
     path('comentario/<int:pk>/like/', views.like_comentario, name='like_comentario'),
     path('guardar-donacion/<pk>/', views.guardar_donacion, name='guardar_donacion'),

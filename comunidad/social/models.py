@@ -53,17 +53,27 @@ class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
     comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    imagenes = models.ImageField(upload_to='imagenes_proyecto/', blank=True, null=True)
-    videos = models.FileField(upload_to='videos_proyecto/', blank=True, null=True)
-    documentos = models.FileField(upload_to='documentos_proyecto/', blank=True, null=True)
-    archivos = models.ManyToManyField('ArchivoProyecto', related_name='proyectos', blank=True)
+    imagenes = models.ImageField(upload_to='comunidades/imagenes_proyecto/', blank=True, null=True)
+    documentos = models.FileField(upload_to='comunidades/documentos_proyecto/', blank=True, null=True)
+    
     def __str__(self):
         return self.titulo
+    
+    def comentarios(self):
+        return ComentarioProyecto.objects.filter(proyecto=self).order_by('-fecha_comentarios')
+    
+class ComentarioProyecto(models.Model):
+    proyecto = models.ForeignKey(Proyecto, related_name='comentarios', on_delete=models.CASCADE)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    contenido = models.TextField()
+    fecha_comentario = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"Comentario de {self.autor.username} en {self.proyecto}"
 
 class ArchivoProyecto(models.Model):
     TIPO_CHOICES = [
         ('imagen', 'Imagen'),
-        ('video', 'Video'),
         ('documento', 'Documento'),
     ]
     archivo = models.FileField(upload_to='archivos_proyecto/')
@@ -97,6 +107,10 @@ class Desafio(models.Model):
     puntaje = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True, default=None)
     def __str__(self):
         return self.titulo
+    
+    @property
+    def tipo(self):
+        return self.tipo_desafio
     
     def calcular_porcentaje_objetivo(self):
         total_donado = sum(d.monto for d in self.donaciones.all())
@@ -342,6 +356,10 @@ class Campaign(models.Model):
     desafio = models.OneToOneField(Desafio, on_delete=models.CASCADE)
     def __str__(self):
         return self.desafio.titulo
+    
+    @property
+    def tipo(self):
+        return self.desafio.tipo
     
     @property
     def respuestas(self):

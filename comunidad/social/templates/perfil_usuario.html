@@ -1,70 +1,126 @@
 {% load bootstrap5 %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de {{ usuario.username }}</title>
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <style>
+        body {
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            padding-top: 80px;
+        }
+        .profile-header {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 5px solid #ffffff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .profile-name {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .profile-info {
+            font-size: 1.1rem;
+            color: #6c757d;
+        }
+        .action-buttons {
+            margin-top: 20px;
+        }
+        .projects-section {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .project-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .project-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .project-list li:last-child {
+            border-bottom: none;
+        }
+
+        main{
+          flex: 1;
+        }
+    </style>
+</head>
 <body>
-<main>
-<div class="profile-page">
-<div class="user-info" style="display: flex;">
-    {% if perfil.foto_perfil %}
-      <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil de {{ usuario.username }}" width="100" height="100" style="object-fit: cover; border-radius: 50%;">
-      <h1 style="margin-left: 10px;">{{ usuario.first_name }} {{ usuario.last_name }}</h1>    
-    {% else %}
-        <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ usuario.username }}" width="100" height="100" style="object-fit: cover; border-radius: 50%;">
-    {% endif %}
-</div>
-{% if yo %}
-    {% if sigue_a %}
-        <a href="{% url 'dejar_de_seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-secondary">Dejar de seguir</a>
-    {% else %}
-        <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary">Seguir</a>
-    {% endif %}
+    {% include 'header.html' %}
     
+    <main class="container">
+        <div class="profile-header">
+            <div class="row align-items-center">
+                <div class="col-md-3 text-center">
+                    {% if perfil.foto_perfil %}
+                        <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil de {{ usuario.username }}" class="profile-image">
+                    {% else %}
+                        <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ usuario.username }}" class="profile-image">
+                    {% endif %}
+                </div>
+                <div class="col-md-9">
+                    <h1 class="profile-name">{{ usuario.first_name }} {{ usuario.last_name }}</h1>
+                    <p class="profile-info"><i class="fas fa-user-tag"></i> {{ perfil.rol }}</p>
+                    <p class="profile-info"><i class="fas fa-star"></i> Puntos: {{ perfil.puntos }}</p>
+                    <p class="profile-info"><i class="fas fa-trophy"></i> Clasificación: {{ clasificacion }}</p>
+                    <p class="profile-info"><i class="fas fa-info-circle"></i> {{ perfil.biografia }}</p>
+                    
+                    <div class="action-buttons">
+                        {% if yo %}
+                            {% if sigue_a %}
+                                <a href="{% url 'dejar_de_seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-outline-secondary"><i class="fas fa-user-minus"></i> Dejar de seguir</a>
+                            {% else %}
+                                <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Seguir</a>
+                            {% endif %}
+                            <a href="{% url 'chat' usuario.perfilusuario.id %}" class="btn btn-success"><i class="fas fa-comments"></i> Chatear</a>
+                        {% else %}
+                            <a href="{% url 'editar_perfil' %}" class="btn btn-primary"><i class="fas fa-user-edit"></i> Editar Perfil</a>
+                            <form method="post" enctype="multipart/form-data" class="d-inline-block">
+                                {% csrf_token %}
+                                <label for="foto_perfil" class="btn btn-outline-primary">
+                                    <i class="fas fa-camera"></i> Cambiar foto
+                                    <input type="file" name="foto_perfil" id="foto_perfil" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                                </label>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-{% else %}
-<a href="{% url 'editar_perfil' %}" class="action-button">Editar Perfil</a>
+        <div class="projects-section">
+            <h2 class="mb-4"><i class="fas fa-project-diagram"></i> Proyectos</h2>
+            <ul class="project-list">
+                {% for proyecto in proyectos %}
+                    <li><a href="{% url 'detalle_proyecto' proyecto.pk %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
+                {% empty %}
+                    <li>Este usuario no ha creado ningún proyecto.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </main>
 
-    <form method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="file" name="foto_perfil" accept="image/*">
-      <button type="submit">Cambiar foto de perfil</button>
-  </form>
-  <a href="{% url 'chat' usuario.perfilusuario.id %}" class="action-button">Chatear</a>
-{% endif %}
-
-    <p>Biografía: {{ perfil.biografia }}</p>
-    <p>Rol: {{ perfil.rol }}</p>
-    <p>Puntos: {{ perfil.puntos }}</p>
-    <p>Clasificacion: {{ clasificacion }}</p>
-  </div>
-
-  <hr>
-
-  <h2>Proyectos</h2>
-  <ul>
-    {% for proyecto in proyectos %}
-      <li><a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto.titulo }}</a></li>
-    {% empty %}
-      <li>Este usuario no ha creado ningún proyecto.</li>
-    {% endfor %}
-  </ul>
-
-  
-
-  
-</div>
-</main>
+    
 </body>
-
-{% include 'header.html' %}
-{% include 'footer.html' %}
-<style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  main{
-    flex: 1;
-  }
-</style>
+</html>{% include 'footer.html' %}
