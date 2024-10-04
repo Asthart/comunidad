@@ -11,7 +11,7 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url("{% static 'images/background3.jpg' %}");
+            background-image: url("{% static 'images/fondo.png' %}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -75,7 +75,7 @@
         
         .community-divider {
             width: 100%;
-            border: 1px solid grey;
+            border: 1px solid #fcc350;
             height: 1px;
             background: #ddd;
             margin: 10px 0;
@@ -124,6 +124,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             margin-bottom: 20px;
             padding: 20px;
+            border:2px solid #fcc350 !important;
+            
         }
         
         .publication-header {
@@ -219,6 +221,24 @@
             max-height: 55px;
             object-fit: contain;
         }
+
+        .dorado{
+            border:2px solid #fcc350 !important;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 {%include 'header.html'%}
@@ -227,7 +247,7 @@
         <button class="scroll-to-top-btn" id="scroll-to-top-btn" title="Ir arriba">
             <img src="{% static 'images/subir.svg' %}" alt="Ir arriba" >
         </button>
-        <div class="community-header" id="community-header">
+        <div class="community-header dorado" id="community-header">
             {% if comunidad.banner %}
             <img src="{{ comunidad.banner.url }}" alt="Banner de la comunidad" class="community-banner">
             {% endif %}

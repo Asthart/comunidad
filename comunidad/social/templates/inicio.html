@@ -15,7 +15,7 @@
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            background-image: url("{% static 'images/background3.jpg' %}");
+            background-image: url("{% static 'images/fondo.png' %}");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -180,6 +180,10 @@
                 font-size: 1.5rem;
             }
         }
+
+        .dorado{
+            border:2px solid #fcc350 !important;
+        }
     </style>
 </head>
 {% include 'header.html' %}
@@ -190,10 +194,10 @@
         <div class="container mt-5 primero">
             <div class="row justify-content-center">
                 <div class="col-md-8">
-                    <div class="card shadow-lg">
-                        <div class="card-body text-center">
+                    <div class="card shadow-lg dorado">
+                        <div class="card-body text-center ">
                             <h1 class="card-title mb-4 fw-bold">Último Concurso: {{ concurso.nombre }}</h1>
-                            <div class="countdown-container p-4 bg-light rounded">
+                            <div class="countdown-container p-4 bg-light rounded dorado">
                                 <div id="contador" class="contador display-4 text-primary fw-bold"></div>
                             </div>
                         </div>
@@ -202,12 +206,12 @@
             </div>
         </div>
         <br>
-        <div class="publication">
+        <div class="publication dorado">
         <h1 class="title fw-bold">Proyectos Recientes</h1>
         </div>  
         {% if proyectos %}
             {% for pro in proyectos %}
-                <div class="publication">
+                <div class="publication dorado">
                     <div class="publication-header">
                         {% if pro.creador.perfilusuario.foto_perfil %}
                         {% if pro.creador.perfilusuario.foto_perfil.url %}

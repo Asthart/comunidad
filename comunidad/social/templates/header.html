@@ -15,9 +15,9 @@
           </li>
 -->
 <header>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #745bc1; border-bottom:2px solid #fcc350 !important;">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'inicio' %}"><img src="{% static 'images/logo2.png' %}" alt="" width="30" height="24" style="margin-right: 5px;" class="d-inline-block align-text-top">Inicio</a>
+      <a class="navbar-brand" href="{% url 'inicio' %}"><img src="{% static 'images/logoRed2.png' %}" alt="" width="30" height="30" style="margin-right: 5px;" class="d-inline-block align-text-top">Inicio</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -43,7 +43,7 @@
         {% endif %}
         </ul>
         {% if user.is_authenticated %}
-        <li class="nav-item"><a href="{% url 'perfil_usuario' user.username %}">
+        <li class="nav-item" style="color: #745bc1;"><a href="{% url 'perfil_usuario' user.username %}">
           {% if user.perfilusuario.foto_perfil %}
             <img src="{{ user.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% else %}
