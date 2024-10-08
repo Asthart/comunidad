@@ -260,6 +260,7 @@
                     <hr class="community-divider">
                     <p class="community-description">{{ comunidad.descripcion }}</p>
                 </div>
+                
                 <div class="boton-comunidad">
                     {% if es_miembro %}
                         <a href="{% url 'chat_comunidad' comunidad.pk %}" class="action-button">Chat de la comunidad</a>

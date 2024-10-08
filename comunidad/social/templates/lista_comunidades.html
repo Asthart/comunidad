@@ -26,6 +26,9 @@
                 {% else %}
                     <td>Privada</td>
                 {% endif %}
+                {% if comunidad.donaciones %}
+                <!--poner simbolo de dolar aqui-->
+                {% endif %}
                 <td>
                     <a href="{% url 'detalle_comunidad' comunidad.pk %}">Ver detalles</a>
                 </td>
