@@ -22,7 +22,7 @@
             <a href="{% url 'guardar_donacion' campaign.desafio.pk %}">Realizar donación</a>
         {% endif %}
     {% else %}
-        <p> No se pueden agregar nuevas respuestas.</p>
+        <p> Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}
     {% if campaign_activa and request.user != campaign.desafio.creador %}
 
