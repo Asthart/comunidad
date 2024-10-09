@@ -61,6 +61,10 @@
   </nav>
 </header>
 <style>
+  body a{
+    text-decoration: none;
+  }
+
   .icono-svg {
     width: 20px;
     height: 20px;
@@ -130,6 +134,20 @@ nav a {
       }
     }
   }
+}
+
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #0056b3;
 }
 </style>
     <script src="{% static 'js/jquery.min.js'%}"></script>
