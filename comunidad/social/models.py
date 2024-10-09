@@ -9,6 +9,12 @@ from multiupload.fields import MultiFileField
 
 from django.db import models
 from django.contrib.auth.models import User
+class Premio(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    tipo = models.CharField(max_length=50)
+    def __str__(self):
+        return f"{self.nombre}"
 
 class Comunidad(models.Model):
     nombre = models.CharField(max_length=100)
@@ -105,6 +111,8 @@ class Desafio(models.Model):
     max_monto = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True,default=0)
     cantidad_donada = models.DecimalField(max_digits=10, decimal_places=2, null=True,default=0)
     puntaje = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True, default=None)
+    premio = models.ForeignKey(Premio, on_delete=models.CASCADE,default=None, null=True, blank=True)
+    
     def __str__(self):
         return self.titulo
     
@@ -319,12 +327,6 @@ class UserAction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     
 
-class Premio(models.Model):
-    nombre = models.CharField(max_length=100)
-    descripcion = models.TextField()
-    tipo = models.CharField(max_length=50)
-    def __str__(self):
-        return f"{self.nombre}"
 
 class Concurso(models.Model):
     nombre = models.CharField(max_length=100)

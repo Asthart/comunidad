@@ -12,7 +12,7 @@
     
     <h2>Respuestas:</h2>
     
-    {% if campaign_activa %}
+    {% if campaign_activa and request.user != campaign.desafio.creador %}
         <form method="post">
             {% csrf_token %}
             {{ respuesta_form.as_p }}
@@ -22,13 +22,16 @@
             <a href="{% url 'guardar_donacion' campaign.desafio.pk %}">Realizar donación</a>
         {% endif %}
     {% else %}
-        <p>Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
+        <p> No se pueden agregar nuevas respuestas.</p>
     {% endif %}
+    {% if campaign_activa and request.user != campaign.desafio.creador %}
+
     <div class="rating" >
         {% for i in "54321" %}
             <a href="{% url 'puntuar_desafio' campaign.pk forloop.counter  %}"class="star" data-value="{{ forloop.counter }}">&#9733;</a>
         {% endfor %}
     </div>
+    {% endif %}
     <div class="promedio-rating">
         <div class="promedio-stars-outer">
             <div class="promedio-stars-inner" style="width: {{ puntos|floatformat:1 }}%;"></div>
