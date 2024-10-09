@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio - Tu Plataforma Social</title>
     <style>
+
         body {
             margin-top: 80px;
             display: flex;
@@ -132,20 +133,6 @@
             resize: vertical;
             border-radius: 5px;
         }
-        
-        button[type="submit"] {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        
-        button[type="submit"]:hover {
-            background-color: #0056b3;
-        }
 
         .title{
             text-align: center;
@@ -157,7 +144,7 @@
         }
     
         .contador {
-            background: linear-gradient(45deg, #007bff, #00bfff);
+            background: linear-gradient(90deg, #5ceaf6, #ef32f9, #5ceaf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: pulse 2s infinite;
@@ -184,6 +171,27 @@
         .dorado{
             border:2px solid #fcc350 !important;
         }
+
+        .scroll-to-top-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background-color: transparent; 
+            border: none;
+        }
+        
+        .scroll-to-top-btn img {
+            max-width: 55px;
+            max-height: 55px;
+            object-fit: contain;
+        }
     </style>
 </head>
 {% include 'header.html' %}
@@ -191,6 +199,9 @@
 
     <!-- Contenido principal -->
     <main>
+        <button class="scroll-to-top-btn" id="scroll-to-top-btn" title="Ir arriba">
+            <img src="{% static 'images/subir.svg' %}" alt="Ir arriba" >
+        </button>
         <div class="container mt-5 primero">
             <div class="row justify-content-center">
                 <div class="col-md-8">
@@ -332,6 +343,33 @@
 
         // Llamar a la función inmediatamente para evitar el retraso inicial
         actualizarContador();
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+            
+            // Function to toggle button visibility
+            function toggleButtonVisibility() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.style.display = 'block';
+                } else {
+                    scrollToTopBtn.style.display = 'none';
+                }
+            }
+    
+            // Initial call to set button visibility
+            toggleButtonVisibility();
+            
+            // Add scroll event listener
+            window.addEventListener('scroll', toggleButtonVisibility);
+    
+            // Add click event listener to the button
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
     </script>
 {% include 'footer.html' %}
 </html>

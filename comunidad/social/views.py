@@ -687,7 +687,7 @@ def lista_campaigns(request):
 def puntuar_respuesta(request, pk, estrellas):
     respuesta = get_object_or_404(Respuesta, pk=pk)
     if request.method == 'POST' and request.user == respuesta.campaign.desafio.creador:
-        respuesta.puntuacion = int(estrellas)
+        respuesta.puntuacion =int(estrellas)
         respuesta.save()
         return JsonResponse({'status': 'success', 'puntuacion': respuesta.puntuacion})
     return JsonResponse({'status': 'error'}, status=400)

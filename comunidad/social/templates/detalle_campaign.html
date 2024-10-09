@@ -22,7 +22,7 @@
             <a href="{% url 'guardar_donacion' campaign.desafio.pk %}">Realizar donación</a>
         {% endif %}
     {% else %}
-        <p> No se pueden agregar nuevas respuestas.</p>
+        <p> Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}
     {% if campaign_activa and request.user != campaign.desafio.creador %}
 
@@ -59,12 +59,61 @@
     {% empty %}
         <p>No hay respuestas aún.</p>
     {% endfor %}
+    <a href="{% url 'detalle_comunidad' campaign.comunidad.pk%}">Volver</a>
 </div>
 </main>
 </body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var ratings = document.querySelectorAll('.rating');
+        var isCreador = {{ is_creador|yesno:"true,false" }};
+        
+        ratings.forEach(function(rating) {
+            var stars = rating.querySelectorAll('.star');
+            var respuestaId = rating.dataset.respuestaId;
+            var currentRating = parseInt(rating.dataset.puntuacion) || 0;
+
+            function updateStars(value) {
+                stars.forEach(function(star, index) {
+                    star.classList.toggle('checked', index >= (5 - value));
+                });
+                rating.nextElementSibling.querySelector('.puntos-valor').textContent = value;
+            }
+
+            updateStars(currentRating);
+
+            if (isCreador) {
+                stars.forEach(function(star, index) {
+                    star.addEventListener('click', function() {
+                        var value = 5 - index;
+                        
+                        fetch(`/puntuar/${respuestaId}/${value}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            }
+                        }).then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                updateStars(data.puntuacion);
+                                currentRating = data.puntuacion;
+                            }
+                        });
+                    });
+                });
+
+                rating.addEventListener('mouseleave', function() {
+                    updateStars(currentRating);
+                });
+            }
+        });
+    });
+</script>
+
 <style>
     body {
         margin-top: 80px;
@@ -126,50 +175,3 @@
         color: #ccc;
     }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var ratings = document.querySelectorAll('.rating');
-        var isCreador = {{ is_creador|yesno:"true,false" }};
-        
-        ratings.forEach(function(rating) {
-            var stars = rating.querySelectorAll('.star');
-            var respuestaId = rating.dataset.respuestaId;
-            var currentRating = parseInt(rating.dataset.puntuacion) || 0;
-
-            function updateStars(value) {
-                stars.forEach(function(star, index) {
-                    star.classList.toggle('checked', index >= (5 - value));
-                });
-                rating.nextElementSibling.querySelector('.puntos-valor').textContent = value;
-            }
-
-            updateStars(currentRating);
-
-            if (isCreador) {
-                stars.forEach(function(star, index) {
-                    star.addEventListener('click', function() {
-                        var value = 5 - index;
-                        
-                        fetch(`/puntuar/${respuestaId}/${value}/`, {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRFToken': '{{ csrf_token }}'
-                            }
-                        }).then(response => response.json())
-                        .then(data => {
-                            if (data.status === 'success') {
-                                updateStars(data.puntuacion);
-                                currentRating = data.puntuacion;
-                            }
-                        });
-                    });
-                });
-
-                rating.addEventListener('mouseleave', function() {
-                    updateStars(currentRating);
-                });
-            }
-        });
-    });
-</script>
