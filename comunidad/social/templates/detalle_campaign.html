@@ -38,7 +38,16 @@
         </div>
         <span>{{ puntos|floatformat:1 }} de 5 estrellas</span>
     </div>
-    
+    <p>Likes: {{ desafio.total_likes }}</p>
+
+<form action="{% url 'like_desafio' campaign.desafio.id %}" method="POST">
+    {% csrf_token %}
+    {% if user in desafio.likes.all %}
+        <button type="submit">Quitar Like</button>
+    {% else %}
+        <button type="submit">Dar Like</button>
+    {% endif %}
+</form>
     {% for respuesta in campaign.respuestas %}
         <div class="respuesta">
             <p>{{ respuesta.autor.username }}: {{ respuesta.respuesta }}</p>

@@ -112,7 +112,10 @@ class Desafio(models.Model):
     cantidad_donada = models.DecimalField(max_digits=10, decimal_places=2, null=True,default=0)
     puntaje = models.DecimalField(max_digits=2, decimal_places=1, null=True, blank=True, default=None)
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE,default=None, null=True, blank=True)
-    
+    likes = models.ManyToManyField(User, related_name='likes_desafios', blank=True)
+
+    def total_likes(self):
+        return self.likes.count()
     def __str__(self):
         return self.titulo
     

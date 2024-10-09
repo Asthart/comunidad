@@ -368,12 +368,19 @@ def crear_publicacion(request):
     return render(request, 'crear_publicacion.html', {'form': form})
 
 @login_required
-def dar_like(request, pk):
-    publicacion = Publicacion.objects.get(pk=pk)
-    like, created = Like.objects.get_or_create(publicacion=publicacion, autor=request.user)
-    if not created:
-        like.delete()
-    return redirect('inicio')
+def like_desafio(request, desafio_id):
+    desafio = get_object_or_404(Desafio, id=desafio_id)
+    campaign = get_object_or_404(Campaign, desafio=desafio_id)
+    
+    if request.user in desafio.likes.all():
+        print("1")
+        desafio.likes.remove(request.user)  # Quitar like si ya existe
+    else:
+        print("2")
+        
+        desafio.likes.add(request.user)  # Agregar like si no existe
+    
+    return redirect('detalle_campaign', campaign.id)
 
 def like(request, pk):
     publicacion = get_object_or_404(Publicacion, pk=pk)
