@@ -48,6 +48,7 @@
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
             padding: 30px;
+            margin-bottom: 30px;
         }
         .project-list {
             list-style-type: none;
@@ -81,10 +82,13 @@
                 </div>
                 <div class="col-md-9">
                     <h1 class="profile-name">{{ usuario.first_name }} {{ usuario.last_name }}</h1>
-                    <p class="profile-info"><i class="fas fa-user-tag"></i> {{ perfil.rol }}</p>
+                    <p class="profile-info"><i class="fas fa-info-circle"></i> Biografía:  {{ perfil.biografia }}</p>
+                    <!--
+                    <p class="profile-info"><i class="fas fa-user-tag"></i> Rol: {{ perfil.rol }}</p>
+                    -->
                     <p class="profile-info"><i class="fas fa-star"></i> Puntos: {{ perfil.puntos }}</p>
                     <p class="profile-info"><i class="fas fa-trophy"></i> Clasificación: {{ clasificacion }}</p>
-                    <p class="profile-info"><i class="fas fa-info-circle"></i> {{ perfil.biografia }}</p>
+                    
                     
                     <div class="action-buttons">
                         {% if yo %}
@@ -96,6 +100,7 @@
                             <a href="{% url 'chat' usuario.perfilusuario.id %}" class="btn btn-success"><i class="fas fa-comments"></i> Chatear</a>
                         {% else %}
                             <a href="{% url 'editar_perfil' %}" class="btn btn-primary"><i class="fas fa-user-edit"></i> Editar Perfil</a>
+                            <!--
                             <form method="post" enctype="multipart/form-data" class="d-inline-block">
                                 {% csrf_token %}
                                 <label for="foto_perfil" class="btn btn-outline-primary">
@@ -103,6 +108,7 @@
                                     <input type="file" name="foto_perfil" id="foto_perfil" accept="image/*" style="display: none;" onchange="this.form.submit()">
                                 </label>
                             </form>
+                            -->
                         {% endif %}
                     </div>
                 </div>
@@ -110,12 +116,23 @@
         </div>
 
         <div class="projects-section">
-            <h2 class="mb-4"><i class="fas fa-project-diagram"></i> Proyectos</h2>
+            <h2 class="mb-4"><i class="fas fa-project-diagram"></i> Proyectos Creados</h2>
             <ul class="project-list">
                 {% for proyecto in proyectos %}
                     <li><a href="{% url 'detalle_proyecto' proyecto.pk %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
                 {% empty %}
                     <li>Este usuario no ha creado ningún proyecto.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="projects-section">
+            <h2 class="mb-4"><i class="fas fa-project-diagram"></i> Comunidades</h2>
+            <ul class="project-list">
+                {% for comunidad in comunidades %}
+                    <li><a href="{% url 'detalle_comunidad' comunidad.pk %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
+                {% empty %}
+                    <li>Este usuario no pertenece a ninguna comunidad.</li>
                 {% endfor %}
             </ul>
         </div>

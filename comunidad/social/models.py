@@ -151,6 +151,10 @@ class Desafio(models.Model):
                 votos = Voto.objects.filter(desafio=desafio)
                 desafio.votos_positivos = votos.filter(es_positivo=True).count()
                 desafio.votos_negativos = votos.filter(es_positivo=False).count()
+                
+    @property
+    def campaign(self):
+        return Campaign.objects.get(desafio=self)
 
 
 class Donacion(models.Model):
@@ -309,6 +313,18 @@ class TerminosCondiciones(models.Model):
     def __str__(self):
         return "Términos y Condiciones"
     
+class TerminosCondicionesUsuario(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    aceptado_en = models.DateTimeField(auto_now_add=True)
+    terminos = models.ForeignKey(TerminosCondiciones, on_delete=models.CASCADE)
+    
+    @property
+    def aceptado(self):
+        aceptado = True
+        if self.aceptado_en < self.terminos.actualizado_en:
+            aceptado = False
+        return aceptado
+    
 class Clasificacion(models.Model):
     nombre = models.CharField(max_length=50)
     umbral_puntos = models.IntegerField()
@@ -333,6 +349,7 @@ class UserAction(models.Model):
 
 class Concurso(models.Model):
     nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE)
@@ -432,3 +449,8 @@ class PuntajeDesafio(models.Model):
 
     def __str__(self):
         return f"{self.usuario} - {self.puntaje} estrellas para {self.desafio}"
+    
+class FirstVisit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    url = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)

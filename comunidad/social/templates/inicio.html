@@ -199,6 +199,7 @@
 
     <!-- Contenido principal -->
     <main>
+
         <button class="scroll-to-top-btn" id="scroll-to-top-btn" title="Ir arriba">
             <img src="{% static 'images/subir.svg' %}" alt="Ir arriba" >
         </button>
@@ -207,8 +208,8 @@
                 <div class="col-md-8">
                     <div class="card shadow-lg dorado">
                         <div class="card-body text-center ">
-                            <h1 class="card-title mb-4 fw-bold">Último Concurso: {{ concurso.nombre }}</h1>
-                            <div class="countdown-container p-4 bg-light rounded dorado">
+                            <h1 class="card-title mb-4 fw-bold">Último Concurso: <a href="{% url 'concurso_resultados' %}">{{ concurso.nombre }}</a></h1>
+                            <div class="countdown-container p-4 bg-light rounded dorado" id="cuadrito">
                                 <div id="contador" class="contador display-4 text-primary fw-bold"></div>
                             </div>
                         </div>
@@ -220,6 +221,25 @@
         <div class="publication dorado">
         <h1 class="title fw-bold">Proyectos Recientes</h1>
         </div>  
+
+        <div class="modal fade modal-dialog modal-dialog-scrollable" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  ...
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-primary">Understood</button>
+                </div>
+              </div>
+            </div>
+        </div>
+
         {% if proyectos %}
             {% for pro in proyectos %}
                 <div class="publication dorado">
@@ -292,6 +312,11 @@
         {% else %}
             <p>No hay proyectos para mostrar.</p>
         {% endif %}
+
+        <a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Launch static backdrop modal
+        </a>
+
     </main>
 </body>
 

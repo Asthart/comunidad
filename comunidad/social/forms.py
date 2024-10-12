@@ -143,6 +143,14 @@ class EditUserProfileForm(forms.ModelForm):
         widgets = {
             'biografia': forms.Textarea(attrs={'rows': 4}),
         }
+        
+class EditUserProfilePersonalForm(forms.ModelForm):
+    class Meta:
+        model = PerfilUsuario
+        fields = ['biografia', 'foto_perfil']
+        widgets = {
+            'biografia': forms.Textarea(attrs={'rows': 4}),
+        }
 
 class EditUserForm(forms.ModelForm):
     class Meta:

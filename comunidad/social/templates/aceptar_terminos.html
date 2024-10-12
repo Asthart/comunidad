@@ -1,19 +1,16 @@
-{% extends 'base.html' %}
+
 {% load static %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block title %}Aceptar Términos y Condiciones - Hubinab Reward{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="terms-container">
         <h1 class="terms-title">Aceptar Términos y Condiciones</h1>
-        <p class="terms-intro">Al hacer clic en "Volver", regresará al formulario de registro.</p>
+        <p class="terms-intro">Al hacer clic en "Volver", se cerrará la sesión actual.</p>
         <div class="terms-content">
             <h2>Términos y Condiciones</h2>
             {{ terminos.texto|safe }}
         </div>
+
         <div class="back-button-container">
             <button type="button" id="back-button" class="btn btn-secondary">Volver</button>
         </div>
@@ -22,7 +19,7 @@
 
 <script>
     document.getElementById('back-button').addEventListener('click', function() {
-        window.location.href = '{% url "register" %}';
+        window.location.href = '{% url "logout" %}';
     });
 </script>
 {% endblock %}
