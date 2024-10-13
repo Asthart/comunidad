@@ -98,12 +98,7 @@ class MensajeChatAdmin(admin.ModelAdmin):
     search_fields = ('emisor__username', 'room_name', 'contenido')
     date_hierarchy = 'fecha_envio'
 
-@admin.register(ActividadUsuario)
-class ActividadUsuarioAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'tipo_actividad', 'fecha_hora', 'puntos_ganados')
-    list_filter = ('tipo_actividad', 'fecha_hora')
-    search_fields = ('usuario__username', 'tipo_actividad')
-    
+
 admin.site.register(Tag)
 
 '''
@@ -134,6 +129,10 @@ class PremioAdmin(admin.ModelAdmin):
     list_display = ('nombre',)
     search_fields = ('nombre',)
     
+@admin.register(UserAction)
+class UserActionAdmin(admin.ModelAdmin):
+    list_display = ('user','accion','timestamp','puntos')
+    search_fields = ('nombre',)
 
 @admin.register(Concurso)
 class ConcursoAdmin(admin.ModelAdmin):

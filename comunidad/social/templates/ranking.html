@@ -60,9 +60,9 @@
         <ol class="list-group list-group-flush">
             {% for entry in ranking %}
                 <li class="list-group-item">
-                    <a href="{% url 'perfil_usuario' entry.usuario__username %}">
-                        {{ entry.usuario__username }}
-                        {{ entry.usuario__first_name }} 
+                    <a href="{% url 'perfil_usuario' entry.user__username %}">
+                        {{ entry.user__username }}
+                        {{ entry.user__first_name }} 
                     </a> - {{ entry.total_puntos }} puntos 
                 </li>
             {% empty %}

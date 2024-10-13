@@ -10,7 +10,7 @@
         <div class="modal-body">
             <div class="container">
                 <div class="terms-container">
-                    <h5>Al hacer clic en "Volver", se cerrará la sesión actual.</h5>
+                    <h5>Al hacer clic en "Rechazar", se cerrará la sesión actual.</h5>
                     <br>
                     <div class="terms-content">
                         {{ terminos.texto|safe }}
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Volver</a>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Rechazar</a>
             <form action="{% url 'aceptar_terminos' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Aceptar</button>

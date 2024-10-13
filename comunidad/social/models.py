@@ -213,14 +213,7 @@ def crear_perfil_usuario(sender, instance, created, **kwargs):
 def guardar_perfil_usuario(sender, instance, **kwargs):
     instance.perfilusuario.save()
 
-class ActividadUsuario(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    tipo_actividad = models.CharField(max_length=50)
-    fecha_hora = models.DateTimeField(auto_now_add=True)
-    puntos_ganados = models.IntegerField(default=0)
-    def __str__(self):
-        return f'{self.usuario.username} - {self.tipo_actividad}'
-    
+
 class MensajeChat(models.Model):
     emisor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensajes_enviados')
     room_name = models.CharField(max_length=255)
@@ -343,7 +336,9 @@ class Action(models.Model):
 class UserAction(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.ForeignKey(Action, on_delete=models.CASCADE)
+    accion = models.CharField(max_length=50,default="")
     timestamp = models.DateTimeField(auto_now_add=True)
+    puntos=models.IntegerField(default=0)
     
 
 

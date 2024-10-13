@@ -13,16 +13,18 @@ def get_clasificacion(puntos):
 def update_user_points(user_id, action_id, points):
     user = User.objects.get(id=user_id)
     action = Action.objects.get(id=action_id)
+    if not points==0:
+        # Actualizar puntos totales del perfil del usuario
+        PerfilUsuario.objects.filter(usuario_id=user.id).update(puntos=F('puntos') + points)
     
-    # Actualizar puntos totales del perfil del usuario
-    PerfilUsuario.objects.filter(usuario_id=user.id).update(puntos=F('puntos') + points)
-    
-    # Crear registro de acción
-    UserAction.objects.create(
-        user=user,
-        action=action,
-        timestamp=now()
-    )
+        # Crear registro de acción
+        UserAction.objects.create(
+            user=user,
+            action=action,
+            accion=action.name,
+            timestamp=now(),
+            puntos=points
+        )
     
 import datetime
 

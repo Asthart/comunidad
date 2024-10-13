@@ -122,11 +122,6 @@ def crear_comunidad(request):
             comunidad.administrador = request.user
             comunidad.save()
             comunidad.miembros.add(request.user)
-            ActividadUsuario.objects.create(
-                usuario=request.user,
-                tipo_actividad='crear_comunidad',
-                puntos_ganados=50
-            )
             ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
             send_mail(
                 'Nueva solicitud de cuenta',
@@ -184,11 +179,6 @@ def crear_proyecto(request,pk):
             
             proyecto.creador = request.user
             proyecto.save()
-            ActividadUsuario.objects.create(
-                usuario=request.user,
-                tipo_actividad='crear_proyecto',
-                puntos_ganados=30
-            )
             accion = Action.objects.filter(name='crear_proyecto').first()
             update_user_points(request.user.id, accion.id, accion.points)
             return redirect('detalle_proyecto', pk=proyecto.pk)
@@ -215,11 +205,6 @@ def crear_desafio(request,pk):
             
             campaign = Campaign.objects.create(desafio=desafio)
             
-            ActividadUsuario.objects.create(
-                usuario=request.user,
-                tipo_actividad='crear_desafio',
-                puntos_ganados=40
-            )
             accion = Action.objects.filter(name='crear_desafio').first()
             update_user_points(request.user.id, accion.id, accion.points)
             
@@ -250,6 +235,9 @@ def puntuar_desafio(request, desafio_id, punto):
     # Actualiza el promedio de puntaje en el modelo Desafio (opcional)
     desafio.puntaje = promedio_puntaje
     desafio.save()
+    
+    accion = Action.objects.filter(name='puntuar desafio').first()
+    update_user_points(request.user.id, accion.id, accion.points)
     
     return redirect('detalle_campaign', pk=desafio_id)
 
@@ -304,7 +292,6 @@ def perfil_usuario(request, username):
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
     clasificacion = get_clasificacion(perfil.puntos)
-    actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
     sigue_a = perfil.sigue_a(request.user)
     yo= not usuario==request.user
     comunidades=Comunidad.objects.filter(miembros=usuario)
@@ -312,7 +299,6 @@ def perfil_usuario(request, username):
         'usuario': usuario,
         'perfil': perfil,
         'proyectos': proyectos,
-        'actividades': actividades,
         'sigue_a': sigue_a,
         'clasificacion': clasificacion,
         'yo':yo,
@@ -421,6 +407,9 @@ def crear_comentario(request, pk):
             comentario.publicacion = publicacion
             comentario.autor = request.user
             comentario.save()
+            accion = Action.objects.filter(name='comentar').first()
+            update_user_points(request.user.id, accion.id, accion.points)
+            
             return redirect('inicio')
     else:
         form = ComentarioForm()
@@ -436,6 +425,8 @@ def crear_comentario_pro(request, pk):
             comentario.proyecto = proyecto
             comentario.autor = request.user
             comentario.save()
+            accion = Action.objects.filter(name='comentar proyecto').first()
+            update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
         form = ComentarioProyectoForm()
@@ -578,6 +569,8 @@ def dejar_de_seguir_usuario(request, pk):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.dejar_de_seguir_usuario(usuario)
+    accion = Action.objects.filter(name='seguir').first()
+    update_user_points(request.user.id, accion.id, -(accion.points))
     return redirect('perfil_usuario', username=usuario.username)
 
 @login_required
@@ -671,11 +664,6 @@ def detalle_campaign(request, pk):
             respuesta.campaign = campaign
             respuesta.save()
             
-            ActividadUsuario.objects.create(
-                usuario=request.user,
-                tipo_actividad='responder_campaign',
-                puntos_ganados=20
-            )
             accion: Action | None= Action.objects.filter(name='responder_campaign').first()
             update_user_points(request.user.id, accion.id, accion.points)
             
@@ -843,17 +831,17 @@ def ranking_usuarios(request):
     else:
         # Establecer un rango de fechas predeterminado (por ejemplo, los últimos 30 días)
         fecha_fin = timezone.now()
-        fecha_inicio = fecha_fin - timedelta(days=30)
+        fecha_inicio = fecha_fin - timedelta(days=60)
 
     # Obtener el ranking de usuarios en base al rango de fechas
     ranking = (
-        ActividadUsuario.objects.filter(
-            fecha_hora__range=(fecha_inicio, fecha_fin)
+        UserAction.objects.filter(
+            timestamp__range=(fecha_inicio, fecha_fin)
         )
-        .values('usuario__username')
-        .annotate(total_puntos=Sum('puntos_ganados'))
+        .values('user__username')
+        .annotate(total_puntos=Sum('puntos'))
         .order_by('-total_puntos')
     )
-
+    print(ranking)
     return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
 
