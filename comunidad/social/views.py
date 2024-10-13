@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from django.db.models import Q,Sum,Avg
+import requests
 from .models import *
 from .forms import *
 from .utils import update_user_points,get_clasificacion
@@ -377,7 +378,6 @@ def like_desafio(request, desafio_id):
         desafio.likes.remove(request.user)  # Quitar like si ya existe
     else:
         print("2")
-        
         desafio.likes.add(request.user)  # Agregar like si no existe
     
     return redirect('detalle_campaign', campaign.id)
@@ -687,7 +687,7 @@ def lista_campaigns(request):
 def puntuar_respuesta(request, pk, estrellas):
     respuesta = get_object_or_404(Respuesta, pk=pk)
     if request.method == 'POST' and request.user == respuesta.campaign.desafio.creador:
-        respuesta.puntuacion =int(estrellas)
+        respuesta.puntuacion = int(estrellas)
         respuesta.save()
         return JsonResponse({'status': 'success', 'puntuacion': respuesta.puntuacion})
     return JsonResponse({'status': 'error'}, status=400)
@@ -829,3 +829,18 @@ def ranking_usuarios(request):
     )
 
     return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
+
+def autenticar_usuario(request):
+    token = request.GET.get('token')
+    if token:
+        url = "https://innovacrece.uic.cu/api/account"
+        response = requests.get(url)
+        if response.status_code == 200:
+            usuario_data = response.json()
+            usuario, created = Usuario.objects.get_or_create(username=usuario_data['username'], email=usuario_data['email'])
+            if created:
+                # ... crear el usuario en tu base de datos
+                pass
+            login(request, usuario)
+            return redirect('inicio')
+    return redirect('login')

@@ -256,7 +256,6 @@ class Publicacion(models.Model):
         return f"Publicación de {self.autor.username} en {self.fecha_publicacion}"
     
 class Like(models.Model):
-    publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_like = models.DateTimeField(auto_now_add=True)
     
