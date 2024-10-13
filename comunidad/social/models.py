@@ -1,3 +1,4 @@
+import uuid
 from arrow import now
 from django.db import models
 from django.contrib.auth.models import User, Group

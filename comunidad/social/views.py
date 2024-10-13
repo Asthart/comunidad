@@ -95,11 +95,19 @@ def inicio(request):
     is_first_time = is_first_visit(request, url)
     if is_first_time:
         FirstVisit.objects.create(user=request.user, url=url)
-    
+    terminos = TerminosCondiciones.objects.get(id=1)
+    terminos_usuario = TerminosCondicionesUsuario.objects.filter(usuario=request.user).first()
+    terminos_aceptados = False
+    if terminos_usuario:
+        if terminos_usuario.aceptado:
+            terminos_aceptados = True
+            
     return render(request, 'inicio.html', {
         'proyectos': proyectos,
         'concurso': contador,
-        'is_first_time': is_first_time
+        'is_first_time': is_first_time,
+        'terminos': terminos,
+        'terminos_aceptados': terminos_aceptados
     })
 
 
@@ -519,6 +527,33 @@ class ChatWS    (AsyncWebsocketConsumer):
 
 def aceptar_terminos(request):
     terminos = TerminosCondiciones.objects.get(id=1)
+    terminos_usuario = TerminosCondicionesUsuario.objects.filter(usuario=request.user).first()
+    terminos_aceptados = False
+    if terminos_usuario:
+        if terminos_usuario.aceptado:
+            terminos_aceptados = True
+
+
+    if request.method == 'POST':
+        usuario = request.user
+        aceptado_en = timezone.now()
+        if not terminos_aceptados:
+            if not terminos_usuario == None:
+                terminos_usuario.aceptado_en = timezone.now()
+                terminos_usuario.save()
+            else:
+                TerminosCondicionesUsuario.objects.create(
+                    usuario=usuario,
+                    terminos=terminos,
+                    aceptado_en=aceptado_en
+                )
+        else:
+            if not terminos_usuario == None:
+                terminos_usuario.aceptado_en = timezone.now()
+                terminos_usuario.save()
+            
+        return redirect('inicio')
+        
     return render(request, 'aceptar_terminos.html', {'terminos': terminos})
 
 @login_required
@@ -821,3 +856,4 @@ def ranking_usuarios(request):
     )
 
     return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
+
