@@ -197,8 +197,62 @@
 {% include 'header.html' %}
 
 <body>
+
+    <div>
+        <img src="{% static 'images/banner2.png' %}" style="width: 100%" class="img-fluid" alt="banner">
+    </div>
+
     <!-- Contenido principal -->
     <main>
+
+        <div class="publication dorado">
+            <h1 class="title fw-bold">Principales servicios que ofrecemos</h1>
+
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                      01. Campañas de desafíos
+                    </button>
+                  </h2>
+                  <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">Valida tus proyectos en el mercado a través de donaciones o donativos, con recompensas.</div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                        02. Actividades
+                    </button>
+                  </h2>
+                  <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">Participa en diversas actividades en las temáticas a fines de la comunidad para compartir proyectos, ideas, lanzar campañas y hacer networking.</div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
+                        03. Espacio de Colaboración
+                    </button>
+                  </h2>
+                  <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                    <div class="accordion-body">Crea tu propio espacio de colaboración para proyectos empresariales y Desarrollo Local con uso de la ciencia.</div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                      <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
+                          04. Apollo a la Comunidad
+                      </button>
+                    </h2>
+                    <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                      <div class="accordion-body">Recibe apoyo y feedback de la comunidad para tus proyectos.</div>
+                    </div>
+                  </div>
+              </div>
+        </div>
+
+
         <button class="scroll-to-top-btn" id="scroll-to-top-btn" title="Ir arriba">
             <img src="{% static 'images/subir.svg' %}" alt="Ir arriba" >
         </button>
@@ -217,6 +271,7 @@
             </div>
         </div>
         <br>
+
         <div class="publication dorado">
         <h1 class="title fw-bold">Proyectos Recientes</h1>
         </div> 
