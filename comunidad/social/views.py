@@ -857,17 +857,3 @@ def ranking_usuarios(request):
 
     return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
 
-def autenticar_usuario(request):
-    token = request.GET.get('token')
-    if token:
-        url = "https://innovacrece.uic.cu/api/account"
-        response = requests.get(url)
-        if response.status_code == 200:
-            usuario_data = response.json()
-            usuario, created = Usuario.objects.get_or_create(username=usuario_data['username'], email=usuario_data['email'])
-            if created:
-                # ... crear el usuario en tu base de datos
-                pass
-            login(request, usuario)
-            return redirect('inicio')
-    return redirect('login')
