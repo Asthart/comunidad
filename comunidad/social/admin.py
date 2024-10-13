@@ -30,6 +30,8 @@ class ComunidadAdmin(admin.ModelAdmin):
         updated = queryset.update(activada=True)
         if updated:
             self.send_activation_email(queryset.first())
+            grupo = Group.objects.get(name='Administrador de Comunidad')
+            grupo.user_set.add(queryset.first().administrador.id)
         return updated
 
     def send_activation_email(self, comunidad):

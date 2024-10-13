@@ -122,6 +122,7 @@ def crear_comunidad(request):
             comunidad.administrador = request.user
             comunidad.save()
             comunidad.miembros.add(request.user)
+
             ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
             send_mail(
                 'Nueva solicitud de cuenta',
