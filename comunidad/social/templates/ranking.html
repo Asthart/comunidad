@@ -13,11 +13,6 @@
         min-height: 100vh;
       font-family: 'Poppins', sans-serif;
       padding: 0;
-      background-image: url("{% static 'images/background3.jpg' %}");
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
       height: 100%; /* Asegúrate de que el html y el body ocupen el 100% de la altura */
   }
   
@@ -67,6 +62,7 @@
                 <li class="list-group-item">
                     <a href="{% url 'perfil_usuario' entry.usuario__username %}">
                         {{ entry.usuario__username }}
+                        {{ entry.usuario__first_name }} 
                     </a> - {{ entry.total_puntos }} puntos 
                 </li>
             {% empty %}

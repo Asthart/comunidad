@@ -1,19 +1,6 @@
 {% load static %}
 
 <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-<!--
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
--->
 <header>
   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #745bc1; border-bottom:2px solid #fcc350 !important;">
     <div class="container-fluid">
@@ -60,7 +47,18 @@
     </div>
   </nav>
 </header>
+
+{% include 'aceptar_terminos.html' %}
+
 <style>
+
+  body {
+    background-image: url("{% static 'images/fondo.png' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+  }
   body a{
     text-decoration: none;
   }
@@ -150,5 +148,4 @@ button[type="submit"]:hover {
   background-color: #0056b3;
 }
 </style>
-    <script src="{% static 'js/jquery.min.js'%}"></script>
 

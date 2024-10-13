@@ -137,7 +137,7 @@ class PremioAdmin(admin.ModelAdmin):
 
 @admin.register(Concurso)
 class ConcursoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'fecha_inicio', 'fecha_fin', 'premio')
+    list_display = ('nombre', 'descripcion', 'fecha_inicio', 'fecha_fin', 'premio')
     list_filter = ['fecha_inicio', 'fecha_fin']
     search_fields = ['nombre']
     

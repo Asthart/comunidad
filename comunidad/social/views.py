@@ -12,28 +12,10 @@ from django.db.models import Q,Sum,Avg
 import requests
 from .models import *
 from .forms import *
-from .utils import update_user_points,get_clasificacion
+from .utils import update_user_points, get_clasificacion, is_first_visit
 from django.core.mail import send_mail
 from django.views.generic import ListView
-'''
-@login_required
-def inicio(request):
-    comunidades = Comunidad.objects.filter(miembros=request.user,activada=True)
-    proyectos = Proyecto.objects.filter(comunidad__in=comunidades)
-    desafios = Desafio.objects.filter(comunidad__in=comunidades)
-    
-    accion = Action.objects.filter(name='inicio').first()
-    update_user_points(request.user.id, accion.id, accion.points)
-    
-    return render(request, 'inicio.html', {
-        'comunidades': comunidades,
-        'proyectos': proyectos,
-        'desafios': desafios,
-    })
-'''
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
-from .models import Comunidad, PerfilUsuario, Publicacion
+
 
 @login_required
 def inicio(request):
@@ -110,9 +92,23 @@ def inicio(request):
     accion = Action.objects.filter(name='inicio').first()
     update_user_points(user.id, accion.id, accion.points)
     
+    url = request.path
+    is_first_time = is_first_visit(request, url)
+    if is_first_time:
+        FirstVisit.objects.create(user=request.user, url=url)
+    terminos = TerminosCondiciones.objects.get(id=1)
+    terminos_usuario = TerminosCondicionesUsuario.objects.filter(usuario=request.user).first()
+    terminos_aceptados = False
+    if terminos_usuario:
+        if terminos_usuario.aceptado:
+            terminos_aceptados = True
+            
     return render(request, 'inicio.html', {
         'proyectos': proyectos,
         'concurso': contador,
+        'is_first_time': is_first_time,
+        'terminos': terminos,
+        'terminos_aceptados': terminos_aceptados
     })
 
 
@@ -311,6 +307,7 @@ def perfil_usuario(request, username):
     actividades = ActividadUsuario.objects.filter(usuario=usuario).order_by('-fecha_hora')[:10]
     sigue_a = perfil.sigue_a(request.user)
     yo= not usuario==request.user
+    comunidades=Comunidad.objects.filter(miembros=usuario)
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
@@ -319,6 +316,7 @@ def perfil_usuario(request, username):
         'sigue_a': sigue_a,
         'clasificacion': clasificacion,
         'yo':yo,
+        'comunidades':comunidades
     })
     
 from .forms import CustomUserCreationForm
@@ -529,7 +527,34 @@ class ChatWS    (AsyncWebsocketConsumer):
 
 def aceptar_terminos(request):
     terminos = TerminosCondiciones.objects.get(id=1)
-    return render(request, 'aceptar_terminos.html', {'terminos': terminos})
+    terminos_usuario = TerminosCondicionesUsuario.objects.filter(usuario=request.user).first()
+    terminos_aceptados = False
+    if terminos_usuario:
+        if terminos_usuario.aceptado:
+            terminos_aceptados = True
+
+
+    if request.method == 'POST':
+        usuario = request.user
+        aceptado_en = timezone.now()
+        if not terminos_aceptados:
+            if not terminos_usuario == None:
+                terminos_usuario.aceptado_en = timezone.now()
+                terminos_usuario.save()
+            else:
+                TerminosCondicionesUsuario.objects.create(
+                    usuario=usuario,
+                    terminos=terminos,
+                    aceptado_en=aceptado_en
+                )
+        else:
+            if not terminos_usuario == None:
+                terminos_usuario.aceptado_en = timezone.now()
+                terminos_usuario.save()
+            
+        return redirect('inicio')
+        
+    return render(request, 'aceptar_terminos.html', {'terminos': terminos, 'terminos_aceptados': terminos_aceptados, 'terminos_usuario': terminos_usuario})
 
 @login_required
 def buscar_usuarios(request):
@@ -610,6 +635,7 @@ def listar_concursos(request):
 def concurso_resultados(request):
     
     concurso_actual = Concurso.objects.latest('fecha_fin')
+    premio = concurso_actual.premio
     # Ordenar por ranking y tomar el primero
     ganador = PerfilUsuario.objects.order_by('-puntos').first()
     usuario= User.objects.get(id=ganador.usuario_id)
@@ -619,6 +645,7 @@ def concurso_resultados(request):
         'ganador': ganador,
         'usuario':usuario,
         'top_usuarios':top_usuarios,
+        'premio': premio
     })
     
 
@@ -695,11 +722,11 @@ def puntuar_respuesta(request, pk, estrellas):
 
 @login_required
 def guardar_donacion(request,pk):
+    desafio= Desafio.objects.get(id=pk)
     if request.method == 'POST':
         nombre = request.POST['nombre']
         identificador_transferencia = request.POST['identificador_transferencia']
         cantidad = request.POST['cantidad']
-        desafio= Desafio.objects.get(id=pk)
         # Aquí deberías validar los datos antes de guardarlos
         # Por ejemplo:
         desafio.cantidad_donada+=Decimal(cantidad)
@@ -712,9 +739,10 @@ def guardar_donacion(request,pk):
             identificador_transferencia=identificador_transferencia,
             cantidad=cantidad,
         )
-        
+      
         # Si todo salió bien, redirige al usuario a la lista de donaciones
         return redirect('inicio')
+    campaign = desafio.campaign 
     qr = Cuenta.objects.first()
     # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados
     form = DonacionComunidadForm(initial={
@@ -723,7 +751,7 @@ def guardar_donacion(request,pk):
         'cantidad': ''
     })
     
-    return render(request, 'crear_donacion.html', {'form': form,'qr':qr})
+    return render(request, 'crear_donacion.html', {'form': form,'qr':qr, 'campaign': campaign})
 
 
 @login_required
@@ -749,16 +777,15 @@ def chat_comunidad(request, comunidad_id):
 def editar_perfil(request):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     user = request.user
-    print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
     if request.method == 'POST':
-        perfil_form = EditUserProfileForm(request.POST, request.FILES, instance=perfil_usuario)
+        perfil_form = EditUserProfilePersonalForm(request.POST, request.FILES, instance=perfil_usuario)
         user_form = EditUserForm(request.POST, instance=user)
         
         if perfil_form.is_valid() and user_form.is_valid():
             perfil_form.save()
             user_form.save()
     else:
-        perfil_form = EditUserProfileForm(instance=perfil_usuario)
+        perfil_form = EditUserProfilePersonalForm(instance=perfil_usuario)
         user_form = EditUserForm(instance=user)
     
     return render(request, 'editar_perfil.html', {

@@ -31,6 +31,7 @@ return render(request, 'editar_perfil.html', {'form': form})
     <button type="submit">Actualizar perfil y cuenta</button>
 </form>
         </div>
+        <a href="{% url 'perfil_usuario' request.user.username%}">Volver</a>
     </main>
 </body>
 

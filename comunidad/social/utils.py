@@ -1,5 +1,5 @@
 import requests
-from .models import Action, Clasificacion, Concurso, PerfilUsuario, ResultadoConcurso, UserAction, User
+from .models import *
 from django.utils.timezone import now
 from django.db.models import F
 def get_clasificacion(puntos):
@@ -57,3 +57,6 @@ def validate_session_with_external_app(sessionid):
         return user
 
     return None
+
+def is_first_visit(request, url):
+    return not FirstVisit.objects.filter(user=request.user, url=url).exists()

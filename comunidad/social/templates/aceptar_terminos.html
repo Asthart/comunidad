@@ -1,28 +1,30 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block extra_css %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
-{% block title %}Aceptar Términos y Condiciones - Hubinab Reward{% endblock %}
-
-{% block content %}
-<div class="container">
-    <div class="terms-container">
-        <h1 class="terms-title">Aceptar Términos y Condiciones</h1>
-        <p class="terms-intro">Al hacer clic en "Volver", regresará al formulario de registro.</p>
-        <div class="terms-content">
-            <h2>Términos y Condiciones</h2>
-            {{ terminos.texto|safe }}
+<div class="modal modal-lg fade modal-dialog modal-dialog-centered modal-dialog-scrollable" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Términos y Condiciones de Uso</h1>
+          {% if terminos_aceptados %}
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          {% endif %}
         </div>
-        <div class="back-button-container">
-            <button type="button" id="back-button" class="btn btn-secondary">Volver</button>
+        <div class="modal-body">
+            <div class="container">
+                <div class="terms-container">
+                    <h5>Al hacer clic en "Volver", se cerrará la sesión actual.</h5>
+                    <br>
+                    <div class="terms-content">
+                        {{ terminos.texto|safe }}
+                    </div>
+                </div>
+            </div>
         </div>
+        <div class="modal-footer">
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Volver</a>
+            <form action="{% url 'aceptar_terminos' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Aceptar</button>
+          </form>
+        </div>
+      </div>
     </div>
 </div>
-
-<script>
-    document.getElementById('back-button').addEventListener('click', function() {
-        window.location.href = '{% url "register" %}';
-    });
-</script>
-{% endblock %}
