@@ -304,18 +304,6 @@
 {% include 'footer.html' %}
 
     <script>
-        let primera = false;
-        let terminos_aceptados = false;
-        if ("{{ is_first_time }}" == "True"){
-            primera = true;
-        }
-        if ("{{ terminos_aceptados }}" == "True"){
-            terminos_aceptados = true;
-        }
-        if (primera || !terminos_aceptados) {
-            document.getElementById("terminos-b").click();
-        }
-
         function getCookie(name) {
             let value = "; " + document.cookie;
             let parts = value.split("; " + name + "=");

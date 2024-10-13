@@ -2,23 +2,24 @@
     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Términos y Condiciones de Uso</h1>
+          {% if terminos_aceptados %}
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          {% endif %}
         </div>
         <div class="modal-body">
             <div class="container">
                 <div class="terms-container">
-                    <h1 class="terms-title">Aceptar Términos y Condiciones</h1>
-                    <p class="terms-intro">Al hacer clic en "Volver", se cerrará la sesión actual.</p>
+                    <h5>Al hacer clic en "Volver", se cerrará la sesión actual.</h5>
+                    <br>
                     <div class="terms-content">
-                        <h2>Términos y Condiciones</h2>
                         {{ terminos.texto|safe }}
                     </div>
                 </div>
             </div>
         </div>
         <div class="modal-footer">
-            <a href="{% url 'logout' %}" class="btn btn-secondary">Cerrar</a>
+            <a href="{% url 'logout' %}" class="btn btn-secondary">Volver</a>
             <form action="{% url 'aceptar_terminos' %}" method="post">
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Aceptar</button>

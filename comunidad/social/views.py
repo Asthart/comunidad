@@ -554,7 +554,7 @@ def aceptar_terminos(request):
             
         return redirect('inicio')
         
-    return render(request, 'aceptar_terminos.html', {'terminos': terminos})
+    return render(request, 'aceptar_terminos.html', {'terminos': terminos, 'terminos_aceptados': terminos_aceptados, 'terminos_usuario': terminos_usuario})
 
 @login_required
 def buscar_usuarios(request):

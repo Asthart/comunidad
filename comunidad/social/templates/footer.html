@@ -39,4 +39,17 @@
 
 <script src="{% static 'js/jquery.min.js'%}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+<script>
+  let primera = false;
+        let terminos_aceptados = false;
+        if ("{{ is_first_time }}" == "True"){
+            primera = true;
+        }
+        if ("{{ terminos_aceptados }}" == "True"){
+            terminos_aceptados = true;
+        }
+        if (primera || !terminos_aceptados) {
+            document.getElementById("terminos-b").click();
+        }
+</script>
 </html>
