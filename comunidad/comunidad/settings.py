@@ -164,7 +164,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'cespedesalejandro247@gmail.com'
-EMAIL_HOST_PASSWORD = 'apkw sfog sxay anub '
+EMAIL_HOST_PASSWORD = ' '
 DEFAULT_FROM_EMAIL = 'cespedesalejandro247@gmail.com'
 LOGIN_URL = 'login/'
 
