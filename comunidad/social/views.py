@@ -147,7 +147,7 @@ def detalle_comunidad(request, pk):
     proyectos = Proyecto.objects.filter(comunidad=comunidad)
     desafios = Desafio.objects.filter(comunidad=comunidad)  
     campaigns = Campaign.objects.filter(desafio__comunidad=comunidad)
-    es_admin = comunidad.administrador == request.user
+    es_admin = (comunidad.administrador == request.user)
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
     

@@ -64,19 +64,23 @@
         main{
           flex: 1;
         }
+
+        .dorado{
+            border:2px solid #fcc350 !important;
+        }
     </style>
 </head>
 <body>
     {% include 'header.html' %}
     
     <main class="container">
-        <div class="profile-header">
+        <div class="profile-header dorado">
             <div class="row align-items-center">
                 <div class="col-md-3 text-center">
                     {% if perfil.foto_perfil %}
-                        <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil de {{ usuario.username }}" class="profile-image">
+                        <img src="{{ perfil.foto_perfil.url }}" alt="Foto de perfil de {{ usuario.username }}" class="profile-image dorado">
                     {% else %}
-                        <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ usuario.username }}" class="profile-image">
+                        <img src="{% static '/../media/fotos_perfil/default_avatar.jpeg' %}" alt="Foto de perfil de {{ usuario.username }}" class="profile-image dorado">
                     {% endif %}
                 </div>
                 <div class="col-md-9">
@@ -114,7 +118,7 @@
             </div>
         </div>
 
-        <div class="projects-section">
+        <div class="projects-section dorado">
             <h2 class="mb-4"><i class="fas fa-project-diagram"></i> Proyectos Creados</h2>
             <ul class="project-list">
                 {% for proyecto in proyectos %}
@@ -125,7 +129,7 @@
             </ul>
         </div>
 
-        <div class="projects-section">
+        <div class="projects-section dorado">
             <h2 class="mb-4"><i class="fas fa-project-diagram"></i> Comunidades</h2>
             <ul class="project-list">
                 {% for comunidad in comunidades %}
