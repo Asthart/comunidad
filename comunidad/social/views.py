@@ -244,17 +244,20 @@ def puntuar_desafio(request, desafio_id, punto):
 
 def buscar(request):
     q = request.GET.get('q')
-    if q:
-        usuarios = User.objects.filter(
-            Q(first_name__icontains=q) |
-            Q(last_name__icontains=q)
-        ).select_related('perfilusuario')
-        comunidades = Comunidad.objects.filter( Q(nombre__icontains=q) & Q(activada=True))
-        proyectos = Proyecto.objects.filter( Q(titulo__icontains=q))
-        desafios = Desafio.objects.filter(Q(titulo__icontains=q))
-        return render(request, 'buscar.html', {'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
-    else:
-        return redirect('inicio')
+    busqueda = q
+    if not q:
+        q=""
+        busqueda="TODO"
+        
+    usuarios = User.objects.filter(
+        Q(first_name__icontains=q) |
+        Q(last_name__icontains=q)
+    ).select_related('perfilusuario')
+    comunidades = Comunidad.objects.filter( Q(nombre__icontains=q) & Q(activada=True))
+    proyectos = Proyecto.objects.filter( Q(titulo__icontains=q))
+    desafios = Desafio.objects.filter(Q(titulo__icontains=q))
+    
+    return render(request, 'buscar.html', {'busqueda':busqueda, 'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
 @login_required
 def chat(request, receptor_id):
     receptor = get_object_or_404(User, id=receptor_id)

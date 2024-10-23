@@ -30,7 +30,8 @@
         {% endif %}
         </ul>
         {% if user.is_authenticated %}
-        <li class="nav-item" style="color: #745bc1;"><a href="{% url 'perfil_usuario' user.username %}">
+        <li class="nav-item" style="color: #745bc1;">
+          <a href="{% url 'perfil_usuario' user.username %}">
           {% if not user.perfilusuario.foto_perfil == "static/images/default-avatar.svg" %}
             <img src="{{ user.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% else %}
@@ -38,7 +39,8 @@
           {% endif %}
         {% endif %}
           <span class="texto">{{ user.first_name }} {{ user.last_name }}</span>
-        </a></li>
+        </a>
+        </li>
         <form class="d-flex" action="{% url 'buscar' %}" method="get" style="padding: 0;">
           <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Buscar">
           <button class="btn btn-outline-success" type="submit">Buscar</button>

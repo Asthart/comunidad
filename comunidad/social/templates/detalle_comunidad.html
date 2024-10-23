@@ -277,7 +277,12 @@
                     {% for campaign in campaigns %}
                     <div class="project-item">
                         <a href="{% url 'detalle_campaign' campaign.pk %}">
-                            <h4>{{ campaign.desafio.titulo }}</h4>
+                        {% if campaign.tipo == 'donacion' %}
+                            <img src="{% static 'images/donate.svg' %}" alt="Icono" class="icono-svg" style="height: 30px; width: 30px;">
+                        {% else %}
+                            <img src="{% static 'images/vote.svg' %}" alt="Icono" class="icono-svg" style="height: 30px; width: 30px;">
+                        {% endif %}
+                            <span class="h4">{{ campaign.desafio.titulo }}</span>
                         </a>
                     </div>
                     {% empty %}
@@ -308,8 +313,10 @@
             </div>
 
             <div class="publications-section">
-                <div class="publication">
+                <div class="publication text-center">
                     <h2 class="title fw-bold">Publicaciones Recientes</h2>
+                    <br>
+                    <a href="{% url 'crear_publicacion' %}" class="action-button" style="">Crear Publicación</a>
                 </div>  
                 {% if publicaciones %}
                     {% for pub in publicaciones %}

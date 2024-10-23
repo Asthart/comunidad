@@ -1,58 +1,159 @@
 {% load static %}
 
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados de la búsqueda</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin-top: 85px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+          margin-top: 20px;
+          flex: 1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #212529;
+        }
+        ul {
+            list-style-type: none;
+        }
+        li {
+            margin-bottom: 15px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+        }
+        .card-img-top {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .card-title {
+            font-weight: bold;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-outline-secondary {
+            color: #6c757d;
+            background-color: transparent;
+            border-color: #6c757d;
+        }
+        .btn-outline-secondary:hover {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .dorado{
+          border:2px solid #fcc350 !important;
+        }
+    </style>
+</head>
+{% load static %}
+
 <body>
-  <main>
+    {% include 'header.html' %}
 
-  <h1>Resultados de la búsqueda</h1>
-  <h2>Usuarios</h2>
-  <ul>
-    {% for usuario in usuarios %}
-      <li>
-        {% if usuario.perfil %}
-          <img src="{{ usuario.perfil.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50">
-        {% endif %}
-        <span>
-          <a href="{% url 'perfil_usuario' usuario.username %}">{{ usuario.puntos }} {{ usuario.first_name }} {{ usuario.last_name }}</a>
-        </span>
-      </li>
-    {% endfor %}
-  </ul>
-<h2>Comunidades</h2>
-<ul>
-  {% for comunidad in comunidades %}
-    <li><a href="{% url 'detalle_comunidad' comunidad.id %}">{{ comunidad.nombre }}</a></li>
-  {% endfor %}
-</ul>
-
-<h2>Proyectos</h2>
-<ul>
-  {% for proyecto in proyectos %}
-    <li><a href="{% url 'detalle_proyecto' proyecto.id %}">{{ proyecto.titulo }}</a></li>
-  {% endfor %}
-</ul>
-
-<h2>Desafíos</h2>
-<ul>
-  {% for desafio in desafios %}
-    <li><a href="{% url 'detalle_desafio' desafio.id %}">{{ desafio.titulo }}</a></li>
-  {% endfor %}
-</ul>
-</main>
+    <main>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4 fw-bold">Resultados de la búsqueda para "{{ busqueda }}"</h1>
+        <div class="row">
+            <div class="col-md-12 mb-4">
+                <div class="card bg-white dorado">
+                    <div class="card-body">
+                        <h2>Usuarios</h2>
+                        <ul>
+                            {% for usuario in usuarios %}
+                                <li>
+                                    {% if not usuario.perfilusuario.foto_perfil == "static/images/default-avatar.svg" %}
+                                        <img src="{{ usuario.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" width="50" height="50" class="rounded-circle mr-2">
+                                    {% else %}
+                                        <img src="{% static '/images/default-avatar.svg' %}" alt="Foto de perfil de {{ usuario.username }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
+                                    {% endif %}
+                                    <a href="{% url 'perfil_usuario' usuario.username %}" class="text-dark">{{ usuario.puntos }} {{ usuario.first_name }} {{ usuario.last_name }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-12 mb-4">
+                <div class="card bg-white dorado">
+                    <div class="card-body">
+                        <h2>Comunidades</h2>
+                        <ul>
+                            {% for comunidad in comunidades %}
+                                <li><a href="{% url 'detalle_comunidad' comunidad.id %}" class="text-dark">{{ comunidad.nombre }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-12 mb-4">
+                <div class="card bg-white dorado">
+                    <div class="card-body">
+                        <h2>Proyectos</h2>
+                        <ul>
+                            {% for proyecto in proyectos %}
+                                <li><a href="{% url 'detalle_proyecto' proyecto.id %}" class="text-dark">{{ proyecto.titulo }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-12 mb-4">
+                <div class="card bg-white dorado">
+                    <div class="card-body">
+                        <h2>Desafíos</h2>
+                        <ul>
+                            {% for desafio in desafios %}
+                                <li><a href="{% url 'detalle_desafio' desafio.id %}" class="text-dark">{{ desafio.titulo }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </main>
+    {% include 'footer.html' %}
 </body>
 
-
-{% include 'header.html' %}
-{% include 'footer.html' %}
-<style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  main{
-    flex: 1;
-  }
-</style>
+</html>
 
