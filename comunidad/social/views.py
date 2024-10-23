@@ -806,7 +806,11 @@ def salir_comunidad(request, pk):
 @login_required
 def solicitar_membresia(request, comunidad_id):
     comunidad = get_object_or_404(Comunidad, id=comunidad_id)
-
+    solicitud_pendiente = SolicitudMembresia.objects.filter(comunidad=comunidad, usuario=request.user).first()
+    creada = False
+    if solicitud_pendiente:
+        creada = True
+    
     if request.method == 'POST':
         # Verificar que la comunidad es privada
         if comunidad.publica:
@@ -820,9 +824,9 @@ def solicitar_membresia(request, comunidad_id):
             return redirect('detalle_comunidad', comunidad_id)
         else:
             # Si ya existe una solicitud pendiente
-            return render(request, 'solicitud_existente.html', {'comunidad': comunidad})
+            creada = True
 
-    return render(request, 'solicitud_membresia.html', {'comunidad': comunidad})
+    return render(request, 'solicitud_membresia.html', {'comunidad': comunidad , 'creada': creada})
 
 def ranking_usuarios(request):
     ranking = []
