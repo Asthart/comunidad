@@ -274,6 +274,7 @@
 
                 <div class="publication">
                     <h3>Campañas</h3>
+                    <hr class="community-divider">
                     {% for campaign in campaigns %}
                     <div class="project-item">
                         <a href="{% url 'detalle_campaign' campaign.pk %}">
@@ -296,6 +297,7 @@
 
                 <div class="publication">
                     <h3>Proyectos</h3>
+                    <hr class="community-divider">
                     {% for proyecto in comunidad.proyectos.all %}
                         <div class="project-item">
                             <a href="{% url 'detalle_proyecto' proyecto.pk %}">
@@ -315,6 +317,7 @@
             <div class="publications-section">
                 <div class="publication text-center">
                     <h2 class="title fw-bold">Publicaciones Recientes</h2>
+                    <hr class="community-divider">
                     <br>
                     <a href="{% url 'crear_publicacion' %}" class="action-button" style="">Crear Publicación</a>
                 </div>  
@@ -379,6 +382,7 @@
             <div class="sidebar-right">
                 <div class="publication">
                     <h3>Miembros ({{ comunidad.miembros.count }})</h3>
+                    <hr class="community-divider">
                     {% for miembro in comunidad.miembros.all %}
                         <div class="member-item">
                             {% if miembro.perfilusuario.foto_perfil %}

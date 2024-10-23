@@ -37,9 +37,9 @@
           {% else %}
             <img src="{% static '/images/default-avatar.svg' %}" alt="Foto de perfil de {{ user.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
           {% endif %}
-        {% endif %}
-          <span class="texto">{{ user.first_name }} {{ user.last_name }}</span>
-        </a>
+            <span class="texto">{{ user.first_name }} {{ user.last_name }}</span>
+            </a>
+          {% endif %}
         </li>
         <form class="d-flex" action="{% url 'buscar' %}" method="get" style="padding: 0;">
           <input class="form-control me-2" type="search" name="q" placeholder="Buscar..." aria-label="Buscar">

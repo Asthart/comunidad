@@ -1,35 +1,90 @@
 {% load static %}
-{% load bootstrap5 %}
 <!doctype html>
 <html lang="es" data-bs-theme="auto">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        main{
+          flex: 1;
+          margin-top: 20px;
+        }
+        body {
+            background-color: #f8f9fa;
+            margin-top: 80px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,.1);
+        }
+        .card-img-top {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .card-title {
+            font-weight: bold;
+        }
+        .btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .dorado{
+          border:2px solid #fcc350 !important;
+        }
+        .community-divider {
+          width: 100%;
+          border: 1px solid #fcc350;
+          height: 1px;
+          background: #ddd;
+          margin: 10px 0;
+        }
+    </style>
 </head>
 <body>
+    {% include 'header.html' %}
     <main>
-        <h1 class="text-center fw-bold">{{ proyecto.titulo }}</h1>
-        <p><strong>Creado por:</strong> {{ proyecto.creador.username }}</p>
-        <p><strong>Fecha de creación:</strong> {{ proyecto.fecha_creacion }}</p>
-        <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
-        <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}">{{ proyecto.comunidad.nombre }}</a></p>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body dorado">
+                <h1 class="card-title fw-bold">Proyecto {{ proyecto.titulo }}</h1>
+                <hr class="community-divider">
+                <p><strong>Creado por:</strong>                
+                  <a href="{% url 'perfil_usuario' proyecto.creador.username %}">
+                    {% if not proyecto.creador.perfilusuario.foto_perfil == "static/images/default-avatar.svg" %}
+                      <img src="{{ proyecto.creador.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ proyecto.creador.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
+                    {% else %}
+                      <img src="{% static '/images/default-avatar.svg' %}" alt="Foto de perfil de {{ proyecto.creador.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
+                    {% endif %}
+                      <span class="texto">{{ proyecto.creador.first_name }} {{ proyecto.creador.last_name }}</span>
+                    </a>
+                </p>
+                <p><strong>Fecha de creación:</strong> {{ proyecto.fecha_creacion }}</p>
+                <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
+                <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}" class="">{{ proyecto.comunidad }}</a></p>
+            </div>
+        </div>
     </div>
-</main>
+    </main>
+    {% include 'footer.html' %}
 </body>
 </html>
-{% include 'header.html' %}
-{% include 'footer.html' %}
-<style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  main{
-    flex: 1;
-  }
-</style>
-
-
