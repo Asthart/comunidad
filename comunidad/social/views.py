@@ -124,13 +124,13 @@ def crear_comunidad(request):
             comunidad.miembros.add(request.user)
 
             ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
-            send_mail(
+            '''send_mail(
                 'Nueva solicitud de cuenta',
                 f'El usuario {request.user} ha solicitado una comunidad. Con el nombre de {comunidad.nombre}.',
                 ADMIN_EMAIL,
                 ['cespedesalejandro247@gmail.com'],
                 fail_silently=False,
-            )
+            )'''
             accion = Action.objects.filter(name='crear_comunidad').first()
             update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
@@ -688,18 +688,37 @@ def detalle_campaign(request, pk):
     })
 
 @login_required
-def lista_campaigns(request):
-    campaigns = Campaign.objects.all().order_by('-id')
+def lista_campaigns(request, comunidad_id):
+    campaigns = Campaign.objects.filter(desafio__comunidad=comunidad_id).order_by('-id')
+    comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
     filtro = request.GET.get('filtro', 'todas')
-    
     if filtro == 'activas':
         campaigns = campaigns.filter(activa=True)
     elif filtro == 'no_activas':
         campaigns = campaigns.filter(activa=False)
     
     return render(request, 'lista_campaigns.html', {
+        'comunidad': comunidad,
         'campaigns': campaigns,
         'filtro_actual': filtro
+    })
+    
+@login_required
+def lista_proyectos(request, comunidad_id):
+    comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
+    proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
+    
+    return render(request, 'lista_proyectos.html', {
+        'comunidad': comunidad,
+        'proyectos': proyectos,
+    })
+    
+@login_required
+def lista_miembros(request, comunidad_id):
+    comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
+    
+    return render(request, 'lista_miembros.html', {
+        'comunidad': comunidad,
     })
     
 @login_required

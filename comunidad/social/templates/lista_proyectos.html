@@ -1,0 +1,35 @@
+{% load static %}
+
+<body>
+    <main>
+        <div>
+    <h1>Proyectos de {{comunidad.nombre}}</h1>
+    
+    <ul>
+        {% for proyecto in proyectos %}
+            <li>
+                <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto }}</a>
+            </li>
+        {% empty %}
+            <li>No hay proyectos.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'detalle_comunidad' comunidad.id %}">Volver</a>
+        </div>
+    </main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+</style>

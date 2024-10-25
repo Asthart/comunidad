@@ -24,7 +24,7 @@ class Comunidad(models.Model):
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
     publica = models.BooleanField(default=False)
-    donaciones = models.BooleanField(default=False)
+    #donaciones = models.BooleanField(default=False)
     foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='static/images/default-avatar.svg')
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='static/images/backgroud1.jpg')
 

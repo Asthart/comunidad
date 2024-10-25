@@ -3,12 +3,12 @@
 <body>
     <main>
         <div>
-    <h1>Campañas</h1>
+    <h1>Campañas de {{comunidad.nombre}}</h1>
     
     <div class="filtros">
-        <a href="{% url 'lista_campaigns' %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %}">Ver todas</a>
-        <a href="{% url 'lista_campaigns' %}?filtro=activas" class="btn {% if filtro_actual == 'activas' %}btn-active{% endif %}">Ver solo activas</a>
-        <a href="{% url 'lista_campaigns' %}?filtro=no_activas" class="btn {% if filtro_actual == 'no_activas' %}btn-active{% endif %}">Ver solo no activas</a>
+        <a href="{% url 'lista_campaigns' 2 %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %}">Ver todas</a>
+        <a href="{% url 'lista_campaigns' 2 %}?filtro=activas" class="btn {% if filtro_actual == 'activas' %}btn-active{% endif %}">Ver solo activas</a>
+        <a href="{% url 'lista_campaigns' 2 %}?filtro=no_activas" class="btn {% if filtro_actual == 'no_activas' %}btn-active{% endif %}">Ver solo no activas</a>
     </div>
     
     <ul>
@@ -18,9 +18,10 @@
                 ({% if campaign.activa %}Activa{% else %}No activa{% endif %})
             </li>
         {% empty %}
-            <li>No hay campaigns.</li>
+            <li>No hay campañas.</li>
         {% endfor %}
     </ul>
+    <a href="{% url 'detalle_comunidad' comunidad.id %}">Volver</a>
         </div>
     </main>
 </body>

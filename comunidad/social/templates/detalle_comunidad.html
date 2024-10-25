@@ -105,7 +105,7 @@
         }
         
         .publications-section {
-            width: 64%;
+            width: 62%;
             margin-left: 2px;
             margin-right: 2px;
         }
@@ -115,7 +115,7 @@
         }
 
         .sidebar-left {
-            width: 17%;
+            width: 19%;
         }
         
         .publication {
@@ -134,6 +134,10 @@
             margin-bottom: 10px;
         }
         
+        .member-item{
+            margin-bottom: 2px;
+        }
+
         .profile-picture {
             width: 40px;
             height: 40px;
@@ -185,10 +189,6 @@
 
         .title{
             text-align: center;
-        }
-
-        .member-item{
-            margin-bottom: 2px;
         }
 
         .boton-condicional{
@@ -253,8 +253,12 @@
                 
                 <div class="boton-comunidad">
                     {% if es_miembro %}
-                        <a href="{% url 'chat_comunidad' comunidad.pk %}" class="action-button">Chat de la comunidad</a>
-                        <a href="{% url 'salir_comunidad' comunidad.pk %}" class="action-button boton-condicional">Salir de la comunidad</a>
+                        <a href="{% url 'chat_comunidad' comunidad.pk %}" class="action-button bg-primary">Chat de la comunidad</a>
+                        {% if not es_admin %}
+                            <a href="{% url 'salir_comunidad' comunidad.pk %}" class="action-button boton-condicional">Salir de la comunidad</a>
+                        {% else %}
+                            <a href="http://localhost:8000/admin" class="action-button boton-condicional">Administrar comunidad</a>
+                        {% endif %}
                     {% elif not es_miembro and comunidad.publica %}
                         <a href="{% url 'unirse_comunidad' comunidad.pk %}" class="action-button">Unirse a la comunidad</a>
                     {% else %}
@@ -275,7 +279,7 @@
                 <div class="publication">
                     <h3>Campañas</h3>
                     <hr class="community-divider">
-                    {% for campaign in campaigns %}
+                    {% for campaign in campaigns|slice:":5" %}
                     <div class="project-item">
                         <a href="{% url 'detalle_campaign' campaign.pk %}">
                         {% if campaign.tipo == 'donacion' %}
@@ -291,6 +295,7 @@
                     {% endfor %}
                     <br>
                     {% if es_miembro %}
+                        <a href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
                         <a href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
                     {% endif %}
                 </div>
@@ -298,7 +303,7 @@
                 <div class="publication">
                     <h3>Proyectos</h3>
                     <hr class="community-divider">
-                    {% for proyecto in comunidad.proyectos.all %}
+                    {% for proyecto in comunidad.proyectos.all|slice:":5" %}
                         <div class="project-item">
                             <a href="{% url 'detalle_proyecto' proyecto.pk %}">
                                 <h4>{{ proyecto }}</h4>
@@ -309,6 +314,7 @@
                     {% endfor %}
                     <br>
                     {% if es_miembro %}
+                        <a href="{% url 'lista_proyectos' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
                         <a href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Crear proyecto</a>
                     {% endif %}
                 </div>
@@ -383,23 +389,31 @@
                 <div class="publication">
                     <h3>Miembros ({{ comunidad.miembros.count }})</h3>
                     <hr class="community-divider">
-                    {% for miembro in comunidad.miembros.all %}
+
+                    <div class="member-item">
+                        {% if comunidad.administrador.perfilusuario.foto_perfil %}
+                        <div class="author-info">
+                            <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de {{ comunidad.administrador.username }}" class="profile-picture">
+                        {% endif %}
+                            <a href="{% url 'perfil_usuario' comunidad.administrador.username %}" class="author-name">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</a>
+                            <span class="admin-badge" style="color: #ef32f9;">- Admin</span>
+                        </div>
+                    </div>
+
+                    {% for miembro in comunidad.miembros.all|slice:":12" %}
+                    {% if not miembro == comunidad.administrador %}
                         <div class="member-item">
                             {% if miembro.perfilusuario.foto_perfil %}
                             <div class="author-info">
-                            {% if miembro.perfilusuario.foto_perfil.url %}
                                 <img src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="profile-picture">
                             {% endif %}
-                            {% endif %}
                                 <a href="{% url 'perfil_usuario' miembro.username %}" class="author-name">{{ miembro.first_name }} {{ miembro.last_name }}</a>
-                            {% if miembro == comunidad.administrador %}
-
-                                <span class="admin-badge" style="color: #ef32f9;">- Admin</span>
-
-                            {% endif %}
                             </div>
                         </div>
+                    {% endif %}
                     {% endfor %}
+                    <br>
+                    <a href="{% url 'lista_miembros' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
                 </div>
             </div>
 

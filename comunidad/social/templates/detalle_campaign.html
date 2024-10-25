@@ -13,7 +13,9 @@
     
     <h2>Respuestas:</h2>
     
-    {% if campaign_activa and request.user != campaign.desafio.creador %}
+    {% if request.user == campaign.desafio.creador %}
+        <p> Eres el creador de la campaña, no puedes responder.</p>
+    {% elif campaign_activa %}
         <form method="post">
             {% csrf_token %}
             {{ respuesta_form.as_p }}

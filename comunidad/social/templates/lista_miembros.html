@@ -1,0 +1,71 @@
+{% load static %}
+
+<body>
+    <main>
+        <div>
+    <h1>Miembros de {{comunidad.nombre}}</h1>
+    
+    <ul>
+        <div class="member-item">
+            {% if comunidad.administrador.perfilusuario.foto_perfil %}
+            <div class="author-info">
+                <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de {{ comunidad.administrador.username }}" class="profile-picture">
+            {% endif %}
+                <a href="{% url 'perfil_usuario' comunidad.administrador.username %}" class="author-name">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</a>
+                <span class="admin-badge" style="color: #ef32f9;">- Admin</span>
+            </div>
+        </div>
+
+        {% for miembro in comunidad.miembros.all %}
+        {% if not miembro == comunidad.administrador %}
+            <div class="member-item">
+                {% if miembro.perfilusuario.foto_perfil %}
+                <div class="author-info">
+                    <img src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="profile-picture">
+                {% endif %}
+                    <a href="{% url 'perfil_usuario' miembro.username %}" class="author-name">{{ miembro.first_name }} {{ miembro.last_name }}</a>
+                </div>
+            </div>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    <a href="{% url 'detalle_comunidad' comunidad.id %}">Volver</a>
+        </div>
+    </main>
+</body>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+<style>
+  body {
+    margin-top: 80px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main{
+    flex: 1;
+  }
+
+  .member-item{
+    margin-bottom: 2px;
+}
+
+.profile-picture {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.author-info {
+    flex-grow: 1;
+}
+
+.author-name {
+    font-weight: bold;
+    color: #333;
+}
+</style>
