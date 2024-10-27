@@ -295,8 +295,10 @@
                     {% endfor %}
                     <br>
                     {% if es_miembro %}
-                        <a href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
-                        <a href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
+                        <div >
+                        <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
+                        <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
+                        </div>
                     {% endif %}
                 </div>
 
@@ -314,8 +316,10 @@
                     {% endfor %}
                     <br>
                     {% if es_miembro %}
-                        <a href="{% url 'lista_proyectos' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
-                        <a href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Crear proyecto</a>
+                    <div>
+                        <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_proyectos' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
+                        <a style="display: flex; justify-content: center;" href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Crear proyecto</a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -413,7 +417,7 @@
                     {% endif %}
                     {% endfor %}
                     <br>
-                    <a href="{% url 'lista_miembros' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
+                    <a style="display: flex; justify-content: center;" href="{% url 'lista_miembros' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
                 </div>
             </div>
 

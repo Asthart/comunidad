@@ -64,8 +64,8 @@
     {% include 'header.html' %}
     <main>
     <div class="container mt-5">
-        <div class="card">
-            <div class="card-body dorado">
+        <div class="card dorado">
+            <div class="card-body">
                 <h1 class="card-title fw-bold">Proyecto {{ proyecto.titulo }}</h1>
                 <hr class="community-divider">
                 <p><strong>Creado por:</strong>                
@@ -83,6 +83,9 @@
                 <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}" class="">{{ proyecto.comunidad }}</a></p>
             </div>
         </div>
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'detalle_comunidad' proyecto.comunidad.id %}" class="btn btn-primary">Volver</a>
     </div>
     </main>
     {% include 'footer.html' %}

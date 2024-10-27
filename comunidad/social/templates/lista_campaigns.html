@@ -2,41 +2,100 @@
 
 <body>
     <main>
-        <div>
-    <h1>Campañas de {{comunidad.nombre}}</h1>
-    
-    <div class="filtros">
-        <a href="{% url 'lista_campaigns' 2 %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %}">Ver todas</a>
-        <a href="{% url 'lista_campaigns' 2 %}?filtro=activas" class="btn {% if filtro_actual == 'activas' %}btn-active{% endif %}">Ver solo activas</a>
-        <a href="{% url 'lista_campaigns' 2 %}?filtro=no_activas" class="btn {% if filtro_actual == 'no_activas' %}btn-active{% endif %}">Ver solo no activas</a>
-    </div>
-    
-    <ul>
-        {% for campaign in campaigns %}
-            <li>
-                <a href="{% url 'detalle_campaign' campaign.pk %}">{{ campaign.desafio.titulo }}</a>
-                ({% if campaign.activa %}Activa{% else %}No activa{% endif %})
-            </li>
-        {% empty %}
-            <li>No hay campañas.</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'detalle_comunidad' comunidad.id %}">Volver</a>
+        <div class="container mt-5 p-4 bg-white shadow rounded dorado">
+            <h1 class="text-center fw-bold">Campañas de {{comunidad.nombre}}</h1>
+            
+            <div class="mt-4">
+                <div class="d-flex justify-content-center">
+                    <a style="color: blue;" href="{% url 'lista_campaigns' comunidad.pk %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %} me-2">Ver todas</a>
+                    <a style="color: blue;" href="{% url 'lista_campaigns' comunidad.pk %}?filtro=activas" class="btn {% if filtro_actual == 'activas' %}btn-active{% endif %} me-2">Ver solo activas</a>
+                    <a style="color: blue;" href="{% url 'lista_campaigns' comunidad.pk %}?filtro=no_activas" class="btn {% if filtro_actual == 'no_activas' %}btn-active{% endif %}">Ver solo no activas</a>
+                </div>
+            </div>
+            <hr class="community-divider">
+            <br>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                {% for campaign in campaigns %}
+                    <div class="col">
+                        <div class="card h-100 dorado">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <a href="{% url 'detalle_campaign' campaign.pk %}">
+                                    {% if campaign.tipo == 'donacion' %}
+                                        <img src="{% static 'images/donate.svg' %}" alt="Icono" class="icono-svg" style="height: 30px; width: 30px;">
+                                    {% else %}
+                                        <img src="{% static 'images/vote.svg' %}" alt="Icono" class="icono-svg" style="height: 30px; width: 30px;">
+                                    {% endif %}
+                                        <span class="h4">{{ campaign.desafio.titulo }}</span>
+                                    </a>
+                                <span class="badge {% if campaign.activa %}bg-success{% else %}bg-secondary{% endif %}">
+                                    {% if campaign.activa %}Activa{% else %}No activa{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <p>No hay campañas.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
         </div>
     </main>
-</body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
-<style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
 
-  main{
-    flex: 1;
-  }
+</body>
+</html>
+
+<style>
+    body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+      main{
+        flex: 1;
+      }
+    
+      .member-item{
+        margin-bottom: 2px;
+    }
+    
+    .profile-picture {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    
+    .author-info {
+        flex-grow: 1;
+    }
+    
+    .author-name {
+        font-weight: bold;
+        color: #333;
+    }
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
+      .community-divider {
+        width: 100%;
+        border: 1px solid #fcc350;
+        height: 1px;
+        background: #ddd;
+        margin: 10px 0;
+      }
 </style>

@@ -2,34 +2,83 @@
 
 <body>
     <main>
-        <div>
-    <h1>Proyectos de {{comunidad.nombre}}</h1>
-    
-    <ul>
-        {% for proyecto in proyectos %}
-            <li>
-                <a href="{% url 'detalle_proyecto' proyecto.pk %}">{{ proyecto }}</a>
-            </li>
-        {% empty %}
-            <li>No hay proyectos.</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'detalle_comunidad' comunidad.id %}">Volver</a>
+        <div class="container mt-5 p-4 bg-white shadow rounded dorado">
+            <h1 class="text-center fw-bold">Proyectos de {{comunidad.nombre}}</h1>
+            <hr class="community-divider">
+            <br>
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                {% for proyecto in proyectos %}
+                    <div class="col">
+                        <div class="card h-100 dorado">
+                            <div class="card-body">
+                                <a href="{% url 'detalle_proyecto' proyecto.pk %}" class="text-decoration-none">{{ proyecto }}</a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <p class="card-text">No hay proyectos.</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
         </div>
     </main>
-</body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
-<style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
 
-  main{
-    flex: 1;
-  }
+</body>
+</html>
+
+<style>
+    body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+      main{
+        flex: 1;
+      }
+    
+      .member-item{
+        margin-bottom: 2px;
+    }
+    
+    .profile-picture {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    
+    .author-info {
+        flex-grow: 1;
+    }
+    
+    .author-name {
+        font-weight: bold;
+        color: #333;
+    }
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
+      .community-divider {
+        width: 100%;
+        border: 1px solid #fcc350;
+        height: 1px;
+        background: #ddd;
+        margin: 10px 0;
+      }
 </style>

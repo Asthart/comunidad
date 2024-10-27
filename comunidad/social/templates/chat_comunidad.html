@@ -2,11 +2,11 @@
 <body>
     <main>
         <div class="chat-container">
-            <h1>Chat de la comunidad: {{ comunidad.nombre }}</h1>
-            <div id="chat-messages" class="chat-messages">
+            <h1 class="fw-bold" style="text-align: center; margin-bottom: 20px;">Chat de la comunidad: {{ comunidad.nombre }}</h1>
+            <div id="chat-messages" class="chat-messages dorado">
                 {% for mensaje in mensajes %}
                     <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
-                        <strong>{{ mensaje.emisor.username }}:</strong> 
+                        <a href="{% url 'perfil_usuario' mensaje.emisor.username %}" class="author-name">{{ mensaje.emisor.first_name }} {{ mensaje.emisor.last_name }}{% if mensaje.emisor == request.user %} (Yo){% endif %}:</a>
                         {{ mensaje.contenido }}
                         <small class="message-time">
                             (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
@@ -17,11 +17,16 @@
                     <img src="{% static 'images/bajar.svg' %}" alt="Ir al fondo">
                 </div>
             </div>
-            <div class="chat-input">
+            <div class="chat-input rounded dorado">
                 <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
                 <button id="chat-message-submit">Enviar</button>
             </div>
         </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
+        </div>
+        <br>
     </main>
 </body>
 
@@ -134,6 +139,9 @@
 </script>
 
 <style>
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
     body {
         margin-top: 80px;
         display: flex;
@@ -159,6 +167,7 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         margin-bottom: 20px;
+        background: white;
     }
     
     .scroll-to-bottom-btn {
@@ -214,7 +223,7 @@
     }
 
     .sent {
-        background-color: #e6f3ff;
+        background-color: #B9F2F7;
         text-align: right;
     }
 

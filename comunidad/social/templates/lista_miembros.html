@@ -2,40 +2,61 @@
 
 <body>
     <main>
-        <div>
-    <h1>Miembros de {{comunidad.nombre}}</h1>
-    
-    <ul>
-        <div class="member-item">
-            {% if comunidad.administrador.perfilusuario.foto_perfil %}
-            <div class="author-info">
-                <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de {{ comunidad.administrador.username }}" class="profile-picture">
-            {% endif %}
-                <a href="{% url 'perfil_usuario' comunidad.administrador.username %}" class="author-name">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</a>
-                <span class="admin-badge" style="color: #ef32f9;">- Admin</span>
+        <div class="container mt-5 p-4 bg-white shadow rounded dorado">
+            <h1 class="text-center fw-bold">Miembros de {{comunidad.nombre}}</h1>
+            <hr class="community-divider">
+            <br>
+            
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                {% if comunidad.administrador.perfilusuario.foto_perfil %}
+                    <div class="col">
+                        <div class="card h-100 dorado">
+                            <div class="card-body">
+                                <div class="author-info d-flex align-items-center">
+                                    <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de {{ comunidad.administrador.username }}" class="rounded-circle me-3" width="50" height="50">
+                                    <div>
+                                        <a href="{% url 'perfil_usuario' comunidad.administrador.username %}" class="text-decoration-none text-dark">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</a>
+                                        <small class="ms-2" style="color: #ef32f9;">- Administrador de Comunidad</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                {% for miembro in comunidad.miembros.all %}
+                    {% if not miembro == comunidad.administrador %}
+                        <div class="col">
+                            <div class="card h-100 dorado">
+                                <div class="card-body">
+                                    <div class="author-info d-flex align-items-center">
+                                        {% if miembro.perfilusuario.foto_perfil %}
+                                            <img src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="rounded-circle me-3" width="50" height="50">
+                                        {% endif %}
+                                        <div>
+                                            <a href="{% url 'perfil_usuario' miembro.username %}" class="text-decoration-none text-dark">{{ miembro.first_name }} {{ miembro.last_name }}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
             </div>
         </div>
-
-        {% for miembro in comunidad.miembros.all %}
-        {% if not miembro == comunidad.administrador %}
-            <div class="member-item">
-                {% if miembro.perfilusuario.foto_perfil %}
-                <div class="author-info">
-                    <img src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="profile-picture">
-                {% endif %}
-                    <a href="{% url 'perfil_usuario' miembro.username %}" class="author-name">{{ miembro.first_name }} {{ miembro.last_name }}</a>
-                </div>
-            </div>
-        {% endif %}
-        {% endfor %}
-    </ul>
-    <a href="{% url 'detalle_comunidad' comunidad.id %}">Volver</a>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
         </div>
     </main>
-</body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
+
+</body>
+</html>
+
+
 <style>
   body {
     margin-top: 80px;
@@ -68,4 +89,14 @@
     font-weight: bold;
     color: #333;
 }
+.dorado{
+    border:2px solid #fcc350 !important;
+  }
+  .community-divider {
+    width: 100%;
+    border: 1px solid #fcc350;
+    height: 1px;
+    background: #ddd;
+    margin: 10px 0;
+  }
 </style>

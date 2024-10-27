@@ -2,15 +2,15 @@
 <body>
 <main>
     <div class="chat-container">
-        <h1>Chat con {{ receptor.username }}</h1>
-        <div id="chat-messages" class="chat-messages">
+        <h1 class="fw-bold" style="text-align: center; margin-bottom: 20px;">Chat con {{ receptor.first_name }} {{ receptor.last_name }}</h1>
+        <div id="chat-messages" class="chat-messages dorado">
             {% for mensaje in mensajes %}
                 <div class="message {% if mensaje.emisor == request.user %}sent{% else %}received{% endif %}" data-id="{{ mensaje.id }}">
-                    <strong>{{ mensaje.emisor.username }}:</strong> 
+                    <a href="{% url 'perfil_usuario' mensaje.emisor.username %}" class="author-name">{{ mensaje.emisor.first_name }} {{ mensaje.emisor.last_name }}{% if mensaje.emisor == request.user %} (Yo){% endif %}:</a>
                     {{ mensaje.contenido }}
                     <small class="message-time">
                         (Enviado: {{ mensaje.fecha_envio|date:"d/m/Y, H:i:s" }})
-                        <span class="read-status">
+                        <span class="read-status message-time">
                             {% if mensaje.leido %}
                                 (Leído: {{ mensaje.fecha_lectura|date:"d/m/Y, H:i:s" }})
                             {% endif %}
@@ -22,11 +22,15 @@
                 <img src="{% static 'images/bajar.svg' %}" alt="Ir al fondo">
             </div>
         </div>
-        <div class="chat-input">
+        <div class="chat-input dorado rounded">
             <input type="text" id="chat-message-input" placeholder="Escribe un mensaje...">
             <button id="chat-message-submit">Enviar</button>
         </div>
     </div>
+    <div class="text-center mt-4">
+        <a href="#" onclick="history.back()" class="btn btn-primary">Volver</a>
+    </div>
+    <br>
 </main>
 </body>
 
@@ -179,6 +183,9 @@
 {% include 'header.html' %}
 {% include 'footer.html' %}
 <style>
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
     .chat-container {
         position: relative;
         max-width: 100%;
@@ -193,6 +200,7 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         margin-bottom: 20px;
+        background: white;
     }
     
     .scroll-to-bottom-btn {
@@ -249,5 +257,24 @@
     
     main{
         flex: 1;
+    }
+
+    .message {
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .sent {
+        background-color: #B9F2F7;
+        text-align: right;
+    }
+
+    .received {
+        background-color: #f0f0f0;
+    }
+    .message-time {
+        font-size: 0.8em;
+        color: #888;
     }
 </style>

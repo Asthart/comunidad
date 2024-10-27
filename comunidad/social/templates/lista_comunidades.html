@@ -3,41 +3,48 @@
 <body>
     <main>
         <div class="container py-5">
-            <h1 class="mb-4">Listado de Comunidades Activas</h1>
+            <h1 class="mb-4 fw-bold" style="text-align: center;">Listado de Comunidades Activas</h1>
 
-            <button onclick="location.href='{% url 'crear_comunidad' %}'" class="btn btn-primary mb-3">Solicitar nueva comunidad</button>
+            <div class="text-center mb-4">
+            <button onclick="location.href='{% url 'crear_comunidad' %}'" class="btn btn-primary mb-4">Solicitar nueva comunidad</button>
+            </div>
 
             <ul class="list-group list-group-flush dorado" style="border-radius: 10px;">
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <h5 class="mb-1 fw-bold">Nombre</h5>
-                    <h5 class="mb-1 fw-bold">Administrador</h5>
-                    <h5 class="mb-1 fw-bold">Tipo</h5><!--
+                    <h5 style="width: 25%; text-align: center;" class="mb-1 fw-bold">Nombre</h5>
+                    <h5 style="width: 25%;text-align: center;" class="mb-1 fw-bold">Administrador</h5>
+                    <h5 style="width: 25%;text-align: center;" class="mb-1 fw-bold">Tipo</h5><!--
                     <h5 class="mb-1 fw-bold">Donaciones</h5>-->
-                    <h5 class="mb-1 fw-bold">Acciones</h5>
+                    <h5 style="width: 25%;text-align: center;" class="mb-1 fw-bold">Acciones</h5>
                 </li>
                 {% for comunidad in comunidades %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <h5 class="mb-1  fw-bold">{{ comunidad.nombre }}</h5>
-                        <div class="d-flex align-items-center">
+                        <h5 style="width: 25%;text-align: center;" class="mb-1  fw-bold">{{ comunidad.nombre }}</h5>
+                        <div style="width: 25%;" class="d-flex align-items-center">
                             {% if comunidad.administrador.perfilusuario.foto_perfil %}
-                                <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="rounded-circle me-3" style="width: 45px; height: 45px;">
+                                <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="rounded-circle me-3" style="width: 45px; height: 45px; align-self: center;"> 
                             {% endif %}
-                            <div>
-                                <a href="{% url 'perfil_usuario' comunidad.administrador.username %}"><h5 class="mb-1">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</h5></a>
+                            <div >
+                                <a  href="{% url 'perfil_usuario' comunidad.administrador.username %}"><h5 class="mb-1">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</h5></a>
                                 <small class="text-muted">{{ comunidad.administrador.email }}</small>
                             </div>
                         </div>
+                        <div style="width: 25%;text-align: center;">
                         {% if comunidad.publica %}
                             <span class="badge bg-success">Publica</span>
                         {% else %}
                             <span class="badge bg-secondary">Privada</span>
-                        {% endif %}<!--
+                        {% endif %}
+                        </div>
+                        <!--
                         {% if comunidad.donaciones %}
                             <span class="badge bg-warning">Acepta donaciones</span>
                         {% else %}
                             <span class="badge bg-secondary">No acepta donaciones</span>
                         {% endif %}-->
+                        <div style="width: 25%; text-align: center;">
                         <a href="{% url 'detalle_comunidad' comunidad.pk %}" class="btn btn-sm btn-outline-info ms-2">Ver detalles</a>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
