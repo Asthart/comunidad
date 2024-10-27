@@ -120,6 +120,7 @@ def crear_comunidad(request):
         if form.is_valid():
             comunidad = form.save(commit=False)
             comunidad.administrador = request.user
+            comunidad.crowuser = request.user
             comunidad.save()
             comunidad.miembros.add(request.user)
 
@@ -148,7 +149,7 @@ def detalle_comunidad(request, pk):
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaign.objects.filter(desafio__comunidad=comunidad).order_by('-id')
-    es_admin = (comunidad.administrador == request.user)
+    es_admin = (comunidad.administrador == request.user or comunidad.crowuser == request.user)
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
     # Obtener todas las publicaciones relevantes

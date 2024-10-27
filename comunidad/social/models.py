@@ -21,6 +21,7 @@ class Comunidad(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     administrador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comunidades_administradas')
+    crowuser = models.ForeignKey(User, on_delete=models.CASCADE)
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
     publica = models.BooleanField(default=False)
@@ -28,6 +29,7 @@ class Comunidad(models.Model):
     foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='static/images/default-avatar.svg')
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='static/images/backgroud1.jpg')
     tags = models.ManyToManyField('Tag')
+
 
 
     def __str__(self):
