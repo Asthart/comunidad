@@ -1,5 +1,4 @@
 # views.py
-
 from datetime import datetime, timedelta
 from decimal import Decimal
 import os
