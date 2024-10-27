@@ -66,9 +66,13 @@
     <div class="container mt-5">
         <div class="card dorado">
             <div class="card-body">
-                <h1 class="card-title fw-bold">Proyecto {{ proyecto.titulo }}</h1>
+                <h1 class="card-title fw-bold text-center">Proyecto {{ proyecto.titulo }}</h1>
                 <hr class="community-divider">
-                <p><strong>Creado por:</strong>                
+                <img src="{{ proyecto.imagenes.url }}" class="card-img-top" alt="{{ proyecto.titulo }}" style="max-width: 100%; height: auto;">
+                {% if proyecto.documentos %}
+                    <a href="{{ proyecto.documentos.url }}" class="link-body-emphasis fw-bold"><img src="{% static '/images/download.svg' %}" alt="PDF" width="30" height="30" style="object-fit: cover; border-radius: 50%;"> Descargar Adjunto</a>
+                {% endif %}
+                <p style="margin-top: 20px;"><strong>Creado por:</strong>                
                   <a href="{% url 'perfil_usuario' proyecto.creador.username %}">
                     {% if not proyecto.creador.perfilusuario.foto_perfil == "static/images/default-avatar.svg" %}
                       <img src="{{ proyecto.creador.perfilusuario.foto_perfil.url }}" alt="Foto de perfil de {{ proyecto.creador.username }}" width="30" height="30" style="object-fit: cover; border-radius: 50%;">
@@ -87,6 +91,7 @@
     <div class="text-center mt-4">
         <a href="{% url 'detalle_comunidad' proyecto.comunidad.id %}" class="btn btn-primary">Volver</a>
     </div>
+    <br>
     </main>
     {% include 'footer.html' %}
 </body>
