@@ -39,6 +39,7 @@ urlpatterns = [
     path('comunidad/<int:comunidad_id>/miembros/', views.lista_miembros, name='lista_miembros'),
     path('puntuar/<int:pk>/<int:estrellas>/', views.puntuar_respuesta, name='puntuar_respuesta'),
     path('desafio/<int:desafio_id>/like/', views.like_desafio, name='like_desafio'),
+    path('desafio/<int:desafio_id>/like/<int:comentario_id>', views.like_comentariod, name='like_respuesta'),
     path('comentar/<pk>/', views.crear_comentario, name='crear_comentario'),
     path('comentar_proyecto/<pk>/', views.crear_comentario_pro, name='crear_comentario_pro'),
     path('publicacion/<int:pk>/like/', views.like, name='like_publicacion'),

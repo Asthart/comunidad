@@ -6,13 +6,13 @@
 <div class="campaign-detail">
     <h1>{{ campaign.desafio.titulo }}</h1>
     <p>{{ campaign.desafio.descripcion }}</p>
-    
+
     {% if request.user == campaign.desafio.creador %}
         <a href="{% url 'admin:social_campaign_change' campaign.pk %}">Ir al panel de administración</a>
     {% endif %}
-    
+
     <h2>Respuestas:</h2>
-    
+
     {% if request.user == campaign.desafio.creador %}
         <p> Eres el creador de la campaña, no puedes responder.</p>
     {% elif campaign_activa %}
@@ -27,21 +27,9 @@
     {% else %}
         <p> Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}
-    {% if campaign_activa and request.user != campaign.desafio.creador %}
 
-    <div class="rating" >
-        {% for i in "54321" %}
-            <a href="{% url 'puntuar_desafio' campaign.pk forloop.counter  %}"class="star" data-value="{{ forloop.counter }}">&#9733;</a>
-        {% endfor %}
-    </div>
-    {% endif %}
-    <div class="promedio-rating">
-        <div class="promedio-stars-outer">
-            <div class="promedio-stars-inner" style="width: {{ puntos|floatformat:1 }}%;"></div>
-        </div>
-        <span>{{ puntos|floatformat:1 }} de 5 estrellas</span>
-    </div>
-    <p>Likes: {{ desafio.total_likes }}</p>
+
+    <p>Likes: {{ total_likes }}</p>
 
 <form action="{% url 'like_desafio' campaign.desafio.id %}" method="POST">
     {% csrf_token %}
@@ -54,10 +42,14 @@
     {% for respuesta in campaign.respuestas %}
         <div class="respuesta">
             <p>{{ respuesta.autor.username }}: {{ respuesta.respuesta }}</p>
-            
-            
-            
-            <p class="puntuacion">Puntos: <span class="puntos-valor">{{ respuesta.puntuacion }}</span> estrellas</p>
+            <form action="{% url 'like_respuesta' campaign.desafio.id respuesta.id%}" method="POST">
+                {% csrf_token %}
+                {% if user in desafio.likes.all %}
+                    <button type="submit">Quitar Like</button>
+                {% else %}
+                    <button type="submit">Dar Like</button>
+                {% endif %}
+            <p class="puntuacion">Puntos: <span class="puntos-valor">{{ respuesta.likes_total }}</span> </p>
         </div>
     {% empty %}
         <p>No hay respuestas aún.</p>
@@ -74,7 +66,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         var ratings = document.querySelectorAll('.rating');
         var isCreador = {{ is_creador|yesno:"true,false" }};
-        
+
         ratings.forEach(function(rating) {
             var stars = rating.querySelectorAll('.star');
             var respuestaId = rating.dataset.respuestaId;
@@ -93,7 +85,7 @@
                 stars.forEach(function(star, index) {
                     star.addEventListener('click', function() {
                         var value = 5 - index;
-                        
+
                         fetch(`/puntuar/${respuestaId}/${value}/`, {
                             method: 'POST',
                             headers: {
@@ -124,7 +116,7 @@
         flex-direction: column;
         min-height: 100vh;
       }
-    
+
       main{
         flex: 1;
       }
@@ -134,7 +126,7 @@
         position: relative;
         font-size: 1.5em;
     }
-    
+
     .promedio-stars-outer {
         display: inline-block;
         position: relative;
@@ -144,7 +136,7 @@
         width: 5em; /* Ancho para 5 estrellas */
         height: 1em; /* Altura fija */
     }
-    
+
     .promedio-stars-inner {
         position: absolute;
         top: 0;

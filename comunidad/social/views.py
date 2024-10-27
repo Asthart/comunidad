@@ -18,8 +18,8 @@ from django.views.generic import ListView
 
 @login_required
 def inicio(request):
-    
-    ''' 
+
+    '''
     sessionid = request.COOKIES.get('sessionid')
 
     if sessionid:
@@ -30,55 +30,55 @@ def inicio(request):
             login(request, user)
             return redirect('home')  # Redirigir a la página de inicio
 
-    return redirect('login')  
+    return redirect('login')
     '''
-    
-    
+
+
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     contador = Concurso.ultimo_concurso()
-    
+
     # Obtener las comunidades del usuario
     comunidades = Comunidad.objects.filter(miembros=user, activada=True)
     # Obtener los perfiles que el usuario sigue
     seguidos = profile.seguidos.all()
-    
+
     todos_proyectos = Proyecto.objects.filter(
         Q(comunidad__in=comunidades) |
         Q(creador__in=[seguido.usuario for seguido in seguidos])
     ).exclude(creador=user).distinct().order_by('-fecha_creacion')
     # Obtener todas las publicaciones relevantes
     todas_publicaciones = Publicacion.objects.filter(
-        Q(comunidad__in=comunidades) | 
+        Q(comunidad__in=comunidades) |
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
-    
+
     # Agrupar las publicaciones por tipo
     publicaciones_comunidades = []
     publicaciones_seguidos = []
-    
+
     proyectos_comunidades = []
     proyectos_seguidos = []
-    
+
     for pro in todos_proyectos:
         if pro.comunidad in comunidades:
             proyectos_comunidades.append(pro)
         else:
             proyectos_seguidos.append(pro)
-    
+
     for pub in todas_publicaciones:
         if pub.comunidad in comunidades:
             publicaciones_comunidades.append(pub)
         else:
             publicaciones_seguidos.append(pub)
-    
+
     proyectos = []
     while proyectos_comunidades or proyectos_seguidos:
         if proyectos_comunidades:
             proyectos.append(proyectos_comunidades.pop(0))
         if proyectos_seguidos:
             proyectos.append(proyectos_seguidos.pop(0))
-    
+
     # Mezclar las listas manteniendo el orden general
     publicaciones = []
     while publicaciones_comunidades or publicaciones_seguidos:
@@ -86,11 +86,12 @@ def inicio(request):
             publicaciones.append(publicaciones_comunidades.pop(0))
         if publicaciones_seguidos:
             publicaciones.append(publicaciones_seguidos.pop(0))
-    
+
     # Actualizar puntos del usuario
-    accion = Action.objects.filter(name='inicio').first()
-    update_user_points(user.id, accion.id, accion.points)
-    
+    if not request.user.is_superuser:
+        accion = Action.objects.filter(name='inicio').first()
+        update_user_points(user.id, accion.id, accion.points)
+
     url = request.path
     is_first_time = is_first_visit(request, url)
     if is_first_time:
@@ -101,7 +102,7 @@ def inicio(request):
     if terminos_usuario:
         if terminos_usuario.aceptado:
             terminos_aceptados = True
-            
+
     return render(request, 'inicio.html', {
         'proyectos': proyectos,
         'concurso': contador,
@@ -130,8 +131,9 @@ def crear_comunidad(request):
                 ['cespedesalejandro247@gmail.com'],
                 fail_silently=False,
             )'''
-            accion = Action.objects.filter(name='crear_comunidad').first()
-            update_user_points(request.user.id, accion.id, accion.points)
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='crear_comunidad').first()
+                update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
         form = ComunidadForm()
@@ -144,18 +146,18 @@ def detalle_comunidad(request, pk):
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
-    desafios = Desafio.objects.filter(comunidad=comunidad)  
+    desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaign.objects.filter(desafio__comunidad=comunidad).order_by('-id')
     es_admin = (comunidad.administrador == request.user)
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
-        Q(comunidad=comunidad) | 
+        Q(comunidad=comunidad) |
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
-    
-    
+
+
     return render(request, 'detalle_comunidad.html', {
     'publicaciones': publicaciones,
     'comunidad': comunidad,
@@ -175,11 +177,12 @@ def crear_proyecto(request,pk):
             proyecto = form.save(commit=False)
             comunidad = Comunidad.objects.get(id=pk)
             proyecto.comunidad=comunidad
-            
+
             proyecto.creador = request.user
             proyecto.save()
-            accion = Action.objects.filter(name='crear_proyecto').first()
-            update_user_points(request.user.id, accion.id, accion.points)
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='crear_proyecto').first()
+                update_user_points(request.user.id, accion.id, accion.points)
             return redirect('detalle_proyecto', pk=proyecto.pk)
     else:
         form = ProyectoForm()
@@ -201,20 +204,20 @@ def crear_desafio(request,pk):
             desafio.comunidad=comunidad
             desafio.creador = request.user
             desafio.save()
-            
+
             campaign = Campaign.objects.create(desafio=desafio)
-            
-            accion = Action.objects.filter(name='crear_desafio').first()
-            update_user_points(request.user.id, accion.id, accion.points)
-            
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='crear_desafio').first()
+                update_user_points(request.user.id, accion.id, accion.points)
+
             return redirect('detalle_campaign', pk=campaign.pk)
         else:
             print("form: ",form)
             print("form.errors: ",form.errors)
     else:
         form = DesafioForm()
-        
-    
+
+
     return render(request, 'crear_desafio.html', {'form': form,'comunidad':pk})
 
 @login_required
@@ -225,23 +228,23 @@ def detalle_desafio(request, pk):
 def puntuar_desafio(request, desafio_id, punto):
     campaign = get_object_or_404(Campaign, id=desafio_id)
     desafio = campaign.desafio
-    
+
     puntaje_desafio, created = PuntajeDesafio.objects.update_or_create(
             desafio=desafio,
             usuario=request.user,
             defaults={'puntaje': punto}
         )
-    
+
     # Calcula el promedio de puntajes
     promedio_puntaje = PuntajeDesafio.objects.filter(desafio=desafio).aggregate(Avg('puntaje'))['puntaje__avg'] or 0
-    
+
     # Actualiza el promedio de puntaje en el modelo Desafio (opcional)
     desafio.puntaje = promedio_puntaje
     desafio.save()
-    
-    accion = Action.objects.filter(name='puntuar desafio').first()
-    update_user_points(request.user.id, accion.id, accion.points)
-    
+    if not request.user.is_superuser:
+        accion = Action.objects.filter(name='puntuar desafio').first()
+        update_user_points(request.user.id, accion.id, accion.points)
+
     return redirect('detalle_campaign', pk=desafio_id)
 
 def buscar(request):
@@ -250,7 +253,7 @@ def buscar(request):
     if not q:
         q=""
         busqueda="TODO"
-        
+
     usuarios = User.objects.filter(
         Q(first_name__icontains=q) |
         Q(last_name__icontains=q)
@@ -258,19 +261,19 @@ def buscar(request):
     comunidades = Comunidad.objects.filter( Q(nombre__icontains=q) & Q(activada=True))
     proyectos = Proyecto.objects.filter( Q(titulo__icontains=q))
     desafios = Desafio.objects.filter(Q(titulo__icontains=q))
-    
+
     return render(request, 'buscar.html', {'busqueda':busqueda, 'usuarios': usuarios, 'comunidades': comunidades, 'proyectos': proyectos, 'desafios': desafios})
 @login_required
 def chat(request, receptor_id):
     receptor = get_object_or_404(User, id=receptor_id)
     room_name = f'{min(request.user.id, receptor.id)}_{max(request.user.id, receptor.id)}'
     mensajes = MensajeChat.objects.filter(room_name=room_name).order_by('fecha_envio')
-    
+
     # Marcar mensajes como leídos
     mensajes_no_leidos = mensajes.filter(leido=False).exclude(emisor=request.user)
     for mensaje in mensajes_no_leidos:
         mensaje.marcar_como_leido()
-    
+
     return render(request, 'chat.html', {
         'receptor': receptor,
         'mensajes': mensajes,
@@ -293,7 +296,7 @@ def perfil_usuario(request, username):
             perfil_usuario.foto_perfil = foto_perfil
             perfil_usuario.save()
             return redirect('perfil_usuario', username=request.user.username)
-    
+
     usuario = get_object_or_404(User, username=username)
     perfil = PerfilUsuario.objects.get(usuario=usuario)
     proyectos = Proyecto.objects.filter(creador=usuario)
@@ -310,7 +313,7 @@ def perfil_usuario(request, username):
         'yo':yo,
         'comunidades':comunidades
     })
-    
+
 from .forms import CustomUserCreationForm
 
 def register(request):
@@ -322,8 +325,9 @@ def register(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            accion = Action.objects.filter(name='registrarse').first()
-            update_user_points(request.user.id, accion.id, accion.points)
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='registrarse').first()
+                update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
         form = CustomUserCreationForm()
@@ -337,39 +341,54 @@ def crear_publicacion(request):
         if form.is_valid():
             publicacion = form.save(commit=False)
             publicacion.autor = request.user
-            
+
             # Verificamos si hay al menos un tag seleccionado
             if not form.cleaned_data['tags']:
                 form.add_error('tags', 'Debes seleccionar al menos un tag.')
                 return render(request, 'crear_publicacion.html', {'form': form})
-            
+
             publicacion.save()
-            
+
             tags = form.cleaned_data.get('tags')
             if tags:
                 publicacion.tags.set(tags)
-                
+
             # Guarda los adjuntos después de guardar la publicación
-            accion = Action.objects.filter(name='publicar').first()
-            update_user_points(request.user.id, accion.id, accion.points)
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='publicar').first()
+                update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
         form = PublicacionForm()
-    
+
     return render(request, 'crear_publicacion.html', {'form': form})
 
 @login_required
 def like_desafio(request, desafio_id):
     desafio = get_object_or_404(Desafio, id=desafio_id)
     campaign = get_object_or_404(Campaign, desafio=desafio_id)
-    
+
     if request.user in desafio.likes.all():
         print("1")
         desafio.likes.remove(request.user)  # Quitar like si ya existe
     else:
         print("2")
         desafio.likes.add(request.user)  # Agregar like si no existe
-    
+
+    return redirect('detalle_campaign', campaign.id)
+
+@login_required
+def like_comentariod(request, desafio_id,comentario_id):
+    desafio = get_object_or_404(Desafio, id=desafio_id)
+    campaign = get_object_or_404(Campaign, desafio=desafio_id)
+    respuesta = get_object_or_404(Respuesta, id=comentario_id)
+    if request.user in respuesta.likes.all():
+        print("1")
+        respuesta.likes.remove(request.user)  # Quitar like si ya existe
+    else:
+        print("2")
+        respuesta.likes.add(request.user)  # Agregar like si no existe
+
     return redirect('detalle_campaign', campaign.id)
 
 def like(request, pk):
@@ -413,9 +432,10 @@ def crear_comentario(request, pk):
             comentario.publicacion = publicacion
             comentario.autor = request.user
             comentario.save()
-            accion = Action.objects.filter(name='comentar').first()
-            update_user_points(request.user.id, accion.id, accion.points)
-            
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='comentar').first()
+                update_user_points(request.user.id, accion.id, accion.points)
+
             return redirect('inicio')
     else:
         form = ComentarioForm()
@@ -431,8 +451,9 @@ def crear_comentario_pro(request, pk):
             comentario.proyecto = proyecto
             comentario.autor = request.user
             comentario.save()
-            accion = Action.objects.filter(name='comentar proyecto').first()
-            update_user_points(request.user.id, accion.id, accion.points)
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='comentar proyecto').first()
+                update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
         form = ComentarioProyectoForm()
@@ -520,7 +541,7 @@ class ChatWS    (AsyncWebsocketConsumer):
     async def chat_message(self, event):
         # Enviar el mensaje al emisor
         await self.send(text_data=event["mensaje"])
-        
+
 
 def aceptar_terminos(request):
     terminos = TerminosCondiciones.objects.get(id=1)
@@ -548,9 +569,9 @@ def aceptar_terminos(request):
             if not terminos_usuario == None:
                 terminos_usuario.aceptado_en = timezone.now()
                 terminos_usuario.save()
-            
+
         return redirect('inicio')
-        
+
     return render(request, 'aceptar_terminos.html', {'terminos': terminos, 'terminos_aceptados': terminos_aceptados, 'terminos_usuario': terminos_usuario})
 
 @login_required
@@ -567,8 +588,9 @@ def seguir_usuario(request, pk):
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.seguir_usuario(usuario)
     accion = Action.objects.filter(name='seguir').first()
-    update_user_points(request.user.id, accion.id, accion.points)
-    return redirect('perfil_usuario', username=usuario.username)
+    if not request.user.is_superuser:
+        update_user_points(request.user.id, accion.id, accion.points)
+        return redirect('perfil_usuario', username=usuario.username)
 
 @login_required
 def dejar_de_seguir_usuario(request, pk):
@@ -576,8 +598,9 @@ def dejar_de_seguir_usuario(request, pk):
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.dejar_de_seguir_usuario(usuario)
     accion = Action.objects.filter(name='seguir').first()
-    update_user_points(request.user.id, accion.id, -(accion.points))
-    return redirect('perfil_usuario', username=usuario.username)
+    if not request.user.is_superuser:
+        update_user_points(request.user.id, accion.id, -(accion.points))
+        return redirect('perfil_usuario', username=usuario.username)
 
 @login_required
 def lista_publicaciones(request):
@@ -610,10 +633,10 @@ def crear_concurso(request):
         nombre = request.POST['nombre']
         fecha_inicio = request.POST['fecha_inicio']
         fecha_fin = request.POST['fecha_fin']
-        
+
         premio_id = request.POST['premio']
         premio = Premio.objects.get(id=premio_id)
-        
+
         Concurso.objects.create(
             nombre=nombre,
             fecha_inicio=fecha_inicio,
@@ -621,7 +644,7 @@ def crear_concurso(request):
             premio=premio
         )
         return redirect('listar_concursos')
-    
+
     premios = Premio.objects.all()
     return render(request, 'crear_concurso.html', {'premios': premios})
 
@@ -632,7 +655,7 @@ def listar_concursos(request):
 
 
 def concurso_resultados(request):
-    
+
     concurso_actual = Concurso.objects.latest('fecha_fin')
     premio = concurso_actual.premio
     # Ordenar por ranking y tomar el primero
@@ -646,7 +669,7 @@ def concurso_resultados(request):
         'top_usuarios':top_usuarios,
         'premio': premio
     })
-    
+
 
 def lista_comunidades(request):
     comunidades_activas = Comunidad.objects.filter(activada=True)
@@ -659,6 +682,7 @@ def lista_comunidades(request):
 def detalle_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     desafio=campaign.desafio
+    like_count = desafio.likes.count()
     tipo = False
     if campaign.tipo=="donacion":
         tipo=True
@@ -669,24 +693,24 @@ def detalle_campaign(request, pk):
             respuesta.autor = request.user
             respuesta.campaign = campaign
             respuesta.save()
-            
-            accion: Action | None= Action.objects.filter(name='responder_campaign').first()
-            update_user_points(request.user.id, accion.id, accion.points)
-            
+            if not request.user.is_superuser:
+                accion: Action | None= Action.objects.filter(name='responder_campaign').first()
+                update_user_points(request.user.id, accion.id, accion.points)
+
             return redirect('detalle_campaign', pk=campaign.pk)
     else:
         respuesta_form = RespuestaForm()
-    
+
     puntuaciones = Action.objects.filter(name__startswith='puntos')
-    
+
     return render(request, 'detalle_campaign.html', {
         'campaign': campaign,
         'respuesta_form': respuesta_form,
         'puntuaciones': puntuaciones,
         'is_creador': request.user == campaign.desafio.creador,
         'campaign_activa': campaign.activa,
-        'puntos':desafio.puntaje,
         'tipo':tipo,
+        'total_likes':like_count,
     })
 
 @login_required
@@ -698,31 +722,31 @@ def lista_campaigns(request, comunidad_id):
         campaigns = campaigns.filter(activa=True)
     elif filtro == 'no_activas':
         campaigns = campaigns.filter(activa=False)
-    
+
     return render(request, 'lista_campaigns.html', {
         'comunidad': comunidad,
         'campaigns': campaigns,
         'filtro_actual': filtro
     })
-    
+
 @login_required
 def lista_proyectos(request, comunidad_id):
     comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
-    
+
     return render(request, 'lista_proyectos.html', {
         'comunidad': comunidad,
         'proyectos': proyectos,
     })
-    
+
 @login_required
 def lista_miembros(request, comunidad_id):
     comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
-    
+
     return render(request, 'lista_miembros.html', {
         'comunidad': comunidad,
     })
-    
+
 @login_required
 def puntuar_respuesta(request, pk, estrellas):
     respuesta = get_object_or_404(Respuesta, pk=pk)
@@ -752,10 +776,10 @@ def guardar_donacion(request,pk):
             identificador_transferencia=identificador_transferencia,
             cantidad=cantidad,
         )
-      
+
         # Si todo salió bien, redirige al usuario a la lista de donaciones
         return redirect('inicio')
-    campaign = desafio.campaign 
+    campaign = desafio.campaign
     qr = Cuenta.objects.first()
     # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados
     form = DonacionComunidadForm(initial={
@@ -763,7 +787,7 @@ def guardar_donacion(request,pk):
         'identificador_transferencia': '',
         'cantidad': ''
     })
-    
+
     return render(request, 'crear_donacion.html', {'form': form,'qr':qr, 'campaign': campaign})
 
 
@@ -772,19 +796,19 @@ def chat_comunidad(request, comunidad_id):
     comunidad = get_object_or_404(Comunidad, id=comunidad_id)
     if request.user not in comunidad.miembros.all():
         return HttpResponseForbidden("No eres miembro de esta comunidad.")
-    
+
     mensajes = MensajeChatComunidad.objects.filter(comunidad=comunidad).order_by('fecha_envio')
-    
+
     # Marcar mensajes como leídos
     for mensaje in mensajes:
         if request.user not in mensaje.leido_por.all():
             mensaje.marcar_como_leido(request.user)
-    
+
     return render(request, 'chat_comunidad.html', {
         'comunidad': comunidad,
         'mensajes': mensajes,
     })
-    
+
 
 @login_required
 def editar_perfil(request):
@@ -795,7 +819,7 @@ def editar_perfil(request):
             request.POST._mutable = perfil_usuario.foto_perfil.url
         perfil_form = EditUserProfilePersonalForm(request.POST, request.FILES, instance=perfil_usuario)
         user_form = EditUserForm(request.POST, instance=user)
-        
+
         if perfil_form.is_valid() and user_form.is_valid():
             perfil_form.save()
             user_form.save()
@@ -803,13 +827,13 @@ def editar_perfil(request):
     else:
         perfil_form = EditUserProfilePersonalForm(instance=perfil_usuario)
         user_form = EditUserForm(instance=user)
-    
+
     return render(request, 'editar_perfil.html', {
         'form_perfil': perfil_form,
         'form_usuario': user_form,
         'user': user,
     })
-    
+
 @login_required
 def unirse_comunidad(request, pk):
     comunidad = Comunidad.objects.get(pk=pk)
@@ -819,7 +843,7 @@ def unirse_comunidad(request, pk):
         return redirect('detalle_comunidad', pk=pk)
     else:
         return redirect('detalle_comunidad', pk=pk)
-    
+
 @login_required
 def salir_comunidad(request, pk):
     comunidad = Comunidad.objects.get(pk=pk)
@@ -834,7 +858,7 @@ def solicitar_membresia(request, comunidad_id):
     creada = False
     if solicitud_pendiente:
         creada = True
-    
+
     if request.method == 'POST':
         # Verificar que la comunidad es privada
         if comunidad.publica:
@@ -876,4 +900,3 @@ def ranking_usuarios(request):
     )
     print(ranking)
     return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
-
