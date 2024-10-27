@@ -25,20 +25,24 @@ class ComunidadAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'administrador','activada')
     search_fields = ('nombre', 'administrador__username')
     filter_horizontal = ('miembros',)
-    
+
     def Activar(self, request, queryset):
         updated = queryset.update(activada=True)
         if updated:
             self.send_activation_email(queryset.first())
             grupo = Group.objects.get(name='Administrador de Comunidad')
             grupo.user_set.add(queryset.first().administrador.id)
+            profile = User.objects.get(id=queryset.first().administrador.id)
+            profile.is_staff = True
+            profile.save()
+
         return updated
 
     def send_activation_email(self, comunidad):
         subject = 'Tu comunidad ha sido activada'
         message = f'Hola {comunidad.administrador.username},\n\n' \
                   f'Tu comunidad "{comunidad.nombre}" ha sido activada.\n\n' \
-                  
+
         ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
         send_mail(
             subject,
@@ -52,7 +56,7 @@ class ComunidadAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(administrador=request.user)
-        
+
     actions = ['Activar']  # Agregar esta línea
 
     def changelist_view(self, request, extra_context=None):
@@ -62,20 +66,20 @@ class ComunidadAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super().get_actions(request)
-        
+
         try:
             del actions['delete_selected']
         except KeyError:
             pass
-        
+
         return actions
-    
+
 @admin.register(Proyecto)
 class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_creacion')
     list_filter = ('comunidad', 'fecha_creacion')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
-    
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
@@ -120,17 +124,17 @@ admin.site.register(TerminosCondiciones)
 class ClasificacionAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'umbral_puntos')
     search_fields = ('nombre',)
-    
+
 @admin.register(Action)
 class ActionAdmin(admin.ModelAdmin):
     list_display = ('id','name', 'points')
     search_fields = ('name',)
-    
+
 @admin.register(Premio)
 class PremioAdmin(admin.ModelAdmin):
     list_display = ('nombre',)
     search_fields = ('nombre',)
-    
+
 @admin.register(UserAction)
 class UserActionAdmin(admin.ModelAdmin):
     list_display = ('user','accion','timestamp','puntos')
@@ -141,7 +145,7 @@ class ConcursoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'descripcion', 'fecha_inicio', 'fecha_fin', 'premio')
     list_filter = ['fecha_inicio', 'fecha_fin']
     search_fields = ['nombre']
-    
+
     class Media:
         css = {
             'all': ('css/styles.css',)
@@ -155,12 +159,12 @@ class ConcursoAdmin(admin.ModelAdmin):
         # Aquí irá la lógica para mostrar los resultados del concurso actual
         # Por ahora, solo mostraremos un mensaje
         return HttpResponse("Resultados del concurso actual")
-    
+
 @admin.register(DonacionComunidad)
 class DonacionComunidadAdmin(admin.ModelAdmin):
     list_display = ('id','nombre', 'identificador_transferencia','cantidad')
     search_fields = ('cantidad',)
-    
+
 @admin.register(Cuenta)
 class CuentaAdmin(admin.ModelAdmin):
     list_display = ('id','qr_code', 'numero_cuenta')
