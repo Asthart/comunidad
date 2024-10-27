@@ -1,44 +1,95 @@
 {% load static %}
 
 <body>
-    <main>
-<div class="login-container">
-    <h1 class="login-title">Publicar Proyecto</h1>
-    <form method="post" enctype="multipart/form-data" class="login-form">
+<main>
+<div class="container mt-5 p-4 bg-white shadow rounded dorado">
+    <h1 class="fw-bold text-center mb-4">Publicar Proyecto</h1>
+    <hr class="community-divider">
+    <br>
+
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form-group">
-        {{ form.titulo.label }} {{ form.titulo }}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3 fw-bold">
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" name="titulo" class="form-control" value="{{ request.user.proyecto.titulo }}">
+                </div>
+                <div class="mb-3 fw-bold">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="3">{{ request.user.proyecto.descripcion }}</textarea>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3 fw-bold">
+                    <label for="imagenes">Imágenes:</label>
+                    <input type="file" id="imagenes" name="imagenes" class="form-control" multiple>
+                </div>
+                <div class="mb-3 fw-bold">
+                    <label for="documentos">Documentos:</label>
+                    <input type="file" id="documentos" name="documentos" class="form-control" multiple>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-        {{ form.descripcion.label }} {{ form.descripcion }}
-        </div>
-        <div class="form-group">
-            {{form.imagenes.label}}
-            <br>
-            {{form.imagenes}}
-        </div>
-        <div class="form-group">
-            {{form.documentos.label}}
-            <br>
-            {{form.documentos}}
-        </div>
-        <button type="submit" class="btn btn-primary">Crear Proyecto</button>
+        <button type="submit" class="btn btn-primary w-100 mt-3">Crear Proyecto</button>
     </form>
 </div>
+
+<div class="text-center mt-4">
+  <a href="{% url 'detalle_comunidad' comunidad %}" class="btn btn-primary">Volver</a>
+</div>
+<br>
 </main>
 </body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
+
+
+
 <style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  .dorado{
+      border:2px solid #fcc350 !important;
+    }
+    .community-divider {
+      width: 100%;
+      border: 1px solid #fcc350;
+      height: 1px;
+      background: #ddd;
+      margin: 10px 0;
+    }
+    body {
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+  
+    main{
+      flex: 1;
+    }
+
+  .container {
+      padding: 20px;
+      box-sizing: border-box;
   }
 
-  main{
-    flex: 1;
+  h2 {
+      color: #2c3e50;
+      padding-bottom: 10px;
+  }
+
+  .btn {
+      transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+      background-color: #3498db;
+      color: white;
+  }
+
+  .btn-secondary {
+      background-color: #ecf0f1;
+      border-color: #bdc3c7;
   }
 </style>

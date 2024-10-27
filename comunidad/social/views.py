@@ -144,13 +144,12 @@ def detalle_comunidad(request, pk):
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
-    proyectos = Proyecto.objects.filter(comunidad=comunidad)
+    proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)  
-    campaigns = Campaign.objects.filter(desafio__comunidad=comunidad)
+    campaigns = Campaign.objects.filter(desafio__comunidad=comunidad).order_by('-id')
     es_admin = (comunidad.administrador == request.user)
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
-    
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
         Q(comunidad=comunidad) | 
@@ -185,7 +184,7 @@ def crear_proyecto(request,pk):
             return redirect('detalle_proyecto', pk=proyecto.pk)
     else:
         form = ProyectoForm()
-    return render(request, 'crear_proyecto.html', {'form': form})
+    return render(request, 'crear_proyecto.html', {'form': form, 'comunidad': pk})
 
 @login_required
 def detalle_proyecto(request, pk):

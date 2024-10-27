@@ -305,7 +305,7 @@
                 <div class="publication">
                     <h3>Proyectos</h3>
                     <hr class="community-divider">
-                    {% for proyecto in comunidad.proyectos.all|slice:":5" %}
+                    {% for proyecto in proyectos.all|slice:":5" %}
                         <div class="project-item">
                             <a href="{% url 'detalle_proyecto' proyecto.pk %}">
                                 <h4>{{ proyecto }}</h4>
