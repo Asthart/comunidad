@@ -28,7 +28,7 @@
         </div>
     </div>
     <div class="text-center mt-4">
-        <a href="#" onclick="history.back()" class="btn btn-primary">Volver</a>
+        <a href="{% url 'perfil_usuario' request.user.username %}" class="btn btn-primary">Volver</a>
     </div>
     <br>
 </main>
