@@ -3,69 +3,121 @@
 
 <body>
     <main>
-<div class="login-container">
-    <h1>Crear Nuevo Reto</h1>
-    <form method="post" enctype="multipart/form-data" class="login-form">
-        {% csrf_token %}
-        <div class="form-group">
-            {{ form.titulo.label }} {{ form.titulo }}
+        <div class="container mt-5 p-4 bg-white shadow rounded dorado">
+            <h1 class="fw-bold text-center mb-4">Crear Nueva Campaña</h1>
+            <hr class="community-divider">
+            <br>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group fw-bold">
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" name="titulo" class="form-control" value="{{ request.user.desafio.titulo }}">
+                </div>
+                <br>
+                <div class="form-group fw-bold">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" rows="3">{{ request.user.desafio.descripcion }}</textarea>
+                </div>
+                <br>
+                <div class="form-group fw-bold">
+                    <label for="fecha_inicio">Fecha de inicio:</label>
+                    <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" class="form-control" value="{{ request.user.desafio.fecha_inicio }}">
+                </div>
+                <br>
+                <div class="form-group fw-bold">
+                    <label for="fecha_fin">Fecha de fin:</label>
+                    <input type="datetime-local" id="fecha_fin" name="fecha_fin" class="form-control" value="{{ request.user.desafio.fecha_fin }}">
+                </div>
+                <br>
+                <label class="fw-bold">Tipo de Campaña:</label>
+                <select id="tipo_desafio" name="tipo_desafio" class="form-select">
+                    <option value="votacion" {% if request.user.desafio.tipo_desafio == 'votacion' %}selected{% endif %}>Votación</option>
+                    <option value="donacion" {% if request.user.desafio.tipo_desafio == 'donacion' %}selected{% endif %}>Donación</option>
+                </select>
+                <br>
+                <div id="montos" style="display:none;">
+                    <div class="form-group fw-bold">
+                        <label for="objetivo_monto">Objetivo de monto:</label>
+                        <input type="number" id="objetivo_monto" name="objetivo_monto" class="form-control" value="10">
+                    </div>
+                    <br>
+                    <div class="form-group fw-bold">
+                        <label for="min_monto">Mínimo de monto:</label>
+                        <input type="number" id="min_monto" name="min_monto" class="form-control" value="0">
+                    </div>
+                    <br>
+                    <div class="form-group fw-bold">
+                        <label for="max_monto">Máximo de monto:</label>
+                        <input type="number" id="max_monto" name="max_monto" class="form-control" value="5">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-3">Crear Campaña</button>
+            </form>
         </div>
-        <div class="form-group">
-            {{ form.descripcion.label }} {{ form.descripcion }}
+        <div class="text-center mt-4">
+            <a href="{% url 'detalle_comunidad' comunidad %}" class="btn btn-primary">Volver</a>
         </div>
-        <div class="form-group">
-            {{ form.fecha_inicio.label }}
-            <input type="datetime-local" name="fecha_inicio" id="id_fechainicio" />
-        </div>
-        <div class="form-group">
-            {{ form.fecha_fin.label }} 
-            <input type="datetime-local" name="fecha_fin" id="id_fechafin" />
-        </div>
-        <select id="tipo_desafio" name="tipo_desafio">
-            <option value="votacion" {% if form.tipo_desafio.value == 'votacion' %}selected{% endif %}>Votación</option>
-            <option value="donacion" {% if form.tipo_desafio.value == 'donacion' %}selected{% endif %}>Donación</option>
-        </select>
-        <div id="montos" style="display:block;">
-            <div class="form-group normal-nums">
-                {{ form.objetivo_monto.label }} {{ form.objetivo_monto }}
-            </div>
-            <div class="form-group">
-                {{ form.min_monto.label }} {{ form.min_monto }}
-            </div>
-            <div class="form-group">
-                {{ form.max_monto.label }} {{ form.max_monto }}
-            </div>
-        </div>
-        <script>
-            document.getElementById('tipo_desafio').addEventListener('change', function() {
-                var montosDiv = document.getElementById('montos');
-                if (this.value === 'votacion') {
-                    montosDiv.style.display = 'none';
-                } else {
-                    montosDiv.style.display = 'block';
-                }
-            });
-        </script>
-  
-    
-       
-        <button type="submit" class="btn btn-primary">Crear Desafío</button>
-    </form>
-</div>
-</main>
+        <br>
+    </main>
+
+    <script>
+        document.getElementById('tipo_desafio').addEventListener('change', function() {
+            var montosDiv = document.getElementById('montos');
+            if (this.value === 'votacion') {
+                montosDiv.style.display = 'none';
+            } else {
+                montosDiv.style.display = 'block';
+            }
+        });
+    </script>
 </body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
 <style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  .dorado{
+      border:2px solid #fcc350 !important;
+    }
+    .community-divider {
+      width: 100%;
+      border: 1px solid #fcc350;
+      height: 1px;
+      background: #ddd;
+      margin: 10px 0;
+    }
+    body {
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+  
+    main{
+      flex: 1;
+    }
+
+  .container {
+      padding: 20px;
+      box-sizing: border-box;
   }
 
-  main{
-    flex: 1;
+  h2 {
+      color: #2c3e50;
+      padding-bottom: 10px;
+  }
+
+  .btn {
+      transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+      background-color: #3498db;
+      color: white;
+  }
+
+  .btn-secondary {
+      background-color: #ecf0f1;
+      border-color: #bdc3c7;
   }
 </style>

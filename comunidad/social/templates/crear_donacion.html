@@ -2,42 +2,102 @@
 
 <body>
 <main>
-<div style="display: flex;">
-    <div style="flex: 1;">
-        <h2>Hacer una Donación</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Enviar Donación</button>
-        </form>
-    </div>
-    <div style="flex: 1; text-align: center;">
-        {% if qr.qr_code %}
-            <img src="{{ qr.qr_code.url }}" alt="QR Code" style="max-width: 100%;">
-        {% endif %}
-        {% if qr.numero_cuenta %}
-            <p>Número de Cuenta: {{ qr.numero_cuenta }}</p>
-        {% endif %}
+<div class="container mt-5 p-4 bg-white shadow rounded dorado">
+    <div class="row">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4 fw-bold">Hacer una Donación</h2>
+            <hr class="community-divider">
+            <br>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group fw-bold">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" value="{{ request.user.comunidad.nombre }}">
+                </div>
+                <br>
+                <div class="form-group fw-bold">
+                    <label for="identificador_transferencia">Identificador de transferencia:</label>
+                    <input type="text" id="identificador_transferencia" name="identificador_transferencia" class="form-control" value="">
+                </div>
+                <br>
+                <div class="form-group fw-bold">
+                    <label for="cantidad">Cantidad:</label>
+                    <input type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any">
+                </div>
+                <br>
+                <div style="display: flex; justify-content: center;">
+                <button type="submit" class="btn btn-primary">Enviar Donación</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-6 text-center">
+            <h2 class="text-center mb-4 fw-bold">Cuenta a Depositar:</h2>
+            <hr class="community-divider">
+            <br>
+            {% if qr.qr_code %}
+                <img src="{{ qr.qr_code.url }}" alt="QR Code" style="max-width: 100%; height: auto; margin-bottom: 20px;">
+            {% endif %}
+            <br>
+            {% if qr.numero_cuenta %}
+                <p class="text-center fw-bold">Número de Cuenta: {{ qr.numero_cuenta }}</p>
+            {% endif %}
+        </div>
     </div>
 </div>
-
-<a href="{% url 'detalle_campaign' campaign.pk%}">Volver</a>
-
-
+<div class="text-center mt-4">
+  <a href="{% url 'detalle_campaign' campaign.pk %}" class="btn btn-primary">Volver</a>
+</div>
+<br>
 </main>
 </body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
+
+
 <style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+  .dorado{
+      border:2px solid #fcc350 !important;
+    }
+    .community-divider {
+      width: 100%;
+      border: 1px solid #fcc350;
+      height: 1px;
+      background: #ddd;
+      margin: 10px 0;
+    }
+    body {
+      margin-top: 80px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+  
+    main{
+      flex: 1;
+    }
+
+  .container {
+      padding: 20px;
+      box-sizing: border-box;
   }
 
-  main{
-    flex: 1;
+  h2 {
+      color: #2c3e50;
+      padding-bottom: 10px;
+  }
+
+  .btn {
+      transition: background-color 0.3s ease;
+  }
+
+  .btn:hover {
+      background-color: #3498db;
+      color: white;
+  }
+
+  .btn-secondary {
+      background-color: #ecf0f1;
+      border-color: #bdc3c7;
   }
 </style>

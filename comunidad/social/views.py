@@ -210,10 +210,14 @@ def crear_desafio(request,pk):
             update_user_points(request.user.id, accion.id, accion.points)
             
             return redirect('detalle_campaign', pk=campaign.pk)
+        else:
+            print("form: ",form)
+            print("form.errors: ",form.errors)
     else:
         form = DesafioForm()
+        
     
-    return render(request, 'crear_desafio.html', {'form': form})
+    return render(request, 'crear_desafio.html', {'form': form,'comunidad':pk})
 
 @login_required
 def detalle_desafio(request, pk):
