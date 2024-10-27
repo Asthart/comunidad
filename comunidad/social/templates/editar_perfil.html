@@ -1,52 +1,96 @@
-<!--
-perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
-    
-if request.method == 'POST':
-    form = EditUserProfileForm(request.POST, request.FILES, instance=perfil_usuario)
-    if form.is_valid():
-        form.save()
-        return redirect('profile')  # Asume que tienes una vista 'profile' para mostrar el perfil actualizado
-else:
-    form = EditUserProfileForm(instance=perfil_usuario)
-
-return render(request, 'editar_perfil.html', {'form': form})
--->
 {% load static %}
 
 <body>
     <main>
-        <div>
-<h2>Edita tu perfil y información de cuenta</h2>
-
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="row">
-        <div class="col-md-6">
-            {{ form_perfil.as_p }}
+        <div class="container mt-5 p-4 bg-white shadow rounded dorado">
+            <h2 class="text-center mb-4 fw-bold">Edita tu perfil y información de cuenta</h2>
+            <hr class="community-divider">
+            <br>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 fw-bold">
+                        <label for="id_biografia mb-5 ">Biografía:</label>
+                        <textarea id="id_biografia" name="biografia" rows="4" class="form-control">{{ request.user.perfilusuario.biografia }}</textarea>
+                    </div>
+                    <div class="col-md-6 fw-bold">
+                        <label for="id_foto_perfil">Foto de perfil:</label>
+                        <input accept="image/*" type="file" id="id_foto_perfil" name="foto_perfil" class="form-control">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 fw-bold">
+                        <label for="id_first_name">Nombre/s:</label>
+                        <input type="text" id="id_first_name" name="first_name" class="form-control" placeholder="{{ request.user.first_name }}" value="{{ request.user.first_name }}">
+                    </div>
+                    <div class="col-md-6 fw-bold">
+                        <label for="id_last_name">Apellido/s:</label>
+                        <input type="text" id="id_last_name" name="last_name" class="form-control" placeholder="{{ request.user.last_name }}" value="{{ request.user.last_name }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 fw-bold">
+                        <label for="id_email">Correo electrónico:</label>
+                        <input type="email" id="id_email" name="email" class="form-control" placeholder="{{ request.user.email }}" value="{{ request.user.email }}">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3 w-100">Actualizar perfil y cuenta</button>
+            </form>
         </div>
-        <div class="col-md-6">
-            {{ form_usuario.as_p }}
+        <div class="text-center mt-4">
+            <a href="{% url 'perfil_usuario' request.user.username %}" class="btn btn-primary">Volver</a>
         </div>
-    </div>
-    <button type="submit">Actualizar perfil y cuenta</button>
-</form>
-        </div>
-        <a href="{% url 'perfil_usuario' request.user.username%}">Volver</a>
+        <br>
     </main>
-</body>
 
 {% include 'header.html' %}
 {% include 'footer.html' %}
+
 <style>
-  body {
-    margin-top: 80px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
+      .community-divider {
+        width: 100%;
+        border: 1px solid #fcc350;
+        height: 1px;
+        background: #ddd;
+        margin: 10px 0;
+      }
+      body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+      main{
+        flex: 1;
+      }
 
-  main{
-    flex: 1;
-  }
+    .container {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    h2 {
+        color: #2c3e50;
+        padding-bottom: 10px;
+    }
+
+    .btn {
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #ecf0f1;
+        border-color: #bdc3c7;
+    }
 </style>
-
+</body>
+</html>

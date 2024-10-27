@@ -789,12 +789,15 @@ def editar_perfil(request):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     user = request.user
     if request.method == 'POST':
+        if request.POST.get('foto_perfil') == "" or request.POST.get('foto_perfil') is None:
+            request.POST._mutable = perfil_usuario.foto_perfil.url
         perfil_form = EditUserProfilePersonalForm(request.POST, request.FILES, instance=perfil_usuario)
         user_form = EditUserForm(request.POST, instance=user)
         
         if perfil_form.is_valid() and user_form.is_valid():
             perfil_form.save()
             user_form.save()
+            return redirect('perfil_usuario', request.user.username)
     else:
         perfil_form = EditUserProfilePersonalForm(instance=perfil_usuario)
         user_form = EditUserForm(instance=user)
