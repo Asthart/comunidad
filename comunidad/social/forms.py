@@ -6,7 +6,7 @@ from django.forms import ValidationError
 class ComunidadForm(forms.ModelForm):
     class Meta:
         model = Comunidad
-        fields = ['nombre', 'descripcion']
+        fields = ['nombre', 'descripcion', 'publica']
 
 class ProyectoForm(forms.ModelForm):
     class Meta:
@@ -97,18 +97,16 @@ class CustomUserCreationForm(UserCreationForm):
 
 class PublicacionForm(forms.ModelForm):
     imagen = forms.ImageField(required=False)
+    '''
     tags = forms.ModelMultipleChoiceField(
         queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple
     )
-    comunidad = forms.ModelChoiceField(
-        queryset=Comunidad.objects.all(),
-        required=False
-    )
+    '''
     
     class Meta:
         model = Publicacion
-        fields = ('contenido', 'tags', 'imagen', 'comunidad')
+        fields = ('contenido', 'imagen')
 
 class RespuestaForm(forms.ModelForm):
     class Meta:

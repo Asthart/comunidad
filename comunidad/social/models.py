@@ -21,14 +21,14 @@ class Comunidad(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     administrador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comunidades_administradas')
-    crowuser = models.ForeignKey(User, on_delete=models.CASCADE)
+    crowusers = models.ManyToManyField(User, related_name='crowusers')
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
     publica = models.BooleanField(default=False)
     #donaciones = models.BooleanField(default=False)
-    foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='static/images/default-avatar.svg')
-    banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='static/images/backgroud1.jpg')
-    tags = models.ManyToManyField('Tag')
+    foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='comunidades/perfiles/perfil_default.jpg')
+    banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='comunidades/banners/banner_default.jpg')
+    #tags = models.ManyToManyField('Tag')
 
 
 
@@ -40,6 +40,9 @@ class Comunidad(models.Model):
         return Publicacion.objects.filter(comunidad=self).order_by('-fecha_publicacion')
     def es_miembro(self, usuario):
         return self.miembros.filter(id=usuario.id).exists()
+    
+    def es_crowuser(self, usuario):
+        return self.crowusers.filter(id=usuario.id).exists()
 
     def cant_miembros(self):
         return self.miembros.count()
@@ -57,6 +60,12 @@ class Comunidad(models.Model):
         return Proyecto.objects.filter(comunidad=self)
 
 
+class Crowuser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return self.user.username
 
 class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
     titulo = models.CharField(max_length=200)
@@ -187,7 +196,7 @@ class PerfilUsuario(models.Model):
     biografia = models.TextField(blank=True)
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
-    foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='static/images/default-avatar.svg')
+    foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='/fotos_perfil/default-avatar.svg')
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
@@ -237,7 +246,7 @@ class MensajeChat(models.Model):
 class Publicacion(models.Model):
     contenido = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
-    tags = models.ManyToManyField('Tag')
+    tags = models.ManyToManyField('Tag', blank=True, null=True)
     imagen = models.ImageField(blank=True, null=True, upload_to='publicaciones/imagenes/')
     #archivos = MultiFileField(min_num=1, max_num=5)
     comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
@@ -383,7 +392,7 @@ class Campaign(models.Model):
 
     @property
     def respuestas(self):
-        return Respuesta.objects.filter(campaign=self).order_by('-fecha')
+        return Respuesta.objects.filter(campaign=self).order_by('-fecha').reverse()
 
     @property
     def comunidad(self):
@@ -429,6 +438,15 @@ class Cuenta(models.Model):
 
 
 class SolicitudMembresia(models.Model):
+    comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha_solicitud = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=10, choices=[('pendiente', 'Pendiente'), ('aceptada', 'Aceptada'), ('rechazada', 'Rechazada')], default='pendiente')
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.comunidad.nombre} ({self.estado})"
+
+class SolicitudCrowuser(models.Model):
     comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE)
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)

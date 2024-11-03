@@ -3,59 +3,104 @@
 {% include 'header.html' %}
 <body>
     <main>
-<div class="campaign-detail">
-    <h1>{{ campaign.desafio.titulo }}</h1>
+<div class="container mt-5">
+    <div class="card dorado">
+        <div class="card-body">
+    <h1 class="card-title fw-bold text-center">{{ campaign.desafio.titulo }}</h1>
+    <hr class="community-divider">
     <p>{{ campaign.desafio.descripcion }}</p>
 
-    {% if request.user == campaign.desafio.creador %}
-        <a href="{% url 'admin:social_campaign_change' campaign.pk %}">Ir al panel de administración</a>
+    <!--{% if request.user == campaign.desafio.creador %}
+        <a href="{% url 'admin:social_campaign_change' campaign.pk %}">Modificar</a>
+    {% endif %}-->
+
+    <br>
+    {% if request.user != campaign.desafio.creador and tipo %}
+        <a href="{% url 'guardar_donacion' campaign.desafio.pk %}" class="btn btn-secondary" style="margin-bottom: 10px;">Realizar donación</a>
     {% endif %}
+    <div class="respuesta card m-2 rounded">
+    <h2 class="card-title fw-bold text-center m-2">Respuestas:</h2>
 
-    <h2>Respuestas:</h2>
+    
+            {% for respuesta in campaign.respuestas %}
+                <div class="respuesta card-body dorado rounded m-3">
+                    <div class="member-item">
+                        {% if respuesta.autor.perfilusuario.foto_perfil %}
+                        <div class="author-info">
+                            <img src="{{ respuesta.autor.perfilusuario.foto_perfil.url }}" alt="Foto de {{ respuesta.autor.username }}" class="profile-picture">
+                        {% endif %}
+                            <a href="{% url 'perfil_usuario' respuesta.autor.username %}" class="author-name">{{ respuesta.autor.first_name }} {{ respuesta.autor.last_name }}</a>
+                        </div>{{ respuesta.respuesta }}
+                    </div>
+                    <form action="{% url 'like_respuesta' campaign.desafio.id respuesta.id%}" method="POST">
+                        {% csrf_token %}
+                        <div class="">
+
+                    <hr class="community-divider">
+            <button type="submit" class="like-icon" style="background: transparent;">
+                {% if user in desafio.likes.all %}
+                    <img src="{% static 'images/unlike.svg' %}" class="like-icon">
+                {% else %}
+                    {% if respuesta in like_respuestas %}
+                        <img src="{% static 'images/unlike.svg' %}" class="like-icon">
+                    {% else %}
+                        <img src="{% static 'images/like.svg' %}" class="like-icon">
+                    {% endif %}
+                {% endif %}
+            </button>
+                    </form>
+                    <p class="puntuacion">Puntos: <span class="puntos-valor">{{ respuesta.likes_total }}</span> </p>
+                </div>
+            </div>
+            {% empty %}
+                <p class="m-2 text-muted">No hay respuestas aún.</p>
+            {% endfor %}
+   
 
     {% if request.user == campaign.desafio.creador %}
-        <p> Eres el creador de la campaña, no puedes responder.</p>
+        <br>
+        <p class="m-2 text-warning"> Eres el creador de la campaña, no puedes responder.</p>
+        <br>
     {% elif campaign_activa %}
+    
+    <div class="card-footer rounded">
         <form method="post">
             {% csrf_token %}
-            {{ respuesta_form.as_p }}
+            <textarea name="respuesta" placeholder="Escribe tu respuesta..." style="width: 100%; margin-bottom: 15px; margin-top: 10px;"></textarea>
+            <div class="align-content-end">
             <button type="submit">Enviar respuesta</button>
+            </div>
         </form>
-        {% if request.user != campaign.desafio.creador and tipo %}
-            <a href="{% url 'guardar_donacion' campaign.desafio.pk %}">Realizar donación</a>
-        {% endif %}
     {% else %}
-        <p> Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
+    
+        <p class="text-center"> Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}
-
-
-    <p>Likes: {{ total_likes }}</p>
-
-<form action="{% url 'like_desafio' campaign.desafio.id %}" method="POST">
-    {% csrf_token %}
-    {% if user in desafio.likes.all %}
-        <button type="submit">Quitar Like</button>
-    {% else %}
-        <button type="submit">Dar Like</button>
-    {% endif %}
-</form>
-    {% for respuesta in campaign.respuestas %}
-        <div class="respuesta">
-            <p>{{ respuesta.autor.username }}: {{ respuesta.respuesta }}</p>
-            <form action="{% url 'like_respuesta' campaign.desafio.id respuesta.id%}" method="POST">
-                {% csrf_token %}
-                {% if user in desafio.likes.all %}
-                    <button type="submit">Quitar Like</button>
+    </div>
+    <div>
+    <form action="{% url 'like_desafio' campaign.desafio.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="like-icon" style="background: transparent;">
+            {% if user in desafio.likes.all %}
+                <img src="{% static 'images/unlike.svg' %}" alt="Quitar Like" class="like-icon">
+            {% else %}
+                {% if like_campaign %}
+                    <img src="{% static 'images/unlike.svg' %}" alt="Dar Like" class="like-icon">
                 {% else %}
-                    <button type="submit">Dar Like</button>
+                <img src="{% static 'images/like.svg' %}" alt="Dar Like" class="like-icon">
                 {% endif %}
-            <p class="puntuacion">Puntos: <span class="puntos-valor">{{ respuesta.likes_total }}</span> </p>
-        </div>
-    {% empty %}
-        <p>No hay respuestas aún.</p>
-    {% endfor %}
-    <a href="{% url 'detalle_comunidad' campaign.comunidad.pk%}">Volver</a>
+            {% endif %}
+        </button>
+        <p>Likes: {{ total_likes }}</p>
+    </form>
+    </div>
 </div>
+</div>
+</div>
+<div class="text-center mt-4">
+    <a href="{% url 'detalle_comunidad' campaign.comunidad.pk%}" class="btn btn-primary">Volver</a>
+</div>
+</div>
+<br>
 </main>
 </body>
 
@@ -110,16 +155,70 @@
 </script>
 
 <style>
-    body {
-        margin-top: 80px;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-      }
-
-      main{
+    main{
         flex: 1;
+        margin-top: 20px;
       }
+      body {
+          background-color: #f8f9fa;
+          margin-top: 80px;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+      }
+      .container {
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+      }
+      .card {
+          border: none;
+          border-radius: 15px;
+          box-shadow: 0 4px 6px rgba(0,0,0,.1);
+      }
+      .card-img-top {
+          border-top-left-radius: 15px;
+          border-top-right-radius: 15px;
+      }
+      .card-body {
+          padding: 20px;
+      }
+      .card-title {
+          font-weight: bold;
+      }
+      .btn {
+          background-color: #007bff;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 30px;
+          font-weight: bold;
+          transition: background-color 0.3s ease;
+      }
+      .btn:hover {
+          background-color: #0056b3;
+      }
+      .dorado{
+        border:2px solid #fcc350 !important;
+      }
+        .like-icon {
+            background: transparent;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+    
+        img.like-icon {
+            width: 24px;
+            height: 24px;
+        }
+      .community-divider {
+        width: 100%;
+        border: 1px solid #fcc350;
+        height: 1px;
+        background: #ddd;
+        margin: 10px 0;
+    }
 
     .promedio-rating {
         display: inline-block;
@@ -168,5 +267,26 @@
     }
     .rating:hover .star {
         color: #ccc;
+    }
+
+    .member-item{
+        margin-bottom: 2px;
+    }
+
+    .profile-picture {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    .author-info {
+        flex-grow: 1;
+    }
+
+    .author-name {
+        font-weight: bold;
+        color: #333;
     }
 </style>

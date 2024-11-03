@@ -18,6 +18,16 @@
                 <label for="descripcion">Descripción:</label>
                 <textarea id="descripcion" name="descripcion" class="form-control" rows="3">{{ request.user.comunidad.descripcion }}</textarea>
             </div>
+            <br>
+            <div class="form-group fw-bold">
+              <label for="publica">¿Es pública?</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="publica" name="publica" value="true">
+                <label class="form-check-label" for="publica">
+                  Sí
+                </label>
+            </div>
+          </div>
             <button type="submit" class="btn btn-primary w-100 mt-3">Solicitar</button>
         </form>
     </div>

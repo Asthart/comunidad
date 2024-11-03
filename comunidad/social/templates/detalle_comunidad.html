@@ -294,12 +294,14 @@
                         <p>No hay campañas para mostrar.</p>
                     {% endfor %}
                     <br>
-                    {% if es_admin %}
-                        <div >
+                    <div >
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
-                        <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
-                        </div>
-                    {% endif %}
+                        {% if es_admin %}    
+                            <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
+                        {% else %}
+                            <a style="display: flex; justify-content: center;" href="{% url 'solicitar_crowuser' comunidad.pk %}" class="action-button">Solicitar ser Crowuser</a>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div class="publication">
@@ -329,7 +331,7 @@
                     <h2 class="title fw-bold">Publicaciones Recientes</h2>
                     <hr class="community-divider">
                     <br>
-                    <a href="{% url 'crear_publicacion' %}" class="action-button" style="">Crear Publicación</a>
+                    <a href="{% url 'crear_publicacion' comunidad.pk %}" class="action-button" style="">Crear Publicación</a>
                 </div>
                 {% if publicaciones %}
                     {% for pub in publicaciones %}

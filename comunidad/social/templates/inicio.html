@@ -205,6 +205,13 @@
     <!-- Contenido principal -->
     <main>
 
+        {% if is_superuser %}
+        <div class="text-center mt-1">
+            <a href="http://localhost:8000/admin" class="btn btn-primary fw-bold h3">Administrar sitio</a>
+        </div>
+        <br>
+        {% endif %}
+
         <div class="publication dorado">
             <h1 class="title fw-bold">Principales servicios que ofrecemos</h1>
 
@@ -261,7 +268,9 @@
                 <div class="col-md-8">
                     <div class="card shadow-lg dorado">
                         <div class="card-body text-center ">
-                            <h1 class="card-title mb-4 fw-bold">Concurso Activo: <a href="{% url 'concurso_resultados' %}">{{ concurso.nombre }}</a></h1>
+                            <h1 class="card-title mb-4 fw-bold">Concurso Activo: <a href="{% url 'concurso_resultados' %}">
+                                {{ concurso.nombre }} 
+                                <span style="font-size: large;"> Ver más</span><img src="{% static 'images/more.svg' %}" style="width: 40px; height: auto;" alt="Icono" class="icono-svg"></a></h1>
                             <div class="countdown-container p-4 bg-light rounded dorado" id="cuadrito">
                                 <div id="contador" class="contador display-4 text-primary fw-bold"></div>
                             </div>
@@ -302,14 +311,16 @@
                         <div style=" display: grid;
                         place-items: center;
                         height: 100%; ">
+                        </div>
+                        <div>
                         {% if pro.imagenes %}
-                            <img src="{{ pro.imagenes.url }}" alt="Imagen de publicación" style=" max-width: 60%; height: auto;">
-                            </div>
+                        <a href="{{ pro.imagenes.url }}" class="link-body-emphasis fw-bold"><img src="{% static '/images/download.svg' %}" alt="PDF" width="30" height="30" style="object-fit: cover; border-radius: 50%;"> Descargar Imagen</a>
                         {% endif %}
+                        </div>
                         {% if pro.documentos %}
-                            <br>
                             <div>
-                            <h5>Descargar documento adjunto: <a href="{{ pro.documentos.url }}" download="{{ pro.documentos.name }}">{{ pro.documentos.name }}</a></h5>
+                        <a href="{{ pro.documentos.url }}" class="link-body-emphasis fw-bold"><img src="{% static '/images/download.svg' %}" alt="PDF" width="30" height="30" style="object-fit: cover; border-radius: 50%;"> Descargar Adjunto</a>
+
                             </div>
                         {% endif %}
                     </div>
