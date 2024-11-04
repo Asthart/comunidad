@@ -44,7 +44,6 @@ MarkupSafe==2.1.5
 mdurl==0.1.2
 msgpack==1.1.0
 packaging==24.1
-Pillow==8.3.2
 psycopg2-binary==2.9.9
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
@@ -60,7 +59,6 @@ redis==5.0.8
 requests==2.32.3
 rich==13.8.1
 schedule==1.2.2
-screen==1.0.1
 service-identity==24.1.0
 six==1.16.0
 soupsieve==2.6

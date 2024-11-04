@@ -40,7 +40,7 @@ class Comunidad(models.Model):
         return Publicacion.objects.filter(comunidad=self).order_by('-fecha_publicacion')
     def es_miembro(self, usuario):
         return self.miembros.filter(id=usuario.id).exists()
-    
+
     def es_crowuser(self, usuario):
         return self.crowusers.filter(id=usuario.id).exists()
 
@@ -63,7 +63,7 @@ class Comunidad(models.Model):
 class Crowuser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
-    
+
     def __str__(self):
         return self.user.username
 
@@ -447,13 +447,12 @@ class SolicitudMembresia(models.Model):
         return f"{self.usuario.username} - {self.comunidad.nombre} ({self.estado})"
 
 class SolicitudCrowuser(models.Model):
-    comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE)
+    descripcion = models.TextField(default="")
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_solicitud = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=10, choices=[('pendiente', 'Pendiente'), ('aceptada', 'Aceptada'), ('rechazada', 'Rechazada')], default='pendiente')
 
     def __str__(self):
-        return f"{self.usuario.username} - {self.comunidad.nombre} ({self.estado})"
+        return f"{self.usuario.username} - {self.descripcion}"
 
 class PuntajeDesafio(models.Model):
     desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='puntajes')

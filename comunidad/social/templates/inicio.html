@@ -21,7 +21,7 @@
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
-        
+
         main {
             max-width: 80%;
             margin-top: 20px;
@@ -32,7 +32,7 @@
             flex: 1;
             width: 100%;
         }
-        
+
         .publication {
             background-color: white;
             border-radius: 10px;
@@ -40,13 +40,13 @@
             margin-bottom: 20px;
             padding: 20px;
         }
-        
+
         .publication-header {
             display: flex;
             align-items: center;
             margin-bottom: 10px;
         }
-        
+
         .profile-picture {
             width: 40px;
             height: 40px;
@@ -54,21 +54,21 @@
             object-fit: cover;
             margin-right: 10px;
         }
-        
+
         .author-info {
             flex-grow: 1;
         }
-        
+
         .author-name {
             font-weight: bold;
             color: #333;
         }
-        
+
         .publication-date {
             color: #666;
             font-size: 14px;
         }
-        
+
         .community-tag {
             background-color: #f0f0f0;
             padding: 5px 10px;
@@ -76,17 +76,17 @@
             display: inline-block;
             margin-bottom: 10px;
         }
-        
+
         .publication-content {
             margin-bottom: 15px;
         }
-        
+
         .publication-actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .action-button {
             background-color: #007bff;
             color: white;
@@ -96,19 +96,19 @@
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
-        
+
         .action-button:hover {
             background-color: #0056b3;
         }
-        
+
         .action-button i {
             margin-right: 5px;
         }
-        
+
         #comentarios-{{ pub.id }} {
             margin-top: 15px;
         }
-        
+
         .comment {
             background-color: #f9f9f9;
             padding: 10px;
@@ -116,15 +116,15 @@
             margin-bottom: 10px;
             width: 98%;
         }
-        
+
         .comment h4 {
             margin-top: 0;
         }
-        
+
         .comment small {
             color: #888;
         }
-        
+
         textarea {
             height: 60px;
             width: 98%;
@@ -142,14 +142,14 @@
             background: linear-gradient(145deg, white, white);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-    
+
         .contador {
             background: linear-gradient(90deg, #5ceaf6, #ef32f9, #5ceaf6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: pulse 2s infinite;
         }
-    
+
         @keyframes pulse {
             0% {
                 transform: scale(1);
@@ -161,7 +161,7 @@
                 transform: scale(1);
             }
         }
-    
+
         @media (max-width: 768px) {
             .countdown {
                 font-size: 1.5rem;
@@ -183,10 +183,10 @@
             justify-content: center;
             width: 60px;
             height: 60px;
-            background-color: transparent; 
+            background-color: transparent;
             border: none;
         }
-        
+
         .scroll-to-top-btn img {
             max-width: 55px;
             max-height: 55px;
@@ -249,7 +249,7 @@
                 <div class="accordion-item">
                     <h2 class="accordion-header">
                       <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-                          04. Apollo a la Comunidad
+                          04. Apoyo a la Comunidad
                       </button>
                     </h2>
                     <div id="flush-collapseFour" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
@@ -269,7 +269,7 @@
                     <div class="card shadow-lg dorado">
                         <div class="card-body text-center ">
                             <h1 class="card-title mb-4 fw-bold">Concurso Activo: <a href="{% url 'concurso_resultados' %}">
-                                {{ concurso.nombre }} 
+                                {{ concurso.nombre }}
                                 <span style="font-size: large;"> Ver más</span><img src="{% static 'images/more.svg' %}" style="width: 40px; height: auto;" alt="Icono" class="icono-svg"></a></h1>
                             <div class="countdown-container p-4 bg-light rounded dorado" id="cuadrito">
                                 <div id="contador" class="contador display-4 text-primary fw-bold"></div>
@@ -283,7 +283,7 @@
 
         <div class="publication dorado">
         <h1 class="title fw-bold">Proyectos Recientes</h1>
-        </div> 
+        </div>
 
         {% if proyectos %}
             {% for pro in proyectos %}
@@ -299,19 +299,20 @@
                             <span class="publication-date">{{ pro.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
                         </div>
                     </div>
-                    
-                    {% if pro.comunidad %}
-                        <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pro.comunidad.pk %}" class="author-name">{{ pro.comunidad.nombre }}</a></p>
-                    {% endif %}
-                    
-                    <div class="publication-content" >        
 
-                        <h4 class="fw-bold">{{ pro.titulo }}</h4>
-                        <p>{{ pro.descripcion }}</p>
+                    {% if pro.comunidad %}
+                        <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pro.comunidad.pk %}" class="author-name">{{ pro.comunidad.nombre }}</a> Nombre del Proyecto: <a href="{% url 'detalle_proyecto' pro.id %}" >{{ pro.titulo }}</a> Descripción: <a>{{ pro.descripcion }}</a> </p>
+                    {% endif %}
+
+                    <div class="publication-content" >
+
+                        <h4 class="fw-bold" ></h4>
+
                         <div style=" display: grid;
                         place-items: center;
                         height: 100%; ">
                         </div>
+                      <!--
                         <div>
                         {% if pro.imagenes %}
                         <a href="{{ pro.imagenes.url }}" class="link-body-emphasis fw-bold"><img src="{% static '/images/download.svg' %}" alt="PDF" width="30" height="30" style="object-fit: cover; border-radius: 50%;"> Descargar Imagen</a>
@@ -324,15 +325,14 @@
                             </div>
                         {% endif %}
                     </div>
-                    
-                    
+
+
                     <div class="publication-actions">
                         <button onclick="mostrarComentarios({{ pro.id }})" class="action-button">
                             <span class="comment-count">{{ pro.comentarios.count }} Comentarios</span>
                         </button>
                     </div>
                     <br>
-                    <!-- Sección de comentarios -->
                     <div id="comentarios-{{ pro.id }}" style="display: none;">
                         {% for comentario in pro.comentarios.all %}
                             <div class="comment" id="comment{{ comentario.id }}">
@@ -353,6 +353,7 @@
                             <button type="submit">Enviar</button>
                         </form>
                     </div>
+                    -->
                 </div>
             </div>
             {% endfor %}
@@ -363,8 +364,8 @@
         <a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="terminos-b" style="display: none;">
         </a>
 
-       
-    </main> 
+
+    </main>
 </body>
 
 {% include 'footer.html' %}
@@ -374,7 +375,7 @@
             let value = "; " + document.cookie;
             let parts = value.split("; " + name + "=");
             if (parts.length == 2) return parts.pop().split(";").pop();
-        }        
+        }
 
         function mostrarComentarios(proyectoId) {
             var comentariosDiv = document.getElementById('comentarios-' + proyectoId);
@@ -418,7 +419,7 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             var scrollToTopBtn = document.getElementById('scroll-to-top-btn');
-            
+
             // Function to toggle button visibility
             function toggleButtonVisibility() {
                 if (window.pageYOffset > 300) {
@@ -427,13 +428,13 @@
                     scrollToTopBtn.style.display = 'none';
                 }
             }
-    
+
             // Initial call to set button visibility
             toggleButtonVisibility();
-            
+
             // Add scroll event listener
             window.addEventListener('scroll', toggleButtonVisibility);
-    
+
             // Add click event listener to the button
             scrollToTopBtn.addEventListener('click', function() {
                 window.scrollTo({

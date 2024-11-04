@@ -8,6 +8,11 @@ class ComunidadForm(forms.ModelForm):
         model = Comunidad
         fields = ['nombre', 'descripcion', 'publica']
 
+class SolicitudCrowuserForm(forms.ModelForm):
+    class Meta:
+        model = SolicitudCrowuser
+        fields = ['descripcion']
+
 class ProyectoForm(forms.ModelForm):
     class Meta:
         model = Proyecto
@@ -27,7 +32,7 @@ class DesafioForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-            
+
         if self.instance.pk:  # Verificar si existe un ID primario
             if self.instance.tipo_desafio == 'donacion':
                 self.fields['min_monto'].widget.attrs['readonly'] = True
@@ -46,17 +51,17 @@ class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(label='Nombres', max_length=30, required=True)
     last_name = forms.CharField(label='Apellidos', max_length=30, required=True)
     email = forms.EmailField(label='Correo electrónico', required=True)
-    
+
     password1 = forms.CharField(label='Contraseña', widget=forms.PasswordInput(attrs={'placeholder': 'Minimo 8 caracteres'}))
     password2 = forms.CharField(label='Confirmar Contraseña', widget=forms.PasswordInput(attrs={'placeholder': 'Repite la contraseña'}))
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1")
         password2 = self.cleaned_data.get("password2")
-        
+
         if password1 and password2 and password1 != password2:
             raise ValidationError("Las contraseñas no coinciden.")
-        
+
         return password2
 
     class Meta:
@@ -73,19 +78,19 @@ class CustomUserCreationForm(UserCreationForm):
 
     def clean_password1(self):
         password = self.cleaned_data.get("password1")
-        
+
         if len(password) < 8:
             raise ValidationError("La contraseña debe contener al menos 8 caracteres.")
-        
+
         if password.isdigit():
             raise ValidationError("La contraseña no puede ser completamente numérica.")
-        
+
         if password.lower() in ['123456', 'qwerty']:
             raise ValidationError("La contraseña no puede ser una clave utilizada comúnmente.")
-        
+
         if password.lower() == password.upper():
             raise ValidationError("La contraseña no puede asemejarse tanto a su otra información personal.")
-        
+
         return password
 
     def save(self, commit=True):
@@ -103,7 +108,7 @@ class PublicacionForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple
     )
     '''
-    
+
     class Meta:
         model = Publicacion
         fields = ('contenido', 'imagen')
@@ -113,16 +118,16 @@ class RespuestaForm(forms.ModelForm):
         model = Respuesta
         fields = ('respuesta',)
 
-class ComentarioForm(forms.ModelForm):        
+class ComentarioForm(forms.ModelForm):
     class Meta:
         model = Comentario
         fields = ('contenido',)
-        
-class ComentarioProyectoForm(forms.ModelForm):        
+
+class ComentarioProyectoForm(forms.ModelForm):
     class Meta:
         model = ComentarioProyecto
         fields = ('contenido',)
-        
+
 class DonacionComunidadForm(forms.ModelForm):
     class Meta:
         model = DonacionComunidad
@@ -133,7 +138,7 @@ class DonacionComunidadForm(forms.ModelForm):
     }
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['nombre'].widget.attrs['readonly'] = True    
+        self.fields['nombre'].widget.attrs['readonly'] = True
 class EditUserProfileForm(forms.ModelForm):
     class Meta:
         model = PerfilUsuario
@@ -141,7 +146,7 @@ class EditUserProfileForm(forms.ModelForm):
         widgets = {
             'biografia': forms.Textarea(attrs={'rows': 4}),
         }
-        
+
 class EditUserProfilePersonalForm(forms.ModelForm):
     class Meta:
         model = PerfilUsuario
@@ -154,7 +159,7 @@ class EditUserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
-        
+
 class RangoFechaForm(forms.Form):
     fecha_inicio = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))
     fecha_fin = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}))

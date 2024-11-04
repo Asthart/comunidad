@@ -21,10 +21,10 @@ def inicio(request):
     terminos = TerminosCondiciones.objects.all().first()
     user = request.user
     is_superuser = request.user.is_superuser
-    
+
     if terminos == None:
         return render(request, 'base.html', {'is_superuser': is_superuser})
-    
+
     profile = PerfilUsuario.objects.get(usuario=user)
     contador = Concurso.ultimo_concurso()
 
@@ -32,7 +32,7 @@ def inicio(request):
     comunidades = Comunidad.objects.filter(miembros=user, activada=True)
     # Obtener los perfiles que el usuario sigue
     seguidos = profile.seguidos.all()
-    
+
     todos_proyectos = Proyecto.objects.filter(
         Q(comunidad__in=comunidades) |
         Q(creador__in=[seguido.usuario for seguido in seguidos])
@@ -142,7 +142,7 @@ def detalle_comunidad(request, pk):
     es_admin = (comunidad.administrador == request.user or comunidad.es_crowuser(user))
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
-    
+
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
         Q(comunidad=comunidad) |
@@ -448,7 +448,7 @@ def crear_comentario_pro(request, pk):
             if not request.user.is_superuser:
                 accion = Action.objects.filter(name='comentar proyecto').first()
                 update_user_points(request.user.id, accion.id, accion.points)
-            return redirect('inicio')
+            return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
     else:
         form = ComentarioProyectoForm()
     return render(request, 'crear_comentario.html', {'form': form, 'proyecto': proyecto})
@@ -538,7 +538,7 @@ class ChatWS    (AsyncWebsocketConsumer):
 
 
 def aceptar_terminos(request):
-    terminos = TerminosCondiciones.objects.get(id=1)
+    terminos = TerminosCondiciones.objects.all().first()
     terminos_usuario = TerminosCondicionesUsuario.objects.filter(usuario=request.user).first()
     terminos_aceptados = False
     if terminos_usuario:
@@ -677,18 +677,18 @@ def detalle_campaign(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     desafio=campaign.desafio
     like_count = desafio.likes.count()
-    
+
     like_campaign= False
     like_respuestas= []
-    
+
     for comentario in campaign.respuestas.all():
         if request.user in comentario.likes.all():
             like_respuestas.append(comentario)
-    
+
     if request.user in desafio.likes.all():
         like_campaign=True
-    
-    
+
+
     tipo = False
     if campaign.tipo=="donacion":
         tipo=True
@@ -861,7 +861,7 @@ def salir_comunidad(request, pk):
 @login_required
 def solicitar_membresia(request, comunidad_id):
     comunidad = get_object_or_404(Comunidad, id=comunidad_id)
-    solicitud_pendiente = SolicitudCrowuser.objects.filter(comunidad=comunidad, usuario=request.user).first()
+    solicitud_pendiente = SolicitudMembresia.objects.filter(comunidad=comunidad, usuario=request.user).first()
     creada = False
     if solicitud_pendiente:
         creada = True
@@ -883,30 +883,31 @@ def solicitar_membresia(request, comunidad_id):
 
     return render(request, 'solicitud_membresia.html', {'comunidad': comunidad , 'creada': creada})
 
-@login_required
-def solicitar_crowuser(request, comunidad_id):
-    comunidad = get_object_or_404(Comunidad, id=comunidad_id)
-    solicitud_pendiente = SolicitudCrowuser.objects.filter(comunidad=comunidad, usuario=request.user).first()
-    creada = False
-    if solicitud_pendiente:
-        creada = True
 
+def solicitar_crowuser(request):
     if request.method == 'POST':
-        # Verificar que la comunidad es privada
-        if comunidad.publica:
-            return redirect('detalle_comunidad', comunidad_id=comunidad_id)
+        form = SolicitudCrowuserForm(request.POST)
+        if form.is_valid():
+            solicitud = form.save(commit=False)
+            solicitud.usuario = request.user
+            solicitud.save()
 
-        # Crear la solicitud de membresía
-        solicitud, created = SolicitudCrowuser.objects.get_or_create(comunidad=comunidad, usuario=request.user)
-        solicitud.save()
-        if created:
-            # Notificar que la solicitud fue enviada
-            return redirect('detalle_comunidad', comunidad_id)
-        else:
-            # Si ya existe una solicitud pendiente
-            creada = True
+            ADMIN_EMAIL = os.environ.get('EMAIL_HOST_USER')
+            '''send_mail(
+                'Nueva solicitud de cuenta',
+                f'El usuario {request.user} ha solicitado una comunidad. Con el nombre de {comunidad.nombre}.',
+                ADMIN_EMAIL,
+                ['cespedesalejandro247@gmail.com'],
+                fail_silently=False,
+            )'''
 
-    return render(request, 'solicitud_crowuser.html', {'comunidad': comunidad , 'creada': creada})
+            return redirect('inicio')
+    else:
+        form = SolicitudCrowuserForm()
+    return render(request, 'solicitud_crowuser.html', {'form': form})
+
+
+
 
 @login_required()
 def ranking_usuarios(request):

@@ -51,6 +51,6 @@ urlpatterns = [
     path('puntuar-desafio/<int:desafio_id>/<int:punto>/', views.puntuar_desafio, name='puntuar_desafio'),
     path('comunidad/<pk>/unirse/', views.unirse_comunidad, name='unirse_comunidad'),
     path('comunidad/<int:comunidad_id>/solicitar/', views.solicitar_membresia, name='solicitar_membresia'),
-    path('comunidad/<int:comunidad_id>/solicitar_crowuser/', views.solicitar_crowuser, name='solicitar_crowuser'),
+    path('solicitar_crowuser/', views.solicitar_crowuser, name='solicitar_crowuser'),
     path('comunidad/<pk>/salir/', views.salir_comunidad, name='salir_comunidad'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

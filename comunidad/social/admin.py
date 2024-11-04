@@ -216,29 +216,22 @@ class SolicitudMembresiaAdmin(admin.ModelAdmin):
 admin.site.register(SolicitudMembresia, SolicitudMembresiaAdmin)
 
 class SolicitudCrowuserAdmin(admin.ModelAdmin):
-    list_display = ('usuario', 'comunidad', 'fecha_solicitud', 'estado')
-    list_filter = ('estado',)
+    list_display = ('usuario', 'fecha_solicitud')
     actions = ['aceptar_solicitud', 'rechazar_solicitud']
 
     def aceptar_solicitud(self, request, queryset):
         for solicitud in queryset:
             # Cambiar el estado de la solicitud a 'aceptada'
-            solicitud.estado = 'aceptada'
             # Agregar el usuario a la comunidad
             #solicitud.comunidad.miembros.add(solicitud.usuario)
-            comunidad = solicitud.comunidad
-            print(comunidad)
-            nuevo_miembro = solicitud.usuario
-            comunidad.crowusers.add(nuevo_miembro)
-            solicitud.save()  # Guardar los cambios en la solicitud
+            grupo = Group.objects.get(name='Crowuser')
+            grupo.user_set.add(solicitud.usuario.id)
             solicitud.delete()
-        self.message_user(request, "Las solicitudes seleccionadas han sido aceptadas y los usuarios han sido añadidos a la comunidad.")
+        self.message_user(request, "Las solicitudes seleccionadas han sido aceptadas.")
 
     def rechazar_solicitud(self, request, queryset):
         for solicitud in queryset:
-            # Cambiar el estado de la solicitud a 'rechazada'
-            solicitud.estado = 'rechazada'
-            solicitud.save()  # Guardar los cambios en la solicitud
+
             solicitud.delete()
         self.message_user(request, "Las solicitudes seleccionadas han sido rechazadas.")
 
