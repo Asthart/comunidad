@@ -32,7 +32,7 @@
                             </div>
 
                             <div class="publication-actions">
-                                <button onclick="mostrarComentarios({{ pub.id }})" class="action-button">
+                                <button onclick="mostrarComentarios({{ pub.id }})" class="action-button btn btn-primary">
                                     <span class="comment-count">{{ pub.comentarios.count }} Comentarios</span>
                                 </button>
                             </div>
@@ -167,6 +167,9 @@
         background-position: center;
         background-repeat: no-repeat;
         background-attachment: fixed;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
     }
 
     main {

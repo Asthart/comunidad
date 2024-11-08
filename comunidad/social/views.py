@@ -303,6 +303,8 @@ def perfil_usuario(request, username):
     yo= not usuario==request.user
     comunidades=Comunidad.objects.filter(miembros=usuario)
     publicaciones = Publicacion.objects.filter(autor=usuario).order_by('-fecha_publicacion')
+    count = publicaciones.count()
+    print(count)
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
@@ -311,7 +313,8 @@ def perfil_usuario(request, username):
         'clasificacion': clasificacion,
         'yo':yo,
         'comunidades':comunidades,
-        'publicaciones':publicaciones
+        'publicaciones':publicaciones,
+        'count': count,
     })
 
 from .forms import CustomUserCreationForm

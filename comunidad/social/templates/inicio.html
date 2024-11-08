@@ -301,13 +301,13 @@
                     </div>
 
                     {% if pro.comunidad %}
-                        <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pro.comunidad.pk %}" class="author-name">{{ pro.comunidad.nombre }}</a> Nombre del Proyecto: <a href="{% url 'detalle_proyecto' pro.id %}" >{{ pro.titulo }}</a> Descripción: <a>{{ pro.descripcion }}</a> </p>
+                        <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pro.comunidad.pk %}" class="author-name">{{ pro.comunidad.nombre }}</a></p>
                     {% endif %}
 
                     <div class="publication-content" >
 
-                        <h4 class="fw-bold" ></h4>
-
+                        <h4 class="fw-bold" >Nombre del Proyecto: <a href="{% url 'detalle_proyecto' pro.id %}" >{{ pro.titulo }}</a> </h4>
+                        <h5>Descripción: <a>{{ pro.descripcion }}</a><h5>
                         <div style=" display: grid;
                         place-items: center;
                         height: 100%; ">

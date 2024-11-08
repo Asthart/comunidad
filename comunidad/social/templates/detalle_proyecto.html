@@ -58,6 +58,22 @@
           background: #ddd;
           margin: 10px 0;
         }
+        .comment {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 98%;
+        }
+
+        textarea {
+            height: 60px;
+            width: 98%;
+            padding: 10px;
+            margin-bottom: 10px;
+            resize: vertical;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -86,7 +102,7 @@
                 <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
                 <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}" class="">{{ proyecto.comunidad }}</a></p>
                 <div class="publication-actions">
-                    <button onclick="mostrarComentarios({{ proyecto.id }})" class="action-button">
+                    <button onclick="mostrarComentarios({{ proyecto.id }})" class="action-button btn btn-primary">
                         <span class="comment-count">{{ proyecto.comentarios.count }} Comentarios</span>
                     </button>
                 </div>
