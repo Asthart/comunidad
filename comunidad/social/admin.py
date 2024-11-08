@@ -240,3 +240,4 @@ class SolicitudCrowuserAdmin(admin.ModelAdmin):
 
 admin.site.register(SolicitudCrowuser, SolicitudCrowuserAdmin)
 admin.site.register(Publicacion)
+#admin.site.register(Cuenta)

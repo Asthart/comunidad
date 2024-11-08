@@ -130,6 +130,11 @@ def crear_comunidad(request):
         form = ComunidadForm()
     return render(request, 'crear_comunidad.html', {'form': form})
 
+@login_required
+def lista_publicaciones(request,username):
+    user = User.objects.get(username=username)
+    publicaciones = Publicacion.objects.filter(autor = user).order_by('-fecha_publicacion')
+    return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user})
 
 @login_required
 def detalle_comunidad(request, pk):
@@ -297,6 +302,7 @@ def perfil_usuario(request, username):
     sigue_a = perfil.sigue_a(request.user)
     yo= not usuario==request.user
     comunidades=Comunidad.objects.filter(miembros=usuario)
+    publicaciones = Publicacion.objects.filter(autor=usuario).order_by('-fecha_publicacion')
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
@@ -304,7 +310,8 @@ def perfil_usuario(request, username):
         'sigue_a': sigue_a,
         'clasificacion': clasificacion,
         'yo':yo,
-        'comunidades':comunidades
+        'comunidades':comunidades,
+        'publicaciones':publicaciones
     })
 
 from .forms import CustomUserCreationForm
@@ -436,6 +443,25 @@ def crear_comentario(request, pk):
     return render(request, 'crear_comentario.html', {'form': form, 'publicacion': publicacion})
 
 @login_required
+def crear_comentario_pub(request, pk):
+    publicacion = Publicacion.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = ComentarioForm(request.POST)
+        if form.is_valid():
+            comentario = form.save(commit=False)
+            comentario.publicacion = publicacion
+            comentario.autor = request.user
+            comentario.save()
+            if not request.user.is_superuser:
+                accion = Action.objects.filter(name='comentar').first()
+                update_user_points(request.user.id, accion.id, accion.points)
+
+            return redirect('lista_publicaciones', publicacion.autor.username)
+    else:
+        form = ComentarioForm()
+    return render(request, 'crear_comentario.html', {'form': form, 'publicacion': publicacion})
+
+@login_required
 def crear_comentario_pro(request, pk):
     proyecto = Proyecto.objects.get(pk=pk)
     if request.method == 'POST':
@@ -536,6 +562,9 @@ class ChatWS    (AsyncWebsocketConsumer):
         # Enviar el mensaje al emisor
         await self.send(text_data=event["mensaje"])
 
+def aceptar_terminos_registro(request):
+    terminos = TerminosCondiciones.objects.all().first()
+    return render(request, 'aceptar_terminos_registro.html', {'terminos': terminos})
 
 def aceptar_terminos(request):
     terminos = TerminosCondiciones.objects.all().first()
@@ -596,7 +625,8 @@ def dejar_de_seguir_usuario(request, pk):
         update_user_points(request.user.id, accion.id, -(accion.points))
         return redirect('perfil_usuario', username=usuario.username)
 
-@login_required
+
+'''@login_required
 def lista_publicaciones(request):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     seguidos = perfil_usuario.seguidos.all()
@@ -606,7 +636,7 @@ def lista_publicaciones(request):
     if not publicaciones.exists():
         publicaciones = None
     return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones})
-
+'''
 
 
 def action_view(request, action_id):
@@ -649,13 +679,21 @@ def listar_concursos(request):
 
 
 def concurso_resultados(request):
-
     concurso_actual = Concurso.objects.latest('fecha_fin')
     premio = concurso_actual.premio
     # Ordenar por ranking y tomar el primero
     ganador = PerfilUsuario.objects.order_by('-puntos').first()
+    superuser = ganador
+    flag = False
+    if ganador.usuario.is_superuser:
+        superuser = ganador
+        flag = True
+        ganador = PerfilUsuario.objects.filter(not self == superuser).order_by('-puntos').first()        
     usuario= User.objects.get(id=ganador.usuario.id)
-    top_usuarios = PerfilUsuario.objects.order_by('-puntos')[:10]
+    if flag:
+        top_usuarios = PerfilUsuario.objects.filter(not self == superuser).order_by('-puntos')[:10]
+    else:
+        top_usuarios = PerfilUsuario.objects.order_by('-puntos')[:10]
     return render(request, 'concurso_resultados.html', {
         'concurso': concurso_actual,
         'ganador': ganador,

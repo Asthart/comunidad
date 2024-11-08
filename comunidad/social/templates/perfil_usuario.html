@@ -152,6 +152,18 @@
                 {% endfor %}
             </ul>
         </div>
+
+        <div class="projects-section dorado">
+            <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Publicaciones</h2>
+            <hr class="community-divider">
+            <ul class="project-list">
+                {% if not publicaciones == None %}
+                    <li><a href="{% url 'lista_publicaciones' usuario.username %}" class="text-decoration-none">Ver publicaciones</a></li>
+                {% else %}
+                    <li>Este usuario no ha creado publicaciones.</li>
+                {% endif %}
+            </ul>
+        </div>
     </main>
 
 

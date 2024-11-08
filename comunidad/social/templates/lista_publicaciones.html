@@ -1,0 +1,247 @@
+{% load static %}
+{% load bootstrap5 %}
+<body>
+    <main>
+        <div>
+        <div class="publications-section" style="width: 100%;">
+            <div class="publication text-center">
+                <h2 class="title fw-bold">Publicaciones de {{ user.first_name }} {{ user.last_name }}</h2>
+                <hr class="community-divider">
+            </div>
+            {% for pub in publicaciones %}
+                        <div class="publication">
+                            <div class="publication-header">
+                                {% if pub.autor.perfilusuario.foto_perfil %}
+                                {% if pub.autor.perfilusuario.foto_perfil.url %}
+                                    <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                                {% endif %}
+                                {% endif %}
+                                <div class="author-info">
+                                    <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.first_name }} {{ pub.autor.last_name }}</a>
+                                    <span class="publication-date">{{ pub.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
+                                </div>
+                            </div>
+                            <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pub.comunidad.pk %}" class="author-name">{{ pub.comunidad.nombre }}</a></p>
+                            <div class="publication-content">
+                            <p>{{ pub.contenido }}</p>
+                            <div style=" display: grid;place-items: center;">
+                                {% if pub.imagen %}
+                                    <img src="{{ pub.imagen.url }}" alt="Imagen de publicación" style="max-width: 60%; height: auto;">
+                                {% endif %}
+                            </div>
+                            </div>
+
+                            <div class="publication-actions">
+                                <button onclick="mostrarComentarios({{ pub.id }})" class="action-button">
+                                    <span class="comment-count">{{ pub.comentarios.count }} Comentarios</span>
+                                </button>
+                            </div>
+
+                            <div id="comentarios-{{ pub.id }}" style="display: none;">
+                                {% for comentario in pub.comentarios.all %}
+                                    <div class="comment" id="comment{{ comentario.id }}">
+                                        <div class="author-info">
+                                            <a href="{% url 'perfil_usuario' comentario.autor.username %}" class="author-name">
+                                                {% if comentario.autor.perfilusuario.foto_perfil %}
+                                                    <img src="{{ comentario.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
+                                                {% endif %}
+                                                {{ comentario.autor.first_name }} {{ comentario.autor.last_name }}
+                                            </a>
+                                        </div>
+                                        <p>{{ comentario.contenido }}</p>
+                                        <small>{{ comentario.fecha_comentario|date:"d/m/Y H:i:s" }}</small>
+                                    </div>
+                                {% endfor %}
+                                <form action="{% url 'crear_comentario_pub' pub.id %}" method="post">
+                                    {% csrf_token %}
+                                    <textarea name="contenido" placeholder="Escribe un comentario..."></textarea>
+                                    <button type="submit" class="action-button">Enviar</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+            </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'perfil_usuario' request.user %}" class="btn btn-primary">Volver</a>
+        </div>
+    </div>
+    </main>
+</body>
+{% include 'header.html' %}
+{% include 'footer.html' %}
+
+
+</html>
+
+<style>
+    .community-tag {
+        background-color: #f0f0f0;
+        padding: 5px 10px;
+        border-radius: 20px;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+    .publications-section {
+        width: 90%;
+    }
+    .publication {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+        padding: 20px;
+        border:2px solid #fcc350 !important;
+
+    }
+
+    .publication-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .member-item{
+        margin-bottom: 2px;
+    }
+
+    .profile-picture {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+    .author-info {
+        flex-grow: 1;
+    }
+
+    .author-name {
+        font-weight: bold;
+        color: #333;
+    }
+
+    .publication-date {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .publication-content {
+        margin-bottom: 15px;
+    }
+
+    .publication-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .comment {
+        background-color: #f9f9f9;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        width: 98%;
+    }
+
+    textarea {
+        height: 60px;
+        width: 98%;
+        padding: 10px;
+        margin-bottom: 10px;
+        resize: vertical;
+        border-radius: 5px;
+    }
+
+    .title{
+        text-align: center;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url("{% static 'images/fondo.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+
+    main {
+        margin-top: 100px;
+        max-width: 100%;
+        margin-left: 10%;
+        margin-right: 10%;
+        flex: 1;
+    }
+    
+      .member-item{
+        margin-bottom: 2px;
+    }
+    
+    .profile-picture {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    
+    .author-info {
+        flex-grow: 1;
+    }
+    
+    .author-name {
+        font-weight: bold;
+        color: #333;
+    }
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
+      .community-divider {
+        width: 100%;
+        border: 1px solid #fcc350;
+        height: 1px;
+        background: #ddd;
+        margin: 10px 0;
+      }
+</style>
+<script>
+    function mostrarComentarios(publicacionId) {
+        var comentariosDiv = document.getElementById('comentarios-' + publicacionId);
+        if (comentariosDiv.style.display === 'none') {
+            comentariosDiv.style.display = 'block';
+        } else {
+            comentariosDiv.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var scrollToTopBtn = document.getElementById('scroll-to-top-btn');
+
+        // Function to toggle button visibility
+        function toggleButtonVisibility() {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.style.display = 'block';
+            } else {
+                scrollToTopBtn.style.display = 'none';
+            }
+        }
+
+        // Initial call to set button visibility
+        toggleButtonVisibility();
+
+        // Add scroll event listener
+        window.addEventListener('scroll', toggleButtonVisibility);
+
+        // Add click event listener to the button
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    });
+</script>

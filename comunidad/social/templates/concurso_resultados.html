@@ -102,6 +102,7 @@
                             </thead>
                             <tbody>
                                 {% for perfil in top_usuarios %}
+                                {% if not perfil.usuario.is_superuser %}
                                     <tr>
                                         <td>
                                             <div class="author-info">
@@ -115,6 +116,7 @@
                                         </td>
                                         <td>{{ perfil.puntos }}</td>
                                     </tr>
+                                {% endif %}
                                 {% empty %}
                                     <tr>
                                         <td colspan="2">No hay usuarios en el ranking.</td>

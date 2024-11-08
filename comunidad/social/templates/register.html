@@ -1,7 +1,5 @@
-{% load bootstrap5 %}
 {% load static %}
-
-{% block extra_css %}
+{% load bootstrap5 %}
 <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 <link href="{% static 'fonts/poppins.css' %}" rel="stylesheet">
 <link href="{% static 'css/all.min.css' %}" rel="stylesheet">
@@ -177,9 +175,7 @@
        font-family: 'Poppins', sans-serif;
    }
 </style>
-{% endblock %}
 
-{% block content %}
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-4">
@@ -252,7 +248,7 @@
                         </div>
 
                         <div class="terms-container mt-4">
-                            <p>Al hacer clic en "Registrarse", usted acepta nuestros <a href="{% url 'aceptar_terminos' %}">Términos y Condiciones</a>.</p>
+                            <p>Al hacer clic en "Registrarse", usted acepta nuestros <a href="{% url 'aceptar_terminos_registro' %}">Términos y Condiciones</a>.</p>
                             <div class="checkbox-container">
                                 <input type="checkbox" id="aceptado_terminos" name="aceptado_terminos" required>
                                 <label for="aceptado_terminos">Acepto los Términos y Condiciones</label>
@@ -298,4 +294,3 @@ document.getElementById('id_password2').addEventListener('blur', function() {
     }
 });
 </script>
-{% endblock %}
