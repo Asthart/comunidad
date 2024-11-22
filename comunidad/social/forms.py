@@ -131,14 +131,12 @@ class ComentarioProyectoForm(forms.ModelForm):
 class DonacionComunidadForm(forms.ModelForm):
     class Meta:
         model = DonacionComunidad
-        fields = ['nombre', 'identificador_transferencia', 'cantidad']
+        fields = ['identificador_transferencia', 'cantidad']
 
     widgets = {
         'cantidad': forms.NumberInput(attrs={'step': 'any'}),
     }
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['nombre'].widget.attrs['readonly'] = True
+    
 class EditUserProfileForm(forms.ModelForm):
     class Meta:
         model = PerfilUsuario

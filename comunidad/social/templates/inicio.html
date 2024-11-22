@@ -207,7 +207,7 @@
 
         {% if is_superuser %}
         <div class="text-center mt-1">
-            <a href="http://localhost:8000/admin" class="btn btn-primary fw-bold h3">Administrar sitio</a>
+            <a href="{% url 'admin:index' %}" class="btn btn-primary fw-bold h3">Administrar sitio</a>
         </div>
         <br>
         {% endif %}

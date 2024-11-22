@@ -10,11 +10,11 @@
             <br>
             <form method="post">
                 {% csrf_token %}
-                <div class="form-group fw-bold">
+                <!--<div class="form-group fw-bold">
                     <label for="nombre">Nombre:</label>
                     <input type="text" id="nombre" name="nombre" class="form-control" value="{{ request.user.comunidad.nombre }}">
                 </div>
-                <br>
+                <br>-->
                 <div class="form-group fw-bold">
                     <label for="identificador_transferencia">Identificador de transferencia:</label>
                     <input type="text" id="identificador_transferencia" name="identificador_transferencia" class="form-control" value="">
@@ -22,7 +22,8 @@
                 <br>
                 <div class="form-group fw-bold">
                     <label for="cantidad">Cantidad:</label>
-                    <input type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any">
+                    <input type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any" min="{{min}}" max="{{ max }}" oninput="this.value = Math.min(Math.max(0, parseInt(this.value)), {{max}}).toFixed(0)">
+                    <small class="form-text text-muted">La cantidad debe estar entre {{min}} y {{max}}.</small>
                 </div>
                 <br>
                 <div style="display: flex; justify-content: center;">
@@ -45,7 +46,7 @@
     </div>
 </div>
 <div class="text-center mt-4">
-  <a href="{% url 'detalle_campaign' campaign.pk %}" class="btn btn-primary">Volver</a>
+  <a href="{% url 'detalle_campaign' id %}" class="btn btn-primary">Volver</a>
 </div>
 <br>
 </main>

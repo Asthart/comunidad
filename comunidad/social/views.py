@@ -14,6 +14,7 @@ from .forms import *
 from .utils import update_user_points, get_clasificacion, is_first_visit
 from django.core.mail import send_mail
 from django.views.generic import ListView
+from django.urls import path
 
 
 @login_required
@@ -49,7 +50,7 @@ def inicio(request):
 
     proyectos_comunidades = []
     proyectos_seguidos = []
-
+    
     for pro in todos_proyectos:
         if pro.comunidad in comunidades:
             proyectos_comunidades.append(pro)
@@ -147,6 +148,7 @@ def detalle_comunidad(request, pk):
     es_admin = (comunidad.administrador == request.user or comunidad.es_crowuser(user))
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
+    is_superuser= user.is_superuser
 
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
@@ -163,6 +165,7 @@ def detalle_comunidad(request, pk):
     'es_admin': es_admin,
     'es_miembro': es_miembro,
     'campaigns': campaigns,
+    'is_superuser': is_superuser,
 })
 
 @login_required
@@ -808,6 +811,8 @@ def puntuar_respuesta(request, pk, estrellas):
 @login_required
 def guardar_donacion(request,pk):
     desafio= Desafio.objects.get(id=pk)
+    min= int(desafio.min_monto)
+    max = int(desafio.max_monto)
     if request.method == 'POST':
         nombre = request.POST['nombre']
         identificador_transferencia = request.POST['identificador_transferencia']
@@ -820,23 +825,30 @@ def guardar_donacion(request,pk):
         desafio.save()
         # Guardar la donación en la base de datos
         DonacionComunidad.objects.create(
-            nombre=nombre,
+            donador=request.user,
             identificador_transferencia=identificador_transferencia,
             cantidad=cantidad,
         )
 
         # Si todo salió bien, redirige al usuario a la lista de donaciones
-        return redirect('inicio')
+        return redirect('detalle_campaign', pk=desafio.campaign.pk)
     campaign = desafio.campaign
     qr = Cuenta.objects.first()
     # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados
     form = DonacionComunidadForm(initial={
-        'nombre': f"{request.user.first_name} {request.user.last_name}",
         'identificador_transferencia': '',
         'cantidad': ''
     })
 
-    return render(request, 'crear_donacion.html', {'form': form,'qr':qr, 'campaign': campaign})
+    return render(request, 'crear_donacion.html', {
+        'form': form,
+        'qr':qr, 
+        'campaign': campaign,
+        'min':min,
+        'max':max,
+        'id': campaign.pk,
+        
+        })
 
 
 @login_required

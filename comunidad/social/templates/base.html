@@ -209,7 +209,7 @@
         
         <div class="text-center mt-4">
           {% if is_superuser %}
-            <a href="http://localhost:8000/admin/social/terminoscondiciones/add/" class="btn btn-primary">Crear términos y condiciones de uso</a>
+            <a href="{% url 'admin:index' %}/social/terminoscondiciones/add/" class="btn btn-primary">Crear términos y condiciones de uso</a>
           {% else %}
             <a href="{% url 'logout' %}" class="btn btn-primary">Volver</a>
           {% endif %}

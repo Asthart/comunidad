@@ -252,6 +252,7 @@
                 </div>
 
                 <div class="boton-comunidad">
+                    {% if not is_superuser %}
                     {% if es_miembro %}
                         <a href="{% url 'chat_comunidad' comunidad.pk %}" class="action-button bg-primary">Chat de la comunidad</a>
                         {% if not es_admin %}
@@ -264,6 +265,7 @@
                     {% else %}
                         <a href="{% url 'solicitar_membresia' comunidad.pk %}" class="action-button">Solicitar unirse a la comunidad</a>
                     {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -272,7 +274,7 @@
 
         <div class="community-content">
 
-            {% if es_miembro or comunidad.publica  %}
+            {% if es_miembro or comunidad.publica or is_superuser  %}
 
             <div class="sidebar-left">
 
@@ -316,12 +318,15 @@
                         <p>No hay proyectos para mostrar.</p>
                     {% endfor %}
                     <br>
-                    {% if es_miembro %}
+                    
                     <div>
+                        {% if es_miembro or is_superuser or es_admin %}
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_proyectos' comunidad.id %}" class="action-button boton-condicional">Ver Todos</a>
-                        <a style="display: flex; justify-content: center;" href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Crear proyecto</a>
+                        {% endif %}
+                        {% if es_miembro %}
+                        <a style="display: flex; justify-content: center;" href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Publicar proyecto</a>
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
             </div>
 
@@ -329,8 +334,10 @@
                 <div class="publication text-center">
                     <h2 class="title fw-bold">Publicaciones Recientes</h2>
                     <hr class="community-divider">
+                    {% if es_miembro %}
                     <br>
                     <a href="{% url 'crear_publicacion' comunidad.pk %}" class="action-button" style="">Crear Publicación</a>
+                    {% endif %}
                 </div>
                 {% if publicaciones %}
                     {% for pub in publicaciones %}
