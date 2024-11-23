@@ -28,7 +28,7 @@ class Comunidad(models.Model):
     #donaciones = models.BooleanField(default=False)
     foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='comunidades/perfiles/perfil_default.jpg')
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='comunidades/banners/banner_default.jpg')
-    #tags = models.ManyToManyField('Tag')
+    #tags = models.ManyToManyField('Tematica')
 
 
 
@@ -167,7 +167,7 @@ class Desafio(models.Model):
 
     @property
     def campaign(self):
-        return Campaign.objects.get(desafio=self)
+        return Campaña.objects.get(desafio=self)
 
 
 class Donacion(models.Model):
@@ -246,7 +246,7 @@ class MensajeChat(models.Model):
 class Publicacion(models.Model):
     contenido = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
-    tags = models.ManyToManyField('Tag', blank=True, null=True)
+    tags = models.ManyToManyField('Tematica', blank=True, null=True)
     imagen = models.ImageField(blank=True, null=True, upload_to='publicaciones/imagenes/')
     #archivos = MultiFileField(min_num=1, max_num=5)
     comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
@@ -297,7 +297,7 @@ class Like_Comentario(models.Model):
     def __str__(self):
         return f"Like de {self.autor.username} en {self.comentario}"
 
-class Tag(models.Model):
+class Tematica(models.Model):
     nombre = models.CharField(max_length=255)
 
     def __str__(self):
@@ -341,18 +341,21 @@ class Adjunto(models.Model):
     archivo = models.FileField(upload_to='publicaciones/archivos/')
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='adjuntos')
 
-class Action(models.Model):
+class Accion(models.Model):
     name = models.CharField(max_length=100)
     points = models.IntegerField(default=0)
 
-class UserAction(models.Model):
+    def __str__(self):
+        return self.name
+class AccionUsuario(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    action = models.ForeignKey(Action, on_delete=models.CASCADE)
+    action = models.ForeignKey(Accion, on_delete=models.CASCADE)
     accion = models.CharField(max_length=50,default="")
     timestamp = models.DateTimeField(auto_now_add=True)
     puntos=models.IntegerField(default=0)
 
-
+    def __str__(self):
+        return self.action.name
 
 class Concurso(models.Model):
     nombre = models.CharField(max_length=100)
@@ -380,7 +383,7 @@ class ResultadoConcurso(models.Model):
     ganador = models.ForeignKey(User, on_delete=models.CASCADE)
     fecha_resultado = models.DateField()
 
-class Campaign(models.Model):
+class Campaña(models.Model):
     activa = models.BooleanField(default=True)
     desafio = models.OneToOneField(Desafio, on_delete=models.CASCADE)
     def __str__(self):
@@ -399,7 +402,7 @@ class Campaign(models.Model):
         return self.desafio.comunidad
 
 class Respuesta(models.Model):
-    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Campaña, on_delete=models.CASCADE)
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
     respuesta = models.CharField(max_length=300)
     fecha = models.DateTimeField(auto_now_add=True)

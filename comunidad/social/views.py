@@ -80,7 +80,7 @@ def inicio(request):
 
     # Actualizar puntos del usuario
     if not request.user.is_superuser:
-        accion = Action.objects.filter(name='inicio').first()
+        accion = Accion.objects.filter(name='inicio').first()
         update_user_points(user.id, accion.id, accion.points)
 
     url = request.path
@@ -124,7 +124,7 @@ def crear_comunidad(request):
                 fail_silently=False,
             )'''
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='crear_comunidad').first()
+                accion = Accion.objects.filter(name='crear_comunidad').first()
                 update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')
     else:
@@ -144,7 +144,7 @@ def detalle_comunidad(request, pk):
     comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)
-    campaigns = Campaign.objects.filter(desafio__comunidad=comunidad).order_by('-id')
+    campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
     es_admin = (comunidad.administrador == request.user or comunidad.es_crowuser(user))
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
@@ -181,7 +181,7 @@ def crear_proyecto(request,pk):
             proyecto.creador = request.user
             proyecto.save()
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='crear_proyecto').first()
+                accion = Accion.objects.filter(name='crear_proyecto').first()
                 update_user_points(request.user.id, accion.id, accion.points)
             return redirect('detalle_proyecto', pk=proyecto.pk)
     else:
@@ -205,9 +205,9 @@ def crear_desafio(request,pk):
             desafio.creador = request.user
             desafio.save()
 
-            campaign = Campaign.objects.create(desafio=desafio)
+            campaign = Campaña.objects.create(desafio=desafio)
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='crear_desafio').first()
+                accion = Accion.objects.filter(name='crear_desafio').first()
                 update_user_points(request.user.id, accion.id, accion.points)
 
             return redirect('detalle_campaign', pk=campaign.pk)
@@ -226,7 +226,7 @@ def detalle_desafio(request, pk):
     return render(request, 'detalle_desafio.html', {'desafio': desafio})
 
 def puntuar_desafio(request, desafio_id, punto):
-    campaign = get_object_or_404(Campaign, id=desafio_id)
+    campaign = get_object_or_404(Campaña, id=desafio_id)
     desafio = campaign.desafio
 
     puntaje_desafio, created = PuntajeDesafio.objects.update_or_create(
@@ -241,7 +241,7 @@ def puntuar_desafio(request, desafio_id, punto):
     # Actualiza el promedio de puntaje en el modelo Desafio (opcional)
     desafio.save()
     if not request.user.is_superuser:
-        accion = Action.objects.filter(name='puntuar desafio').first()
+        accion = Accion.objects.filter(name='puntuar desafio').first()
         update_user_points(request.user.id, accion.id, accion.points)
 
     return redirect('detalle_campaign', pk=desafio_id)
@@ -332,7 +332,7 @@ def register(request):
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='registrarse').first()
+                accion = Accion.objects.filter(name='registrarse').first()
                 update_user_points(request.user.id, accion.id, accion.points)
             return redirect('inicio')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
@@ -349,9 +349,9 @@ def crear_publicacion(request, pk):
             publicacion.autor = request.user
             comunidad = Comunidad.objects.get(pk=pk)
             publicacion.comunidad=comunidad
-            '''# Verificamos si hay al menos un tag seleccionado
+            '''# Verificamos si hay al menos una tematica seleccionada
             if not form.cleaned_data['tags']:
-                form.add_error('tags', 'Debes seleccionar al menos un tag.')
+                form.add_error('tags', 'Debes seleccionar al menos un Tematica.')
                 return render(request, 'crear_publicacion.html', {'form': form})
             '''
             publicacion.save()
@@ -362,7 +362,7 @@ def crear_publicacion(request, pk):
 
             # Guarda los adjuntos después de guardar la publicación
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='publicar').first()
+                accion = Accion.objects.filter(name='publicar').first()
                 update_user_points(request.user.id, accion.id, accion.points)
             return redirect('detalle_comunidad', pk=comunidad.pk)
     else:
@@ -373,7 +373,7 @@ def crear_publicacion(request, pk):
 @login_required
 def like_desafio(request, desafio_id):
     desafio = get_object_or_404(Desafio, id=desafio_id)
-    campaign = get_object_or_404(Campaign, desafio=desafio_id)
+    campaign = get_object_or_404(Campaña, desafio=desafio_id)
 
     if request.user in desafio.likes.all():
         print("1")
@@ -387,7 +387,7 @@ def like_desafio(request, desafio_id):
 @login_required
 def like_comentariod(request, desafio_id,comentario_id):
     desafio = get_object_or_404(Desafio, id=desafio_id)
-    campaign = get_object_or_404(Campaign, desafio=desafio_id)
+    campaign = get_object_or_404(Campaña, desafio=desafio_id)
     respuesta = get_object_or_404(Respuesta, id=comentario_id)
     if request.user in respuesta.likes.all():
         print("1")
@@ -440,7 +440,7 @@ def crear_comentario(request, pk):
             comentario.autor = request.user
             comentario.save()
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='comentar').first()
+                accion = Accion.objects.filter(name='comentar').first()
                 update_user_points(request.user.id, accion.id, accion.points)
 
             return redirect('detalle_comunidad', publicacion.comunidad.pk)
@@ -459,7 +459,7 @@ def crear_comentario_pub(request, pk):
             comentario.autor = request.user
             comentario.save()
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='comentar').first()
+                accion = Accion.objects.filter(name='comentar').first()
                 update_user_points(request.user.id, accion.id, accion.points)
 
             return redirect('lista_publicaciones', publicacion.autor.username)
@@ -478,7 +478,7 @@ def crear_comentario_pro(request, pk):
             comentario.autor = request.user
             comentario.save()
             if not request.user.is_superuser:
-                accion = Action.objects.filter(name='comentar proyecto').first()
+                accion = Accion.objects.filter(name='comentar proyecto').first()
                 update_user_points(request.user.id, accion.id, accion.points)
             return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
     else:
@@ -616,7 +616,7 @@ def seguir_usuario(request, pk):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.seguir_usuario(usuario)
-    accion = Action.objects.filter(name='seguir').first()
+    accion = Accion.objects.filter(name='seguir').first()
     if not request.user.is_superuser:
         update_user_points(request.user.id, accion.id, accion.points)
         return redirect('perfil_usuario', username=usuario.username)
@@ -626,7 +626,7 @@ def dejar_de_seguir_usuario(request, pk):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
     usuario = PerfilUsuario.objects.get(id=pk).usuario
     perfil_usuario.dejar_de_seguir_usuario(usuario)
-    accion = Action.objects.filter(name='seguir').first()
+    accion = Accion.objects.filter(name='seguir').first()
     if not request.user.is_superuser:
         update_user_points(request.user.id, accion.id, -(accion.points))
         return redirect('perfil_usuario', username=usuario.username)
@@ -646,7 +646,7 @@ def lista_publicaciones(request):
 
 
 def action_view(request, action_id):
-    action = Action.objects.get(id=action_id)
+    action = Accion.objects.get(id=action_id)
     if request.user.is_authenticated:
         update_user_points(request.user.id, action_id, action.points)
     return render(request, 'action.html', {'action': action})
@@ -718,7 +718,7 @@ def lista_comunidades(request):
 
 @login_required
 def detalle_campaign(request, pk):
-    campaign = get_object_or_404(Campaign, pk=pk)
+    campaign = get_object_or_404(Campaña, pk=pk)
     desafio=campaign.desafio
     like_count = desafio.likes.count()
 
@@ -744,14 +744,14 @@ def detalle_campaign(request, pk):
             respuesta.campaign = campaign
             respuesta.save()
             if not request.user.is_superuser:
-                accion: Action | None= Action.objects.filter(name='responder_campaign').first()
+                accion: Accion | None= Accion.objects.filter(name='responder_campaign').first()
                 update_user_points(request.user.id, accion.id, accion.points)
 
             return redirect('detalle_campaign', pk=campaign.pk)
     else:
         respuesta_form = RespuestaForm()
 
-    puntuaciones = Action.objects.filter(name__startswith='puntos')
+    puntuaciones = Accion.objects.filter(name__startswith='puntos')
 
     return render(request, 'detalle_campaign.html', {
         'campaign': campaign,
@@ -767,7 +767,7 @@ def detalle_campaign(request, pk):
 
 @login_required
 def lista_campaigns(request, comunidad_id):
-    campaigns = Campaign.objects.filter(desafio__comunidad=comunidad_id).order_by('-id')
+    campaigns = Campaña.objects.filter(desafio__comunidad=comunidad_id).order_by('-id')
     comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
     filtro = request.GET.get('filtro', 'todas')
     if filtro == 'activas':
@@ -978,7 +978,7 @@ def ranking_usuarios(request):
 
     # Obtener el ranking de usuarios en base al rango de fechas
     ranking = (
-        UserAction.objects.filter(
+        AccionUsuario.objects.filter(
             timestamp__range=(fecha_inicio, fecha_fin),
             user__is_superuser=False)
         .values('user__username')
