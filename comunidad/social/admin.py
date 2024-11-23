@@ -127,8 +127,8 @@ class ClasificacionAdmin(admin.ModelAdmin):
 
 @admin.register(Accion)
 class ActionAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'points')
-    search_fields = ('name',)
+    list_display = ('id','nombre', 'puntos')
+    search_fields = ('nombre',)
 
 @admin.register(Premio)
 class PremioAdmin(admin.ModelAdmin):

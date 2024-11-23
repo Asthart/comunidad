@@ -342,20 +342,19 @@ class Adjunto(models.Model):
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='adjuntos')
 
 class Accion(models.Model):
-    name = models.CharField(max_length=100)
-    points = models.IntegerField(default=0)
+    nombre = models.CharField(max_length=100)
+    puntos = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.name
+        return self.nombre
 class AccionUsuario(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    action = models.ForeignKey(Accion, on_delete=models.CASCADE)
-    accion = models.CharField(max_length=50,default="")
+    accion = models.ForeignKey(Accion, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     puntos=models.IntegerField(default=0)
 
     def __str__(self):
-        return self.action.name
+        return self.accion.nombre
 
 class Concurso(models.Model):
     nombre = models.CharField(max_length=100)
