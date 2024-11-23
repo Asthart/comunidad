@@ -166,9 +166,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'cespedesalejandro247@gmail.com'
 EMAIL_HOST_PASSWORD = ' '
 DEFAULT_FROM_EMAIL = 'cespedesalejandro247@gmail.com'
-LOGIN_URL = 'login/'
+LOGIN_URL = '/login/'
 
 TAILWIND_APP_NAME = 'theme'
-SESSION_COOKIE_AGE = 3600  
+SESSION_COOKIE_AGE = 3600
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Cierra la sesión al cerrar el navegador
 SESSION_SAVE_EVERY_REQUEST = True

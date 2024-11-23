@@ -50,7 +50,7 @@ def inicio(request):
 
     proyectos_comunidades = []
     proyectos_seguidos = []
-    
+
     for pro in todos_proyectos:
         if pro.comunidad in comunidades:
             proyectos_comunidades.append(pro)
@@ -694,7 +694,7 @@ def concurso_resultados(request):
     if ganador.usuario.is_superuser:
         superuser = ganador
         flag = True
-        ganador = PerfilUsuario.objects.filter(not self == superuser).order_by('-puntos').first()        
+        ganador = PerfilUsuario.objects.filter(not self == superuser).order_by('-puntos').first()
     usuario= User.objects.get(id=ganador.usuario.id)
     if flag:
         top_usuarios = PerfilUsuario.objects.filter(not self == superuser).order_by('-puntos')[:10]
@@ -842,12 +842,12 @@ def guardar_donacion(request,pk):
 
     return render(request, 'crear_donacion.html', {
         'form': form,
-        'qr':qr, 
+        'qr':qr,
         'campaign': campaign,
         'min':min,
         'max':max,
         'id': campaign.pk,
-        
+
         })
 
 
@@ -979,8 +979,8 @@ def ranking_usuarios(request):
     # Obtener el ranking de usuarios en base al rango de fechas
     ranking = (
         UserAction.objects.filter(
-            timestamp__range=(fecha_inicio, fecha_fin)
-        )
+            timestamp__range=(fecha_inicio, fecha_fin),
+            user__is_superuser=False)
         .values('user__username')
         .annotate(total_puntos=Sum('puntos'))
         .order_by('-total_puntos')
