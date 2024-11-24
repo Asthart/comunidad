@@ -84,7 +84,9 @@
             <div class="card-body">
                 <h1 class="card-title fw-bold text-center">Proyecto {{ proyecto.titulo }}</h1>
                 <hr class="community-divider">
+                {% if proyecto.imagenes %}
                 <img src="{{ proyecto.imagenes.url }}" class="card-img-top" alt="{{ proyecto.titulo }}" style="max-width: 100%; height: auto;">
+                {% endif %}
                 {% if proyecto.documentos %}
                     <a href="{{ proyecto.documentos.url }}" class="link-body-emphasis fw-bold"><img src="{% static '/images/download.svg' %}" alt="PDF" width="30" height="30" style="object-fit: cover; border-radius: 50%;"> Descargar Adjunto</a>
                 {% endif %}
@@ -100,7 +102,7 @@
                 </p>
                 <p><strong>Fecha de creación:</strong> {{ proyecto.fecha_creacion }}</p>
                 <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
-                <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.pk %}" class="">{{ proyecto.comunidad }}</a></p>
+                <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.slug %}" class="">{{ proyecto.comunidad }}</a></p>
                 <div class="publication-actions">
                     <button onclick="mostrarComentarios({{ proyecto.id }})" class="action-button btn btn-primary">
                         <span class="comment-count">{{ proyecto.comentarios.count }} Comentarios</span>

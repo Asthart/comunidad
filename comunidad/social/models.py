@@ -73,8 +73,8 @@ class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
     comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    imagenes = models.ImageField(upload_to='comunidades/imagenes_proyecto/', blank=True, null=True)
-    documentos = models.FileField(upload_to='comunidades/documentos_proyecto/', blank=True, null=True)
+    imagenes = models.ImageField(upload_to='comunidades/imagenes_proyecto/', blank=True,default="")
+    documentos = models.FileField(upload_to='comunidades/documentos_proyecto/', blank=True,default="")
     slug = models.SlugField(default="", null=False)
 
     def __str__(self):
@@ -137,7 +137,7 @@ class Desafio(models.Model):
     @property
     def tipo(self):
         return self.tipo_desafio
-    
+
     @property
     def tcampaign(self):
         return Campaign.objects.get(desafio=self)
@@ -198,6 +198,7 @@ class PerfilUsuario(models.Model):
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='/fotos_perfil/default-avatar.svg')
+    slug = models.SlugField(default="", null=False)
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
@@ -363,6 +364,7 @@ class Concurso(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE)
+    ganador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ganador')
 
     @classmethod
     def ultimo_concurso(cls):

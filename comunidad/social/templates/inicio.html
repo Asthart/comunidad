@@ -394,7 +394,9 @@
             var ahora = new Date();
             var tiempoRestante;
 
-            if (ahora > fechaFin) {
+            if ("{{concurso.ganador.first_name}}"!="") {
+                tiempoRestante = "El ganador es: \n{{concurso.ganador.first_name}}"+" {{concurso.ganador.last_name}}"
+              } else if (ahora > fechaFin) {
                 tiempoRestante = "Concurso finalizado";
             } else if (ahora < fechaInicio) {
                 tiempoRestante = "Concurso aún no ha comenzado";

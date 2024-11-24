@@ -101,7 +101,7 @@ class DesafioAdmin(admin.ModelAdmin):
 
 @admin.register(Campaña)
 class CampañaAdmin(admin.ModelAdmin):
-    
+
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:

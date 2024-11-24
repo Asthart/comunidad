@@ -107,7 +107,7 @@
                             {% if sigue_a %}
                                 <a href="{% url 'dejar_de_seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-outline-secondary"><i class="fas fa-user-minus"></i> Dejar de seguir</a>
                             {% else %}
-                                <a href="{% url 'seguir_usuario' usuario.perfilusuario.id %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Seguir</a>
+                                <a href="{% url 'seguir_usuario' usuario.perfilusuario.slug %}" class="btn btn-primary"><i class="fas fa-user-plus"></i> Seguir</a>
                             {% endif %}
                             <a href="{% url 'chat' usuario.perfilusuario.id %}" class="btn btn-success"><i class="fas fa-comments"></i> Chatear</a>
                         {% else %}
@@ -146,8 +146,6 @@
             <hr class="community-divider">
             <ul class="project-list">
                 {% for comunidad in comunidades|slice:":5" %}
-                    <li><a href="{% url 'detalle_comunidad' comunidad.pk %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
-                {% for comunidad in comunidades %}
                     <li><a href="{% url 'detalle_comunidad' comunidad.slug %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
                 {% empty %}
                     <li>Este usuario no pertenece a ninguna comunidad.</li>

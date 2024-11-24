@@ -22,8 +22,8 @@
                 <br>
                 <div class="form-group fw-bold">
                     <label for="cantidad">Cantidad:</label>
-                    <input type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any" min="{{min}}" max="{{ maximo }}" oninput="this.value = Math.min(Math.max(0, parseInt(this.value)), {{max}}).toFixed(0)">
-                    <small class="form-text text-muted">La cantidad debe estar entre {{min}} y {{maximo}}.</small>
+                    <input type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any" min="{{min}}" max="{{ max }}" oninput="this.value = Math.min(Math.max(0, parseInt(this.value)), {{max}}).toFixed(0)">
+                    <small class="form-text text-muted">La cantidad debe estar entre {{min}} y {{max}}.</small>
                 </div>
                 <br>
                 <div style="display: flex; justify-content: center;">
@@ -46,7 +46,7 @@
     </div>
 </div>
 <div class="text-center mt-4">
-  <a href="{% url 'detalle_campaign' slug %}" class="btn btn-primary">Volver</a>
+  <a href="{% url 'detalle_campaign' id %}" class="btn btn-primary">Volver</a>
 </div>
 <br>
 </main>

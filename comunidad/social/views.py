@@ -28,7 +28,6 @@ def inicio(request):
 
     profile = PerfilUsuario.objects.get(usuario=user)
     contador = Concurso.ultimo_concurso()
-
     # Obtener las comunidades del usuario
     comunidades = Comunidad.objects.filter(miembros=user, activada=True)
     # Obtener los perfiles que el usuario sigue
@@ -170,28 +169,28 @@ def detalle_comunidad(request, slug):
 
 @login_required
 #@permission_required('social.add_proyecto', raise_exception=True)
-def crear_proyecto(request,pk):
+def crear_proyecto(request,slug):
     if request.method == 'POST':
         form = ProyectoForm(request.POST, request.FILES)
         if form.is_valid():
             proyecto = form.save(commit=False)
-            comunidad = Comunidad.objects.get(id=pk)
+            comunidad = Comunidad.objects.get(slug=slug)
             proyecto.comunidad=comunidad
 
             proyecto.creador = request.user
+            proyecto.slug=proyecto.titulo
             proyecto.save()
             if not request.user.is_superuser:
                 accion = Accion.objects.filter(nombre='crear_proyecto').first()
                 update_user_points(request.user.id, accion.id, accion.puntos)
-            return redirect('detalle_proyecto', pk=proyecto.pk)
+            return redirect('detalle_proyecto', slug=proyecto.slug)
     else:
         form = ProyectoForm()
-    return render(request, 'crear_proyecto.html', {'form': form, 'comunidad': pk})
+    return render(request, 'crear_proyecto.html', {'form': form, 'comunidad': slug})
 
 @login_required
 def detalle_proyecto(request, slug):
     proyecto = get_object_or_404(Proyecto, slug=slug)
-    print("aaaaaaa: ",proyecto)
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
@@ -336,11 +335,11 @@ def register(request):
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
-            login(request, user)
+            #login(request, user)
             if not request.user.is_superuser:
                 accion = Accion.objects.filter(nombre='registrarse').first()
                 update_user_points(request.user.id, accion.id, accion.puntos)
-            return redirect('inicio')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
+            return redirect('login')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
         form = CustomUserCreationForm()
 
@@ -370,11 +369,11 @@ def crear_publicacion(request, slug):
             if not request.user.is_superuser:
                 accion = Accion.objects.filter(nombre='publicar').first()
                 update_user_points(request.user.id, accion.id, accion.puntos)
-            return redirect('detalle_comunidad', pk=comunidad.pk)
+            return redirect('detalle_comunidad', slug=comunidad.slug)
     else:
         form = PublicacionForm()
 
-    return render(request, 'crear_publicacion.html', {'form': form, 'comunidad': pk})
+    return render(request, 'crear_publicacion.html', {'form': form, 'comunidad': slug})
 
 @login_required
 def like_desafio(request, desafio_id):
@@ -618,14 +617,14 @@ def buscar_usuarios(request):
     return render(request, 'buscar_usuarios.html', {'usuarios': usuarios, 'sigue_a': sigue_a})
 
 
-def seguir_usuario(request, pk):
+def seguir_usuario(request, slug):
     perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
-    usuario = PerfilUsuario.objects.get(id=pk).usuario
-    perfil_usuario.seguir_usuario(usuario)
+    usuario = PerfilUsuario.objects.get(slug=slug)
+    perfil_usuario.seguir_usuario(usuario.usuario)
     accion = Accion.objects.filter(nombre='seguir').first()
     if not request.user.is_superuser:
         update_user_points(request.user.id, accion.id, accion.puntos)
-        return redirect('perfil_usuario', username=usuario.username)
+    return redirect('perfil_usuario', username=usuario.usuario.username)
 
 
 def dejar_de_seguir_usuario(request, pk):
@@ -635,7 +634,7 @@ def dejar_de_seguir_usuario(request, pk):
     accion = Accion.objects.filter(nombre='seguir').first()
     if not request.user.is_superuser:
         update_user_points(request.user.id, accion.id, -(accion.puntos))
-        return redirect('perfil_usuario', username=usuario.username)
+    return redirect('perfil_usuario', username=usuario.username)
 
 
 '''@login_required
@@ -819,8 +818,8 @@ def puntuar_respuesta(request, pk, estrellas):
 
 
 @login_required
-def guardar_donacion(request,pk):
-    desafio= Desafio.objects.get(id=pk)
+def guardar_donacion(request,slug):
+    desafio= Desafio.objects.get(slug=slug)
     min= int(desafio.min_monto)
     max = int(desafio.max_monto)
     antes = desafio.cantidad_donada
@@ -830,13 +829,13 @@ def guardar_donacion(request,pk):
         cantidad = request.POST['cantidad']
         # Aquí deberías validar los datos antes de guardarlos
         # Por ejemplo:
-        
+
         desafio.cantidad_donada+=Decimal(cantidad)
-        
+
         if (float(cantidad)<desafio.min_monto or float(cantidad)>desafio.max_monto or desafio.cantidad_donada>desafio.objetivo_monto):
             if (desafio.cantidad_donada>desafio.objetivo_monto):
-                
-                return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {maximo}'})   
+
+                return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {maximo}'})
             return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {desafio.max_monto}'})
         desafio.save()
         # Guardar la donación en la base de datos
@@ -863,7 +862,7 @@ def guardar_donacion(request,pk):
         'campaign': campaign,
         'min':min,
         'max':max,
-        'id': campaign.pk,
+        'id': campaign.slug,
         'maximo':maximo,
         })
 
@@ -1008,5 +1007,5 @@ def ranking_usuarios(request):
 @login_required()
 def ver_donaciones(request):
     donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
-    
+
     return render(request, 'donaciones.html', {'donaciones':donaciones,})

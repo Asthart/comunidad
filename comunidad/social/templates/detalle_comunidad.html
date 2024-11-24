@@ -310,7 +310,7 @@
                     <hr class="community-divider">
                     {% for proyecto in proyectos.all|slice:":5" %}
                         <div class="project-item">
-                            <a href="{% url 'detalle_proyecto' proyecto.pk %}">
+                            <a href="{% url 'detalle_proyecto' proyecto.slug %}">
                                 <h4>{{ proyecto }}</h4>
                             </a>
                         </div>
@@ -324,7 +324,7 @@
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_proyectos' comunidad.slug %}" class="action-button boton-condicional">Ver Todos</a>
                         {% endif %}
                         {% if es_miembro %}
-                        <a style="display: flex; justify-content: center;" href="{% url 'crear_proyecto' comunidad.id %}" class="action-button">Publicar proyecto</a>
+                        <a style="display: flex; justify-content: center;" href="{% url 'crear_proyecto' comunidad.slug %}" class="action-button">Publicar proyecto</a>
                         {% endif %}
                     </div>
                 </div>
@@ -417,7 +417,7 @@
                         <div class="member-item">
                             {% if miembro.perfilusuario.foto_perfil %}
                             <div class="author-info">
-                                <img src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="profile-picture">
+                                <img href="{% url 'perfil_usuario' miembro.username %}" src="{{ miembro.perfilusuario.foto_perfil.url }}" alt="Foto de {{ miembro.username }}" class="profile-picture">
                             {% endif %}
                                 <a href="{% url 'perfil_usuario' miembro.username %}" class="author-name">{{ miembro.first_name }} {{ miembro.last_name }}</a>
                             </div>

@@ -51,7 +51,7 @@ class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(label='Nombres', max_length=30, required=True)
     last_name = forms.CharField(label='Apellidos', max_length=30, required=True)
     email = forms.EmailField(label='Correo electrónico', required=True)
-
+    slug =username
     password1 = forms.CharField(label='Contraseña', widget=forms.PasswordInput(attrs={'placeholder': 'Minimo 8 caracteres'}))
     password2 = forms.CharField(label='Confirmar Contraseña', widget=forms.PasswordInput(attrs={'placeholder': 'Repite la contraseña'}))
 
