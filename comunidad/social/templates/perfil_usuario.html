@@ -133,7 +133,7 @@
             <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Proyectos Creados</h2>
             <hr class="community-divider">
             <ul class="project-list">
-                {% for proyecto in proyectos %}
+                {% for proyecto in proyectos|slice:":5" %}
                     <li><a href="{% url 'detalle_proyecto' proyecto.slug %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
                 {% empty %}
                     <li>Este usuario no ha creado ningún proyecto.</li>
@@ -145,6 +145,8 @@
             <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Comunidades</h2>
             <hr class="community-divider">
             <ul class="project-list">
+                {% for comunidad in comunidades|slice:":5" %}
+                    <li><a href="{% url 'detalle_comunidad' comunidad.pk %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
                 {% for comunidad in comunidades %}
                     <li><a href="{% url 'detalle_comunidad' comunidad.slug %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
                 {% empty %}
@@ -164,6 +166,20 @@
                 {% endif %}
             </ul>
         </div>
+        {% if not yo %}
+        <div class="projects-section dorado">
+            <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Donaciones</h2>
+            <hr class="community-divider">
+            <ul class="project-list">
+                {% if not donaciones == None and cantidad_donaciones > 0 %}
+                    <li><a href="{% url 'ver_donaciones' %}" class="text-decoration-none">Ver mis donaciones</a></li>
+                {% else %}
+                    <li>No has realizado donaciones.</li>
+                {% endif %}
+            </ul>
+        </div>
+        {% endif %}
+
     </main>
 
 

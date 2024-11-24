@@ -137,12 +137,10 @@ class Desafio(models.Model):
     @property
     def tipo(self):
         return self.tipo_desafio
-
-    def calcular_porcentaje_objetivo(self):
-        total_donado = sum(d.monto for d in self.donaciones.all())
-        if self.objetivo_monto > 0:
-            return ((total_donado / self.objetivo_monto) * 100).toFixed(2)
-        return 0
+    
+    @property
+    def tcampaign(self):
+        return Campaign.objects.get(desafio=self)
 
     @classmethod
     def verificar_min_max_donaciones(cls):
@@ -180,6 +178,7 @@ class Donacion(models.Model):
 
 class DonacionComunidad(models.Model):
     donador = models.ForeignKey(User, on_delete=models.CASCADE)
+    campaign = models.ForeignKey(Desafio, on_delete=models.CASCADE, null=True)
     identificador_transferencia = models.CharField(max_length=50)
     cantidad = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_creacion = models.DateTimeField(auto_now_add=True)

@@ -14,7 +14,11 @@
 
     <br>
     {% if request.user != campaign.desafio.creador and tipo %}
+        {% if not lleno %}
         <a href="{% url 'guardar_donacion' campaign.desafio.pk %}" class="btn btn-secondary" style="margin-bottom: 10px;">Realizar donación</a>
+        {% else %}
+        <p class="m-2 text-muted">El monto objetivo de donaciones para esta campaña ya está satisfecho.</p>
+        {% endif %}
     {% endif %}
     <div class="respuesta card m-2 rounded">
     <h2 class="card-title fw-bold text-center m-2">Respuestas:</h2>

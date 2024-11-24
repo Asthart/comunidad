@@ -175,8 +175,8 @@ class ConcursoAdmin(admin.ModelAdmin):
 
 @admin.register(DonacionComunidad)
 class DonacionComunidadAdmin(admin.ModelAdmin):
-    list_display = ('id','donador','identificador_transferencia','cantidad')
-    search_fields = ('cantidad',)
+    list_display = ('id','donador','campaign','cantidad','identificador_transferencia','fecha_creacion')
+    search_fields = ('identificador_transferencia',)
 
 @admin.register(Cuenta)
 class CuentaAdmin(admin.ModelAdmin):
