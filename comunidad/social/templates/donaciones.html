@@ -1,0 +1,105 @@
+{% load static %}
+{% include 'header.html' %}
+<body>
+    <main>
+        <div class="container py-5">
+            <h1 class="mb-4 fw-bold" style="text-align: center;">Mis Donaciones</h1>
+
+            <ul class="list-group list-group-flush dorado" style="border-radius: 10px;">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <h5 style="width: 25%; text-align: center;" class="mb-1 fw-bold">Campaña</h5>
+                    <h5 style="width: 25%;text-align: center;" class="mb-1 fw-bold">ID de Transferencia</h5>
+                    <h5 style="width: 25%;text-align: center;" class="mb-1 fw-bold">Monto</h5>
+                    <h5 style="width: 25%;text-align: center;" class="mb-1 fw-bold">Fecha</h5>
+                </li>
+                {% for donacion in donaciones %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <h5 style="width: 25%;text-align: center;" class="mb-1  fw-bold"><a href="{% url 'detalle_campaign' donacion.campaign.tcampaign.pk %}">{{ donacion.campaign.titulo }}</a></h5>
+                        <h5 style="width: 25%;text-align: center;" class="mb-1">{{ donacion.identificador_transferencia }}</h5>
+                        <h5 style="width: 25%;text-align: center;" class="mb-1">${{ donacion.cantidad }}</h5>
+                        <h5 style="width: 25%;text-align: center;" class="mb-1">{{ donacion.fecha_creacion }}</h5>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'perfil_usuario' request.user.username %}" class="btn btn-primary">Volver</a>
+        </div>
+        <br>
+    </main>
+</body>
+{% include 'footer.html' %}
+
+
+<style>
+    .dorado{
+        border:2px solid #fcc350 !important;
+    }
+
+    body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
+        background-image: url("{% static 'images/fondo.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+    }
+    
+    main {
+        max-width: 100%;
+        margin-top: 20px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: auto;
+        padding: 20px;
+        flex: 1;
+        width: 100%;
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+
+    .table th {
+        font-weight: bold;
+    }
+
+    .table-bordered td, .table-bordered th {
+        border: 1px solid #dee2e6;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .btn {
+        padding: 5px 15px;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        color: white;
+        background-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-info {
+        color: white;
+        background-color: #198754;
+    }
+
+    .btn-info:hover {
+        background-color: #134E8B;
+    }
+</style>
+
+

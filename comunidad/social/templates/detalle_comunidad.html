@@ -298,7 +298,7 @@
                     <br>
                     <div >
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
-                        {% if es_admin %}
+                        {% if es_admin and not is_superuser%}
                             <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
                         {% else %}
                         {% endif %}

@@ -300,14 +300,16 @@ def perfil_usuario(request, username):
 
     usuario = get_object_or_404(User, username=username)
     perfil = PerfilUsuario.objects.get(usuario=usuario)
-    proyectos = Proyecto.objects.filter(creador=usuario)
+    proyectos = Proyecto.objects.filter(creador=usuario).order_by('-fecha_creacion')
     clasificacion = get_clasificacion(perfil.puntos)
     sigue_a = perfil.sigue_a(request.user)
     yo= not usuario==request.user
     comunidades=Comunidad.objects.filter(miembros=usuario)
     publicaciones = Publicacion.objects.filter(autor=usuario).order_by('-fecha_publicacion')
     count = publicaciones.count()
-    print(count)
+    donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
+    cantidad_donaciones = donaciones.__len__()
+
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
         'perfil': perfil,
@@ -318,6 +320,8 @@ def perfil_usuario(request, username):
         'comunidades':comunidades,
         'publicaciones':publicaciones,
         'count': count,
+        'donaciones': donaciones,
+        'cantidad_donaciones': cantidad_donaciones,
     })
 
 from .forms import CustomUserCreationForm
@@ -732,6 +736,9 @@ def detalle_campaign(request, pk):
     if request.user in desafio.likes.all():
         like_campaign=True
 
+    lleno = False
+    if (int(desafio.cantidad_donada)==int(desafio.objetivo_monto)):
+        lleno=True
 
     tipo = False
     if campaign.tipo=="donacion":
@@ -762,7 +769,8 @@ def detalle_campaign(request, pk):
         'tipo':tipo,
         'total_likes':like_count,
         'like_campaign':like_campaign,
-        'like_respuestas':like_respuestas
+        'like_respuestas':like_respuestas,
+        'lleno':lleno,
     })
 
 @login_required
@@ -813,19 +821,26 @@ def guardar_donacion(request,pk):
     desafio= Desafio.objects.get(id=pk)
     min= int(desafio.min_monto)
     max = int(desafio.max_monto)
+    antes = desafio.cantidad_donada
+    maximo= int(desafio.objetivo_monto-antes)
     if request.method == 'POST':
-        nombre = request.POST['nombre']
         identificador_transferencia = request.POST['identificador_transferencia']
         cantidad = request.POST['cantidad']
         # Aquí deberías validar los datos antes de guardarlos
         # Por ejemplo:
+        
         desafio.cantidad_donada+=Decimal(cantidad)
+        
         if (float(cantidad)<desafio.min_monto or float(cantidad)>desafio.max_monto or desafio.cantidad_donada>desafio.objetivo_monto):
+            if (desafio.cantidad_donada>desafio.objetivo_monto):
+                
+                return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {maximo}'})   
             return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {desafio.max_monto}'})
         desafio.save()
         # Guardar la donación en la base de datos
         DonacionComunidad.objects.create(
             donador=request.user,
+            campaign=desafio,
             identificador_transferencia=identificador_transferencia,
             cantidad=cantidad,
         )
@@ -847,7 +862,7 @@ def guardar_donacion(request,pk):
         'min':min,
         'max':max,
         'id': campaign.pk,
-        
+        'maximo':maximo,
         })
 
 
@@ -987,3 +1002,9 @@ def ranking_usuarios(request):
     )[:10]
     print(ranking)
     return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
+
+@login_required()
+def ver_donaciones(request):
+    donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
+    
+    return render(request, 'donaciones.html', {'donaciones':donaciones,})
