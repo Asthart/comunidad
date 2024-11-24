@@ -18,11 +18,11 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(Campaña)
 
 @admin.register(Comunidad)
 class ComunidadAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'administrador','activada')
+    prepopulated_fields = {"slug": ("nombre",)}
     search_fields = ('nombre', 'administrador__username')
     filter_horizontal = ('miembros',)
 
@@ -77,6 +77,7 @@ class ComunidadAdmin(admin.ModelAdmin):
 @admin.register(Proyecto)
 class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_creacion')
+    prepopulated_fields = {"slug": ("titulo",)}
     list_filter = ('comunidad', 'fecha_creacion')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
 
@@ -89,6 +90,7 @@ class ProyectoAdmin(admin.ModelAdmin):
 @admin.register(Desafio)
 class DesafioAdmin(admin.ModelAdmin):
     list_display = ('id','titulo', 'creador', 'comunidad', 'fecha_inicio', 'fecha_fin')
+    prepopulated_fields = {"slug": ("titulo",)}
     list_filter = ('comunidad', 'fecha_inicio', 'fecha_fin')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
     def get_queryset(self, request):
@@ -96,6 +98,17 @@ class DesafioAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(comunidad__administrador=request.user)
+
+@admin.register(Campaña)
+class CampañaAdmin(admin.ModelAdmin):
+    
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            # Only set slug when creating a new object
+            obj.slug = obj.generate_slug()
+        super().save_model(request, obj, form, change)
+
 
 @admin.register(MensajeChat)
 class MensajeChatAdmin(admin.ModelAdmin):

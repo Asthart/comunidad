@@ -6,7 +6,7 @@
             <h1 class="text-center fw-bold">Miembros de {{comunidad.nombre}}</h1>
             <hr class="community-divider">
             <br>
-            
+
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
                 {% if comunidad.administrador.perfilusuario.foto_perfil %}
                     <div class="col">
@@ -23,7 +23,7 @@
                         </div>
                     </div>
                 {% endif %}
-                
+
                 {% for miembro in comunidad.miembros.all %}
                     {% if not miembro == comunidad.administrador %}
                         <div class="col">
@@ -44,9 +44,9 @@
                 {% endfor %}
             </div>
         </div>
-        
+
         <div class="text-center mt-4">
-            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
+            <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-primary">Volver</a>
         </div>
     </main>
 

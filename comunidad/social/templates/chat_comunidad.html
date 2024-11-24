@@ -24,7 +24,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
+            <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-primary">Volver</a>
         </div>
         <br>
     </main>
@@ -48,7 +48,7 @@
             messageElement.classList.add(data.username === username ? 'sent' : 'received');
             messageElement.dataset.id = data.id;
             messageElement.innerHTML = `
-                <strong>${data.username}:</strong> 
+                <strong>${data.username}:</strong>
                 ${data.message}
                 <small class="message-time">
                     (Enviado: ${new Date(data.fecha_envio).toLocaleString()})
@@ -86,7 +86,7 @@
     function toggleScrollButton() {
         const chatMessages = document.querySelector('#chat-messages');
         const scrollButton = document.getElementById('scroll-to-bottom-btn');
-        
+
         if (chatMessages.scrollTop + chatMessages.clientHeight < chatMessages.scrollHeight - 20) {
             scrollButton.style.display = 'block';
         } else {
@@ -129,7 +129,7 @@
     function toggleScrollButton() {
         const chatMessages = document.querySelector('#chat-messages');
         const scrollButton = document.getElementById('scroll-to-bottom-btn');
-        
+
         if (chatMessages.scrollTop + chatMessages.clientHeight < chatMessages.scrollHeight - 20) {
             scrollButton.style.display = 'block';
         } else {
@@ -159,7 +159,7 @@
         margin: 0 auto;
         padding: 20px;
     }
-    
+
     .chat-messages {
         max-height: 400px;
         overflow-y: auto;
@@ -169,7 +169,7 @@
         margin-bottom: 20px;
         background: white;
     }
-    
+
     .scroll-to-bottom-btn {
         position: absolute;
         bottom: 102px;
@@ -184,25 +184,25 @@
         cursor: pointer;
         z-index: 1000;
     }
-    
-    
+
+
     .scroll-to-bottom-btn img {
         width: 55px;
         height: 55px;
     }
-    
+
     .chat-input {
         display: flex;
         margin-top: 10px;
     }
-    
+
     .chat-input input {
         flex-grow: 1;
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 5px 0 0 5px;
     }
-    
+
     .chat-input button {
         padding: 10px 20px;
         background-color: #007bff;
@@ -211,7 +211,7 @@
         border-radius: 0 5px 5px 0;
         cursor: pointer;
     }
-    
+
     .chat-input button:hover {
         background-color: #0056b3;
     }

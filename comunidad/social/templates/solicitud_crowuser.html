@@ -22,7 +22,7 @@
                     </form>
                   {% else %}
                     <p class="card-text">Ya has solicitado ser Crowuser.</p>
-                    <a href="{% url 'detalle_comunidad' comunidad.pk %}" class="btn btn-secondary w-100">Volver</a>
+                    <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-secondary w-100">Volver</a>
                   {% endif %}
                 </div>
             </div>

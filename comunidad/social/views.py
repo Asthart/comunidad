@@ -138,10 +138,10 @@ def lista_publicaciones(request,username):
     return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user})
 
 @login_required
-def detalle_comunidad(request, pk):
+def detalle_comunidad(request, slug):
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
-    comunidad = get_object_or_404(Comunidad, pk=pk, activada=True)
+    comunidad = get_object_or_404(Comunidad, slug=slug, activada=True)
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
@@ -189,28 +189,30 @@ def crear_proyecto(request,pk):
     return render(request, 'crear_proyecto.html', {'form': form, 'comunidad': pk})
 
 @login_required
-def detalle_proyecto(request, pk):
-    proyecto = get_object_or_404(Proyecto, pk=pk)
+def detalle_proyecto(request, slug):
+    proyecto = get_object_or_404(Proyecto, slug=slug)
     print("aaaaaaa: ",proyecto)
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
 
 @login_required
-def crear_desafio(request,pk):
+def crear_desafio(request,slug):
     if request.method == 'POST':
         form = DesafioForm(request.POST)
         if form.is_valid():
             desafio = form.save(commit=False)
-            comunidad = Comunidad.objects.get(id=pk)
+            comunidad = Comunidad.objects.get(slug=slug)
             desafio.comunidad=comunidad
             desafio.creador = request.user
             desafio.save()
 
             campaign = Campaña.objects.create(desafio=desafio)
+            campaign.slug=campaign.desafio.titulo
+            campaign.save()
             if not request.user.is_superuser:
                 accion = Accion.objects.filter(nombre='crear_desafio').first()
                 update_user_points(request.user.id, accion.id, accion.puntos)
 
-            return redirect('detalle_campaign', pk=campaign.pk)
+            return redirect('detalle_campaign', slug=campaign.slug)
         else:
             print("form: ",form)
             print("form.errors: ",form.errors)
@@ -218,11 +220,11 @@ def crear_desafio(request,pk):
         form = DesafioForm()
 
 
-    return render(request, 'crear_desafio.html', {'form': form,'comunidad':pk})
+    return render(request, 'crear_desafio.html', {'form': form,'comunidad':slug})
 
 @login_required
-def detalle_desafio(request, pk):
-    desafio = get_object_or_404(Desafio, pk=pk)
+def detalle_desafio(request, slug):
+    desafio = get_object_or_404(Desafio, slug=slug)
     return render(request, 'detalle_desafio.html', {'desafio': desafio})
 
 def puntuar_desafio(request, desafio_id, punto):
@@ -244,7 +246,7 @@ def puntuar_desafio(request, desafio_id, punto):
         accion = Accion.objects.filter(nombre='puntuar desafio').first()
         update_user_points(request.user.id, accion.id, accion.puntos)
 
-    return redirect('detalle_campaign', pk=desafio_id)
+    return redirect('detalle_campaign', slug=slug)
 
 def buscar(request):
     q = request.GET.get('q')
@@ -341,13 +343,13 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 @login_required
-def crear_publicacion(request, pk):
+def crear_publicacion(request, slug):
     if request.method == 'POST':
         form = PublicacionForm(request.POST, request.FILES)
         if form.is_valid():
             publicacion = form.save(commit=False)
             publicacion.autor = request.user
-            comunidad = Comunidad.objects.get(pk=pk)
+            comunidad = Comunidad.objects.get(slug=slug)
             publicacion.comunidad=comunidad
             '''# Verificamos si hay al menos una tematica seleccionada
             if not form.cleaned_data['tags']:
@@ -382,7 +384,7 @@ def like_desafio(request, desafio_id):
         print("2")
         desafio.likes.add(request.user)  # Agregar like si no existe
 
-    return redirect('detalle_campaign', campaign.id)
+    return redirect('detalle_campaign', campaign.slug)
 
 @login_required
 def like_comentariod(request, desafio_id,comentario_id):
@@ -396,7 +398,7 @@ def like_comentariod(request, desafio_id,comentario_id):
         print("2")
         respuesta.likes.add(request.user)  # Agregar like si no existe
 
-    return redirect('detalle_campaign', campaign.id)
+    return redirect('detalle_campaign', campaign.slug)
 
 def like(request, pk):
     publicacion = get_object_or_404(Publicacion, pk=pk)
@@ -717,8 +719,8 @@ def lista_comunidades(request):
 
 
 @login_required
-def detalle_campaign(request, pk):
-    campaign = get_object_or_404(Campaña, pk=pk)
+def detalle_campaign(request, slug):
+    campaign = get_object_or_404(Campaña, slug=slug)
     desafio=campaign.desafio
     like_count = desafio.likes.count()
 
@@ -747,11 +749,11 @@ def detalle_campaign(request, pk):
                 accion: Accion | None= Accion.objects.filter(nombre='responder_campaign').first()
                 update_user_points(request.user.id, accion.id, accion.puntos)
 
-            return redirect('detalle_campaign', pk=campaign.pk)
+            return redirect('detalle_campaign', slug=campaign.slug)
     else:
         respuesta_form = RespuestaForm()
 
-    puntuaciones = Accion.objects.filter(name__startswith='puntos')
+    puntuaciones = Accion.objects.filter(nombre__startswith='puntos')
 
     return render(request, 'detalle_campaign.html', {
         'campaign': campaign,
@@ -766,9 +768,9 @@ def detalle_campaign(request, pk):
     })
 
 @login_required
-def lista_campaigns(request, comunidad_id):
-    campaigns = Campaña.objects.filter(desafio__comunidad=comunidad_id).order_by('-id')
-    comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
+def lista_campaigns(request, slug):
+    campaigns = Campaña.objects.filter(desafio__comunidad__slug=slug).order_by('-id')
+    comunidad= Comunidad.objects.filter(slug=slug).first()
     filtro = request.GET.get('filtro', 'todas')
     if filtro == 'activas':
         campaigns = campaigns.filter(activa=True)
@@ -782,8 +784,8 @@ def lista_campaigns(request, comunidad_id):
     })
 
 @login_required
-def lista_proyectos(request, comunidad_id):
-    comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
+def lista_proyectos(request, slug):
+    comunidad= Comunidad.objects.filter(slug=slug).first()
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
 
     return render(request, 'lista_proyectos.html', {
@@ -792,8 +794,8 @@ def lista_proyectos(request, comunidad_id):
     })
 
 @login_required
-def lista_miembros(request, comunidad_id):
-    comunidad= Comunidad.objects.filter(pk=comunidad_id).first()
+def lista_miembros(request, slug):
+    comunidad= Comunidad.objects.filter(slug=slug).first()
 
     return render(request, 'lista_miembros.html', {
         'comunidad': comunidad,
@@ -831,7 +833,7 @@ def guardar_donacion(request,pk):
         )
 
         # Si todo salió bien, redirige al usuario a la lista de donaciones
-        return redirect('detalle_campaign', pk=desafio.campaign.pk)
+        return redirect('detalle_campaign', slug=desafio.campaign.slug)
     campaign = desafio.campaign
     qr = Cuenta.objects.first()
     # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados

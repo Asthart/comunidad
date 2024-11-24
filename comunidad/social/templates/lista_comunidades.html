@@ -22,7 +22,7 @@
                         <h5 style="width: 25%;text-align: center;" class="mb-1  fw-bold">{{ comunidad.nombre }}</h5>
                         <div style="width: 25%;" class="d-flex align-items-center">
                             {% if comunidad.administrador.perfilusuario.foto_perfil %}
-                                <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="rounded-circle me-3" style="width: 45px; height: 45px; align-self: center;"> 
+                                <img src="{{ comunidad.administrador.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="rounded-circle me-3" style="width: 45px; height: 45px; align-self: center;">
                             {% endif %}
                             <div >
                                 <a  href="{% url 'perfil_usuario' comunidad.administrador.username %}"><h5 class="mb-1">{{ comunidad.administrador.first_name }} {{ comunidad.administrador.last_name }}</h5></a>
@@ -43,7 +43,7 @@
                             <span class="badge bg-secondary">No acepta donaciones</span>
                         {% endif %}-->
                         <div style="width: 25%; text-align: center;">
-                        <a href="{% url 'detalle_comunidad' comunidad.pk %}" class="btn btn-sm btn-outline-info ms-2">Ver detalles</a>
+                        <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-sm btn-outline-info ms-2">Ver detalles</a>
                         </div>
                     </li>
                 {% endfor %}
@@ -73,7 +73,7 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
     }
-    
+
     main {
         max-width: 100%;
         margin-top: 20px;
@@ -84,7 +84,7 @@
         flex: 1;
         width: 100%;
     }
-    
+
     .table td {
         vertical-align: middle;
     }
@@ -124,5 +124,3 @@
         background-color: #134E8B;
     }
 </style>
-
-

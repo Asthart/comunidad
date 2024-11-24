@@ -134,7 +134,7 @@
             <hr class="community-divider">
             <ul class="project-list">
                 {% for proyecto in proyectos %}
-                    <li><a href="{% url 'detalle_proyecto' proyecto.pk %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
+                    <li><a href="{% url 'detalle_proyecto' proyecto.slug %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
                 {% empty %}
                     <li>Este usuario no ha creado ningún proyecto.</li>
                 {% endfor %}
@@ -146,7 +146,7 @@
             <hr class="community-divider">
             <ul class="project-list">
                 {% for comunidad in comunidades %}
-                    <li><a href="{% url 'detalle_comunidad' comunidad.pk %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
+                    <li><a href="{% url 'detalle_comunidad' comunidad.slug %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
                 {% empty %}
                     <li>Este usuario no pertenece a ninguna comunidad.</li>
                 {% endfor %}

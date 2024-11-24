@@ -13,11 +13,11 @@
                     <form method="post">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary w-100">Enviar Solicitud</button>
-                        <a href="{% url 'detalle_comunidad' comunidad.pk %}" class="btn btn-secondary w-100 mt-2">Volver</a>
+                        <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-secondary w-100 mt-2">Volver</a>
                     </form>
                   {% else %}
                     <p class="card-text">Ya has solicitado unirte a la comunidad {{ comunidad.nombre }}.</p>
-                    <a href="{% url 'detalle_comunidad' comunidad.pk %}" class="btn btn-secondary w-100">Volver</a>
+                    <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-secondary w-100">Volver</a>
                   {% endif %}
                 </div>
             </div>

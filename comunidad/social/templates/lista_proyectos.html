@@ -12,7 +12,7 @@
                     <div class="col">
                         <div class="card h-100 dorado">
                             <div class="card-body">
-                                <a href="{% url 'detalle_proyecto' proyecto.pk %}" class="text-decoration-none">{{ proyecto }}</a>
+                                <a href="{% url 'detalle_proyecto' proyecto.slug %}" class="text-decoration-none">{{ proyecto }}</a>
                             </div>
                         </div>
                     </div>
@@ -27,9 +27,9 @@
                 {% endfor %}
             </div>
         </div>
-        
+
         <div class="text-center mt-4">
-            <a href="{% url 'detalle_comunidad' comunidad.id %}" class="btn btn-primary">Volver</a>
+            <a href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn btn-primary">Volver</a>
         </div>
     </main>
 
@@ -46,15 +46,15 @@
         flex-direction: column;
         min-height: 100vh;
       }
-    
+
       main{
         flex: 1;
       }
-    
+
       .member-item{
         margin-bottom: 2px;
     }
-    
+
     .profile-picture {
         width: 40px;
         height: 40px;
@@ -62,11 +62,11 @@
         object-fit: cover;
         margin-right: 10px;
     }
-    
+
     .author-info {
         flex-grow: 1;
     }
-    
+
     .author-name {
         font-weight: bold;
         color: #333;

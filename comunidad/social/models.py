@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import Permission
 from django.utils import timezone
 from multiupload.fields import MultiFileField
-
+from django.template.defaultfilters import slugify
 from django.db import models
 from django.contrib.auth.models import User
 class Premio(models.Model):
@@ -29,7 +29,7 @@ class Comunidad(models.Model):
     foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='comunidades/perfiles/perfil_default.jpg')
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='comunidades/banners/banner_default.jpg')
     #tags = models.ManyToManyField('Tematica')
-
+    slug = models.SlugField(default="", null=False)
 
 
     def __str__(self):
@@ -75,6 +75,7 @@ class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     imagenes = models.ImageField(upload_to='comunidades/imagenes_proyecto/', blank=True, null=True)
     documentos = models.FileField(upload_to='comunidades/documentos_proyecto/', blank=True, null=True)
+    slug = models.SlugField(default="", null=False)
 
     def __str__(self):
         return self.titulo
@@ -126,6 +127,7 @@ class Desafio(models.Model):
     cantidad_donada = models.DecimalField(max_digits=10, decimal_places=2, null=True,default=0)
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE,default=None, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name='likes_desafios', blank=True)
+    slug = models.SlugField(default="", null=False)
 
     def total_likes(self):
         return self.likes.count()
@@ -385,7 +387,17 @@ class ResultadoConcurso(models.Model):
 class Campaña(models.Model):
     activa = models.BooleanField(default=True)
     desafio = models.OneToOneField(Desafio, on_delete=models.CASCADE)
+    slug = models.SlugField(default="")
+
     def __str__(self):
+        return self.desafio.titulo
+
+
+    def generate_slug(self):
+        return slugify(f"{self.desafio.titulo}-{self.id}")
+
+    @property
+    def nombre(self):
         return self.desafio.titulo
 
     @property
