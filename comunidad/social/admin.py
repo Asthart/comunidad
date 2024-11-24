@@ -18,7 +18,7 @@ class CustomUserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
-admin.site.register(Campaign)
+admin.site.register(Campaña)
 
 @admin.register(Comunidad)
 class ComunidadAdmin(admin.ModelAdmin):
@@ -105,7 +105,7 @@ class MensajeChatAdmin(admin.ModelAdmin):
     date_hierarchy = 'fecha_envio'
 
 
-admin.site.register(Tag)
+admin.site.register(Tematica)
 
 '''
 <small class="message-time">
@@ -125,17 +125,17 @@ class ClasificacionAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'umbral_puntos')
     search_fields = ('nombre',)
 
-@admin.register(Action)
+@admin.register(Accion)
 class ActionAdmin(admin.ModelAdmin):
-    list_display = ('id','name', 'points')
-    search_fields = ('name',)
+    list_display = ('id','nombre', 'puntos')
+    search_fields = ('nombre',)
 
 @admin.register(Premio)
 class PremioAdmin(admin.ModelAdmin):
     list_display = ('nombre',)
     search_fields = ('nombre',)
 
-@admin.register(UserAction)
+@admin.register(AccionUsuario)
 class UserActionAdmin(admin.ModelAdmin):
     list_display = ('user','accion','timestamp','puntos')
     search_fields = ('nombre',)

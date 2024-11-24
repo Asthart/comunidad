@@ -104,7 +104,7 @@ class PublicacionForm(forms.ModelForm):
     imagen = forms.ImageField(required=False)
     '''
     tags = forms.ModelMultipleChoiceField(
-        queryset=Tag.objects.all(),
+        queryset=Tematica.objects.all(),
         widget=forms.CheckboxSelectMultiple
     )
     '''
@@ -136,7 +136,7 @@ class DonacionComunidadForm(forms.ModelForm):
     widgets = {
         'cantidad': forms.NumberInput(attrs={'step': 'any'}),
     }
-    
+
 class EditUserProfileForm(forms.ModelForm):
     class Meta:
         model = PerfilUsuario

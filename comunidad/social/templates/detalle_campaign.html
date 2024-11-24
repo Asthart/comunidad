@@ -10,9 +10,7 @@
     <hr class="community-divider">
     <p>{{ campaign.desafio.descripcion }}</p>
 
-    <!--{% if request.user == campaign.desafio.creador %}
-        <a href="{% url 'admin:social_campaign_change' campaign.pk %}">Modificar</a>
-    {% endif %}-->
+
 
     <br>
     {% if request.user != campaign.desafio.creador and tipo %}
@@ -25,7 +23,7 @@
     <div class="respuesta card m-2 rounded">
     <h2 class="card-title fw-bold text-center m-2">Respuestas:</h2>
 
-    
+
             {% for respuesta in campaign.respuestas %}
                 <div class="respuesta card-body dorado rounded m-3">
                     <div class="member-item">
@@ -59,14 +57,14 @@
             {% empty %}
                 <p class="m-2 text-muted">No hay respuestas aún.</p>
             {% endfor %}
-   
+
 
     {% if request.user == campaign.desafio.creador %}
         <br>
         <p class="m-2 text-warning"> Eres el creador de la campaña, no puedes responder.</p>
         <br>
     {% elif campaign_activa %}
-    
+
     <div class="card-footer rounded">
         <form method="post">
             {% csrf_token %}
@@ -76,7 +74,7 @@
             </div>
         </form>
     {% else %}
-    
+
         <p class="text-center"> Esta campaña no está activa. No se pueden agregar nuevas respuestas.</p>
     {% endif %}
     </div>
@@ -211,7 +209,7 @@
             padding: 0;
             cursor: pointer;
         }
-    
+
         img.like-icon {
             width: 24px;
             height: 24px;
