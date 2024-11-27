@@ -16,7 +16,7 @@ class Premio(models.Model):
     tipo = models.CharField(max_length=50)
     def __str__(self):
         return f"{self.nombre}"
-        
+
 class Tematica(models.Model):
     nombre = models.CharField(max_length=255)
 
@@ -254,7 +254,7 @@ class Publicacion(models.Model):
     tags = models.ManyToManyField('Tematica', blank=True, null=True)
     imagen = models.ImageField(blank=True, null=True, upload_to='publicaciones/imagenes/')
     #archivos = MultiFileField(min_num=1, max_num=5)
-    comunidad = models.ForeignKey('Comunidad', on_delete=models.SET_NULL, null=True, blank=True)
+    comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE, null=True, blank=True)
     fecha_publicacion = models.DateTimeField(auto_now_add=True)
 
     def likes(self):

@@ -21,7 +21,7 @@
                                     <span class="publication-date">{{ pub.fecha_publicacion|date:"d/m/Y H:i:s" }}</span>
                                 </div>
                             </div>
-                            <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pub.comunidad.pk %}" class="author-name">{{ pub.comunidad.nombre }}</a></p>
+                              <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pub.comunidad.slug %}" class="author-name">{{ pub.comunidad.nombre }}</a></p>
                             <div class="publication-content">
                             <p>{{ pub.contenido }}</p>
                             <div style=" display: grid;place-items: center;">
@@ -61,7 +61,7 @@
                         </div>
                     {% endfor %}
             </div>
-        
+
         <div class="text-center mt-4">
             <a href="{% url 'perfil_usuario' request.user %}" class="btn btn-primary">Volver</a>
         </div>
@@ -179,11 +179,11 @@
         margin-right: 10%;
         flex: 1;
     }
-    
+
       .member-item{
         margin-bottom: 2px;
     }
-    
+
     .profile-picture {
         width: 40px;
         height: 40px;
@@ -191,11 +191,11 @@
         object-fit: cover;
         margin-right: 10px;
     }
-    
+
     .author-info {
         flex-grow: 1;
     }
-    
+
     .author-name {
         font-weight: bold;
         color: #333;
