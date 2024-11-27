@@ -254,14 +254,14 @@
                 <div class="boton-comunidad">
                     {% if not is_superuser %}
                     {% if es_miembro %}
-                        <a href="{% url 'chat_comunidad' comunidad.pk %}" class="action-button bg-primary">Chat de la comunidad</a>
+                        <a href="{% url 'chat_comunidad' comunidad.slug %}" class="action-button bg-primary">Chat de la comunidad</a>
                         {% if not es_admin %}
-                            <a href="{% url 'salir_comunidad' comunidad.pk %}" class="action-button boton-condicional">Salir de la comunidad</a>
+                            <a href="{% url 'salir_comunidad' comunidad.slug %}" class="action-button boton-condicional">Salir de la comunidad</a>
                         {% else %}
                             <a href="http://localhost:8000/admin" class="action-button boton-condicional">Administrar comunidad</a>
                         {% endif %}
                     {% elif not es_miembro and comunidad.publica %}
-                        <a href="{% url 'unirse_comunidad' comunidad.pk %}" class="action-button">Unirse a la comunidad</a>
+                        <a href="{% url 'unirse_comunidad' comunidad.slug %}" class="action-button">Unirse a la comunidad</a>
                     {% else %}
                         <a href="{% url 'solicitar_membresia' comunidad.slug %}" class="action-button">Solicitar unirse a la comunidad</a>
                     {% endif %}
@@ -298,7 +298,7 @@
                     <br>
                     <div >
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
-                        {% if es_admin and not is_superuser%}
+                        {% if es_admin or es_crowdsourcer and not is_superuser %}
                             <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.slug %}" class="action-button">Crear campaña</a>
                         {% else %}
                         {% endif %}

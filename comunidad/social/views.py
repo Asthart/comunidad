@@ -157,7 +157,8 @@ def detalle_comunidad(request, slug):
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
-    es_admin = (comunidad.administrador == request.user or  user.groups.filter(name="Crowdsourcer").exists())
+    es_admin = comunidad.administrador == request.user
+    es_crowdsourcer= user.groups.filter(name="Crowdsourcer").exists()
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
     is_superuser= user.is_superuser
@@ -175,6 +176,7 @@ def detalle_comunidad(request, slug):
     'proyectos': proyectos,
     'desafios': desafios,
     'es_admin': es_admin,
+    'es_crowdsourcer': es_crowdsourcer,
     'es_miembro': es_miembro,
     'campaigns': campaigns,
     'is_superuser': is_superuser,
@@ -888,8 +890,8 @@ def guardar_donacion(request,slug):
 
 
 @login_required
-def chat_comunidad(request, comunidad_id):
-    comunidad = get_object_or_404(Comunidad, id=comunidad_id)
+def chat_comunidad(request, slug):
+    comunidad = get_object_or_404(Comunidad, slug=slug)
     if request.user not in comunidad.miembros.all():
         return HttpResponseForbidden("No eres miembro de esta comunidad.")
 
@@ -931,21 +933,21 @@ def editar_perfil(request):
     })
 
 @login_required
-def unirse_comunidad(request, pk):
-    comunidad = Comunidad.objects.get(pk=pk)
+def unirse_comunidad(request, slug):
+    comunidad = Comunidad.objects.get(slug=slug)
     if comunidad.publica:
         comunidad.miembros.add(request.user)
         print(f"El usuario {request.user.username} se unió a la comunidad {comunidad.nombre}")
-        return redirect('detalle_comunidad', pk=pk)
+        return redirect('detalle_comunidad', slug=slug)
     else:
-        return redirect('detalle_comunidad', pk=pk)
+        return redirect('detalle_comunidad', slug=slug)
 
 @login_required
-def salir_comunidad(request, pk):
-    comunidad = Comunidad.objects.get(pk=pk)
+def salir_comunidad(request, slug):
+    comunidad = Comunidad.objects.get(slug=slug)
     comunidad.miembros.remove(request.user)
     print("salio")
-    return redirect('detalle_comunidad', pk=pk)
+    return redirect('detalle_comunidad', slug=slug)
 
 @login_required
 def solicitar_membresia(request, slug):

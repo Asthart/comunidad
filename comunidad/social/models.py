@@ -251,7 +251,6 @@ class MensajeChat(models.Model):
 class Publicacion(models.Model):
     contenido = models.TextField()
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
-    tags = models.ManyToManyField('Tematica', blank=True, null=True)
     imagen = models.ImageField(blank=True, null=True, upload_to='publicaciones/imagenes/')
     #archivos = MultiFileField(min_num=1, max_num=5)
     comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE, null=True, blank=True)
