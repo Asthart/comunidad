@@ -110,7 +110,7 @@
                                     {% else %}
                                         <img src="{% static '/images/default-avatar.svg' %}" alt="Foto de perfil de {{ usuario.username }}" width="50" height="50" style="object-fit: cover; border-radius: 50%;">
                                     {% endif %}
-                                    <a href="{% url 'perfil_usuario' usuario.username %}" class="text-dark">{{ usuario.puntos }} {{ usuario.first_name }} {{ usuario.last_name }}</a>
+                                    <a href="{% url 'perfil_usuario' usuario.username %}" class="text-dark">{{ usuario.first_name }} {{ usuario.last_name }}</a>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -153,7 +153,7 @@
                         <hr class="community-divider">
                         <ul>
                             {% for desafio in desafios %}
-                                <li><a href="{% url 'detalle_desafio' desafio.slug %}" class="text-dark">{{ desafio.titulo }}</a></li>
+                                <li><a href="{% url 'detalle_campaign' desafio.tcampaign.slug %}" class="text-dark">{{ desafio.titulo }}</a></li>
                             {% endfor %}
                         </ul>
                     </div>
