@@ -30,16 +30,28 @@ def inicio(request):
     contador = Concurso.ultimo_concurso()
     # Obtener las comunidades del usuario
     comunidades = Comunidad.objects.filter(miembros=user, activada=True)
+    temas_comunidades = Tematica.objects.filter(Tema__in=comunidades)
+    comunidades_relevantes = Comunidad.objects.filter(
+        tematica__in=temas_comunidades,
+        activada=True
+    ).distinct()
+    comunidades_publicas = comunidades_relevantes.filter(publica=True)
+    comunidades_privadas = comunidades_relevantes.filter(publica=False).filter(miembros=request.user)
+
+    comunidades_totales = set(comunidades_publicas) | set(comunidades_privadas)
+
+
+
     # Obtener los perfiles que el usuario sigue
     seguidos = profile.seguidos.all()
 
     todos_proyectos = Proyecto.objects.filter(
-        Q(comunidad__in=comunidades) |
+        Q(comunidad__in=comunidades_totales) |
         Q(creador__in=[seguido.usuario for seguido in seguidos])
     ).exclude(creador=user).distinct().order_by('-fecha_creacion')
     # Obtener todas las publicaciones relevantes
     todas_publicaciones = Publicacion.objects.filter(
-        Q(comunidad__in=comunidades) |
+        Q(comunidad__in=comunidades_totales) |
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
 
@@ -51,7 +63,7 @@ def inicio(request):
     proyectos_seguidos = []
 
     for pro in todos_proyectos:
-        if pro.comunidad in comunidades:
+        if pro.comunidad in comunidades_totales:
             proyectos_comunidades.append(pro)
         else:
             proyectos_seguidos.append(pro)
@@ -111,6 +123,7 @@ def crear_comunidad(request):
             comunidad = form.save(commit=False)
             comunidad.administrador = request.user
             comunidad.crowuser = request.user
+            comunidad.slug = comunidad.nombre
             comunidad.save()
             comunidad.miembros.add(request.user)
 
@@ -144,11 +157,11 @@ def detalle_comunidad(request, slug):
     proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
-    es_admin = (comunidad.administrador == request.user or comunidad.es_crowuser(user))
+    es_admin = (comunidad.administrador == request.user or  user.groups.filter(name="Crowdsourcer").exists())
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
     is_superuser= user.is_superuser
-
+    print(user.groups.filter(name="Crowdsourcer").exists())
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
         Q(comunidad=comunidad) |
@@ -202,6 +215,7 @@ def crear_desafio(request,slug):
             comunidad = Comunidad.objects.get(slug=slug)
             desafio.comunidad=comunidad
             desafio.creador = request.user
+            desafio.slug= desafio.titulo
             desafio.save()
 
             campaign = Campaña.objects.create(desafio=desafio)
@@ -820,6 +834,7 @@ def puntuar_respuesta(request, pk, estrellas):
 @login_required
 def guardar_donacion(request,slug):
     desafio= Desafio.objects.get(slug=slug)
+    campaig= Campaña.objects.get(desafio=desafio)
     min= int(desafio.min_monto)
     max = int(desafio.max_monto)
     antes = desafio.cantidad_donada
@@ -834,9 +849,14 @@ def guardar_donacion(request,slug):
 
         if (float(cantidad)<desafio.min_monto or float(cantidad)>desafio.max_monto or desafio.cantidad_donada>desafio.objetivo_monto):
             if (desafio.cantidad_donada>desafio.objetivo_monto):
-
-                return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {maximo}'})
-            return render(request, 'crear_donacion.html', {'error': 'Por favor, el mnto debe ser entre {desafio.min_monto} y {desafio.max_monto}'})
+                print(campaig.slug)
+                print("el problema es aqui")
+                print(desafio.min_monto)
+                print(maximo)
+                return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {maximo}',
+                                                                'slug':campaig.slug})
+            return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {desafio.max_monto}',
+                                                            'slug':campaig.slug})
         desafio.save()
         # Guardar la donación en la base de datos
         DonacionComunidad.objects.create(
@@ -847,7 +867,7 @@ def guardar_donacion(request,slug):
         )
 
         # Si todo salió bien, redirige al usuario a la lista de donaciones
-        return redirect('detalle_campaign', slug=desafio.campaign.slug)
+        return redirect('detalle_campaign', slug=campaig.slug)
     campaign = desafio.campaign
     qr = Cuenta.objects.first()
     # Si es una solicitud GET, muestra el formulario vacío con los datos del usuario prellenados
@@ -862,7 +882,7 @@ def guardar_donacion(request,slug):
         'campaign': campaign,
         'min':min,
         'max':max,
-        'id': campaign.slug,
+        'slug': campaign.slug,
         'maximo':maximo,
         })
 
@@ -928,8 +948,8 @@ def salir_comunidad(request, pk):
     return redirect('detalle_comunidad', pk=pk)
 
 @login_required
-def solicitar_membresia(request, comunidad_id):
-    comunidad = get_object_or_404(Comunidad, id=comunidad_id)
+def solicitar_membresia(request, slug):
+    comunidad = get_object_or_404(Comunidad, slug=slug)
     solicitud_pendiente = SolicitudMembresia.objects.filter(comunidad=comunidad, usuario=request.user).first()
     creada = False
     if solicitud_pendiente:
@@ -938,14 +958,14 @@ def solicitar_membresia(request, comunidad_id):
     if request.method == 'POST':
         # Verificar que la comunidad es privada
         if comunidad.publica:
-            return redirect('detalle_comunidad', comunidad_id=comunidad_id)
+            return redirect('detalle_comunidad', slug=slug)
 
         # Crear la solicitud de membresía
         solicitud, created = SolicitudMembresia.objects.get_or_create(comunidad=comunidad, usuario=request.user)
         solicitud.save()
         if created:
             # Notificar que la solicitud fue enviada
-            return redirect('detalle_comunidad', comunidad_id)
+            return redirect('detalle_comunidad', slug)
         else:
             # Si ya existe una solicitud pendiente
             creada = True

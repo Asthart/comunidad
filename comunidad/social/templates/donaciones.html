@@ -14,7 +14,7 @@
                 </li>
                 {% for donacion in donaciones %}
                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <h5 style="width: 25%;text-align: center;" class="mb-1  fw-bold"><a href="{% url 'detalle_campaign' donacion.campaign.tcampaign.pk %}">{{ donacion.campaign.titulo }}</a></h5>
+                        <h5 style="width: 25%;text-align: center;" class="mb-1  fw-bold"><a href="{% url 'detalle_campaign' donacion.campaign.slug %}">{{ donacion.campaign.titulo }}</a></h5>
                         <h5 style="width: 25%;text-align: center;" class="mb-1">{{ donacion.identificador_transferencia }}</h5>
                         <h5 style="width: 25%;text-align: center;" class="mb-1">${{ donacion.cantidad }}</h5>
                         <h5 style="width: 25%;text-align: center;" class="mb-1">{{ donacion.fecha_creacion }}</h5>
@@ -50,7 +50,7 @@
         background-repeat: no-repeat;
         background-attachment: fixed;
     }
-    
+
     main {
         max-width: 100%;
         margin-top: 20px;
@@ -61,7 +61,7 @@
         flex: 1;
         width: 100%;
     }
-    
+
     .table td {
         vertical-align: middle;
     }
@@ -101,5 +101,3 @@
         background-color: #134E8B;
     }
 </style>
-
-

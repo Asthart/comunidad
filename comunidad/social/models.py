@@ -16,19 +16,24 @@ class Premio(models.Model):
     tipo = models.CharField(max_length=50)
     def __str__(self):
         return f"{self.nombre}"
+        
+class Tematica(models.Model):
+    nombre = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.nombre
 
 class Comunidad(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField()
     administrador = models.ForeignKey(User, on_delete=models.CASCADE, related_name='comunidades_administradas')
-    crowusers = models.ManyToManyField(User, related_name='crowusers')
     miembros = models.ManyToManyField(User, related_name='comunidades')
     activada = models.BooleanField(default=False)
     publica = models.BooleanField(default=False)
     #donaciones = models.BooleanField(default=False)
     foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='comunidades/perfiles/perfil_default.jpg')
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='comunidades/banners/banner_default.jpg')
-    #tags = models.ManyToManyField('Tematica')
+    tematica = models.ManyToManyField(Tematica,related_name='Tema')
     slug = models.SlugField(default="", null=False)
 
 
@@ -41,8 +46,6 @@ class Comunidad(models.Model):
     def es_miembro(self, usuario):
         return self.miembros.filter(id=usuario.id).exists()
 
-    def es_crowuser(self, usuario):
-        return self.crowusers.filter(id=usuario.id).exists()
 
     def cant_miembros(self):
         return self.miembros.count()
@@ -67,7 +70,7 @@ class Crowuser(models.Model):
     def __str__(self):
         return self.user.username
 
-class Proyecto(models.Model): # quiero hacerle a este lo mismo que le hice a los archivos de las publicaciones
+class Proyecto(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -299,11 +302,6 @@ class Like_Comentario(models.Model):
     def __str__(self):
         return f"Like de {self.autor.username} en {self.comentario}"
 
-class Tematica(models.Model):
-    nombre = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.nombre
 
 class PublicacionVista(models.Model):
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE)
