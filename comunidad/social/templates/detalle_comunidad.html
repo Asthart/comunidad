@@ -263,7 +263,7 @@
                     {% elif not es_miembro and comunidad.publica %}
                         <a href="{% url 'unirse_comunidad' comunidad.pk %}" class="action-button">Unirse a la comunidad</a>
                     {% else %}
-                        <a href="{% url 'solicitar_membresia' comunidad.pk %}" class="action-button">Solicitar unirse a la comunidad</a>
+                        <a href="{% url 'solicitar_membresia' comunidad.slug %}" class="action-button">Solicitar unirse a la comunidad</a>
                     {% endif %}
                     {% endif %}
                 </div>
@@ -299,7 +299,7 @@
                     <div >
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
                         {% if es_admin and not is_superuser%}
-                            <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.id %}" class="action-button">Crear campaña</a>
+                            <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.slug %}" class="action-button">Crear campaña</a>
                         {% else %}
                         {% endif %}
                     </div>

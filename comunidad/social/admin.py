@@ -22,14 +22,13 @@ admin.site.register(User, CustomUserAdmin)
 @admin.register(Comunidad)
 class ComunidadAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'administrador','activada')
-    prepopulated_fields = {"slug": ("nombre",)}
     search_fields = ('nombre', 'administrador__username')
-    filter_horizontal = ('miembros',)
+    filter_horizontal = ('miembros','tematica')
 
     def Activar(self, request, queryset):
         updated = queryset.update(activada=True)
         if updated:
-            self.send_activation_email(queryset.first())
+            #self.send_activation_email(queryset.first())
             grupo = Group.objects.get(name='Administrador de Comunidad')
             grupo.user_set.add(queryset.first().administrador.id)
             profile = User.objects.get(id=queryset.first().administrador.id)
@@ -177,6 +176,17 @@ class ConcursoAdmin(admin.ModelAdmin):
 class DonacionComunidadAdmin(admin.ModelAdmin):
     list_display = ('id','donador','campaign','cantidad','identificador_transferencia','fecha_creacion')
     search_fields = ('identificador_transferencia',)
+    actions = ['eliminar_donacion']
+    def has_delete_permission(self, request, obj=None):
+        return False 
+    def eliminar_donacion(self, request, queryset):
+        for donacion in queryset:
+            desafio = donacion.campaign
+            desafio.cantidad_donada -= donacion.cantidad
+            desafio.save()
+            donacion.delete()
+        self.message_user(request, f"{len(queryset)} donación(es) eliminada(s) y el monto objetivo actualizado.")
+    eliminar_donacion.short_description = "Eliminar seleccionadas y actualizar monto objetivo"
 
 @admin.register(Cuenta)
 class CuentaAdmin(admin.ModelAdmin):
@@ -237,7 +247,7 @@ class SolicitudCrowuserAdmin(admin.ModelAdmin):
             # Cambiar el estado de la solicitud a 'aceptada'
             # Agregar el usuario a la comunidad
             #solicitud.comunidad.miembros.add(solicitud.usuario)
-            grupo = Group.objects.get(name='Crowuser')
+            grupo = Group.objects.get(name='Crowdsourcer')
             grupo.user_set.add(solicitud.usuario.id)
             solicitud.delete()
         self.message_user(request, "Las solicitudes seleccionadas han sido aceptadas.")
