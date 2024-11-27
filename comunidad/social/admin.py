@@ -37,6 +37,10 @@ class ComunidadAdmin(admin.ModelAdmin):
 
         return updated
 
+    def Desactivar(self, request, queryset):
+        updated = queryset.update(activada=False)
+        return updated
+
     def send_activation_email(self, comunidad):
         subject = 'Tu comunidad ha sido activada'
         message = f'Hola {comunidad.administrador.username},\n\n' \
@@ -56,7 +60,7 @@ class ComunidadAdmin(admin.ModelAdmin):
             return qs
         return qs.filter(administrador=request.user)
 
-    actions = ['Activar']  # Agregar esta línea
+    actions = ['Activar','Desactivar']  # Agregar esta línea
 
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
@@ -177,8 +181,10 @@ class DonacionComunidadAdmin(admin.ModelAdmin):
     list_display = ('id','donador','campaign','cantidad','identificador_transferencia','fecha_creacion')
     search_fields = ('identificador_transferencia',)
     actions = ['eliminar_donacion']
+    list_filter = ['donador', 'campaign']
+
     def has_delete_permission(self, request, obj=None):
-        return False 
+        return False
     def eliminar_donacion(self, request, queryset):
         for donacion in queryset:
             desafio = donacion.campaign
