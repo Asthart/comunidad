@@ -853,8 +853,10 @@ def guardar_donacion(request,slug):
                 print("el problema es aqui")
                 print(desafio.min_monto)
                 print(maximo)
-                return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {maximo}'})
-            return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {desafio.max_monto}'})
+                return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {maximo}',
+                                                                'slug':campaig.slug})
+            return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {desafio.max_monto}',
+                                                            'slug':campaig.slug})
         desafio.save()
         # Guardar la donación en la base de datos
         DonacionComunidad.objects.create(
