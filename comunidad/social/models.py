@@ -140,7 +140,7 @@ class Desafio(models.Model):
 
     @property
     def tcampaign(self):
-        return Campaign.objects.get(desafio=self)
+        return Campaña.objects.get(desafio=self)
 
     @classmethod
     def verificar_min_max_donaciones(cls):
