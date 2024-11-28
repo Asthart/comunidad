@@ -346,6 +346,7 @@ from .forms import CustomUserCreationForm
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
+        print(form.is_valid())
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
@@ -357,6 +358,7 @@ def register(request):
                 update_user_points(request.user.id, accion.id, accion.puntos)
             return redirect('login')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
+
         form = CustomUserCreationForm()
 
     return render(request, 'register.html', {'form': form})

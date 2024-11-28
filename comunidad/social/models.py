@@ -201,7 +201,7 @@ class PerfilUsuario(models.Model):
     puntos = models.IntegerField(default=0)
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='/fotos_perfil/default-avatar.svg')
-    slug = models.SlugField(default="", null=False)
+    slug = models.SlugField(unique=True)
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
@@ -220,6 +220,10 @@ class PerfilUsuario(models.Model):
 
     def __str__(self):
         return self.usuario.username
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.usuario.username)
+        super().save(*args, **kwargs)
 
 @receiver(post_save, sender=User)
 def crear_perfil_usuario(sender, instance, created, **kwargs):

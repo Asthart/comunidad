@@ -51,7 +51,6 @@ class CustomUserCreationForm(UserCreationForm):
     first_name = forms.CharField(label='Nombres', max_length=30, required=True)
     last_name = forms.CharField(label='Apellidos', max_length=30, required=True)
     email = forms.EmailField(label='Correo electrónico', required=True)
-    slug =username
     password1 = forms.CharField(label='Contraseña', widget=forms.PasswordInput(attrs={'placeholder': 'Minimo 8 caracteres'}))
     password2 = forms.CharField(label='Confirmar Contraseña', widget=forms.PasswordInput(attrs={'placeholder': 'Repite la contraseña'}))
 
@@ -64,6 +63,12 @@ class CustomUserCreationForm(UserCreationForm):
 
         return password2
 
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        slug = slugify(username)
+        self.cleaned_data['slug'] = slug
+        return username
+
     class Meta:
         model = User
         fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
@@ -75,7 +80,9 @@ class CustomUserCreationForm(UserCreationForm):
             'password1': 'Contraseña',
             'password2': 'Confirmar contraseña',
         }
-
+        field_classes = {
+            'slug': models.SlugField,
+        }
     def clean_password1(self):
         password = self.cleaned_data.get("password1")
 
@@ -96,6 +103,9 @@ class CustomUserCreationForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
+        username = self.cleaned_data.get('username')
+        slug = slugify(username)
+        user.slug = slug
         if commit:
             user.save()
         return user
