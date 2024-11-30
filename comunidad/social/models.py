@@ -202,6 +202,7 @@ class PerfilUsuario(models.Model):
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='/fotos_perfil/default-avatar.svg')
     slug = models.SlugField(unique=True)
+    no_me_gusta= models.ManyToManyField(Tematica)
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
@@ -213,6 +214,9 @@ class PerfilUsuario(models.Model):
     def seguir_usuario(self, usuario_a_seguir):
         perfil_usuario_a_seguir = PerfilUsuario.objects.get(usuario=usuario_a_seguir)
         self.seguidos.add(perfil_usuario_a_seguir)
+
+    def no_gusta(self, tematica):
+        self.no_me_gusta.add(tematica)
 
     def dejar_de_seguir_usuario(self, usuario_a_dejar_de_seguir):
         perfil_usuario_a_dejar_de_seguir = PerfilUsuario.objects.get(usuario=usuario_a_dejar_de_seguir)
