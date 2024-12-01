@@ -23,6 +23,8 @@ def inicio(request):
     terminos = TerminosCondiciones.objects.all().first()
     user = request.user
     is_superuser = request.user.is_superuser
+    profile = PerfilUsuario.objects.get(usuario=user)
+    no_me_gustan = [no.id for no in profile.no_me_gusta.all()]
 
     if terminos == None:
         return render(request, 'base.html', {'is_superuser': is_superuser})
@@ -49,12 +51,12 @@ def inicio(request):
     todos_proyectos = Proyecto.objects.filter(
         Q(comunidad__in=comunidades_totales) |
         Q(creador__in=[seguido.usuario for seguido in seguidos])
-    ).exclude(creador=user).distinct().order_by('-fecha_creacion')
+    ).exclude(creador=user).exclude(tematica__in=no_me_gustan).distinct().order_by('-fecha_creacion')
     # Obtener todas las publicaciones relevantes
     todas_publicaciones = Publicacion.objects.filter(
         Q(comunidad__in=comunidades_totales) |
         Q(autor__in=[seguido.usuario for seguido in seguidos])
-    ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
+    ).exclude(autor=user).exclude(tematica__in=no_me_gustan).distinct().order_by('-fecha_publicacion')
 
     # Agrupar las publicaciones por tipo
     publicaciones_comunidades = []
@@ -104,7 +106,7 @@ def inicio(request):
     if terminos_usuario:
         if terminos_usuario.aceptado:
             terminos_aceptados = True
-            
+
     concursos = False
     if Concurso.objects.all().count() > 0:
         concursos = True
@@ -157,7 +159,7 @@ def lista_publicaciones(request,username):
     no_me_gustan = []
     for no in profile.no_me_gusta.all():
         no_me_gustan.append(no.pk)
-    
+
     return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user, 'no_me_gustan': no_me_gustan})
 
 @login_required
@@ -177,21 +179,19 @@ def detalle_comunidad(request, slug):
     is_superuser= user.is_superuser
     tematicas = ""
     mis_tematicas = comunidad.tematica.all()
-    no_me_gustan = []
-    for no in profile.no_me_gusta.all():
-        no_me_gustan.append(no.pk)
-    
+    no_me_gustan = [no.id for no in profile.no_me_gusta.all()]
+    print(no_me_gusta)
+
     for tema in mis_tematicas:
         tematicas += f"{tema}, "
     tematicas = tematicas[:-2]+'.'
-    print(tematicas)    
-    
+
     print(user.groups.filter(name="Crowdsourcer").exists())
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
         Q(comunidad=comunidad) |
         Q(autor__in=[seguido.usuario for seguido in seguidos])
-    ).exclude(autor=user).distinct().order_by('-fecha_publicacion')
+    ).exclude(autor=user).exclude(tematica__in=no_me_gustan).distinct().order_by('-fecha_publicacion')
 
 
     return render(request, 'detalle_comunidad.html', {
@@ -205,7 +205,6 @@ def detalle_comunidad(request, slug):
     'campaigns': campaigns,
     'is_superuser': is_superuser,
     'tematicas': tematicas,
-    'no_me_gustan': no_me_gustan,
 })
 
 @login_required
@@ -213,8 +212,8 @@ def detalle_comunidad(request, slug):
 def crear_proyecto(request,slug):
     comunidad = Comunidad.objects.get(slug=slug)
     tematicas = comunidad.tematica.all()
-    
-    
+
+
     if request.method == 'POST':
         form = ProyectoForm(request.POST, request.FILES)
         if form.is_valid():
@@ -239,7 +238,7 @@ def detalle_proyecto(request, slug):
     no_me_gusta = False
     if proyecto.tematica in request.user.perfilusuario.no_me_gusta.all():
         no_me_gusta = True
-    
+
     return render(request, 'detalle_proyecto.html', {'proyecto': proyecto, 'no_me_gusta': no_me_gusta})
 
 @login_required
@@ -1047,7 +1046,7 @@ def ranking_usuarios(request):
     concursos = False
     if Concurso.objects.all().count() > 0:
         concursos = True
-    
+
     # Definir un rango de fechas predeterminado si no se proporciona
     if request.method == 'POST' and form.is_valid():
         fecha_inicio = form.cleaned_data['fecha_inicio']

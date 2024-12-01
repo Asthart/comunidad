@@ -306,12 +306,12 @@
                     </div>
 
                     {% if pro.comunidad %}
-                        <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pro.comunidad.pk %}" class="author-name">{{ pro.comunidad.nombre }}</a></p>
+                        <p class="community-tag">Publicado en <a href="{% url 'detalle_comunidad' pro.comunidad.slug %}" class="author-name">{{ pro.comunidad.nombre }}</a></p>
                     {% endif %}
 
                     <div class="publication-content" >
 
-                        <h4 class="fw-bold" >Nombre del Proyecto: <a href="{% url 'detalle_proyecto' pro.id %}" >{{ pro.titulo }}</a> </h4>
+                        <h4 class="fw-bold" >Nombre del Proyecto: <a href="{% url 'detalle_proyecto' pro.slug %}" >{{ pro.titulo }}</a> </h4>
                         <h5>Descripción: <a>{{ pro.descripcion }}</a><h5>
                         <div style=" display: grid;
                         place-items: center;

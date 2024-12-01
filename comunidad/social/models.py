@@ -36,6 +36,9 @@ class Comunidad(models.Model):
     tematica = models.ManyToManyField(Tematica,related_name='Tema')
     slug = models.SlugField(default="", null=False)
 
+    class Meta:
+       verbose_name = 'Comunidad'
+       verbose_name_plural = 'Comunidades'
 
     def __str__(self):
         return self.nombre
@@ -189,7 +192,9 @@ class DonacionComunidad(models.Model):
 
     def __str__(self):
         return f"Donación de {self.donador.first_name} {self.donador.last_name}"
-
+    class Meta:
+       verbose_name = 'Donaciones Comunidad'
+       verbose_name_plural = 'Donaciones Comunidad'
 class Voto(models.Model):
     desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='votos')
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -203,7 +208,7 @@ class PerfilUsuario(models.Model):
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='/fotos_perfil/default-avatar.svg')
     slug = models.SlugField(unique=True)
-    no_me_gusta= models.ManyToManyField(Tematica)
+    no_me_gusta= models.ManyToManyField(Tematica,null=True)
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
@@ -256,6 +261,9 @@ class MensajeChat(models.Model):
             self.leido = True
             self.fecha_lectura = timezone.now()
             self.save()
+    class Meta:
+       verbose_name = 'Mensaje Chat'
+       verbose_name_plural = 'Mensajes Chat'
 
 class Publicacion(models.Model):
     contenido = models.TextField()
@@ -276,9 +284,12 @@ class Publicacion(models.Model):
 
     def comentarios(self):
         return Comentario.objects.filter(publicacion=self).order_by('-fecha_comentarios')
-    
+
     def __str__(self):
         return f"Publicación de {self.autor.username} en {self.fecha_publicacion}"
+    class Meta:
+       verbose_name = 'Publicacion'
+       verbose_name_plural = 'Publicaciones'
 
 class Like(models.Model):
     autor = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -327,6 +338,9 @@ class TerminosCondiciones(models.Model):
 
     def __str__(self):
         return "Términos y Condiciones"
+    class Meta:
+        verbose_name = 'Terminos Condiciones'
+        verbose_name_plural = 'Terminos Condiciones'
 
 class TerminosCondicionesUsuario(models.Model):
     usuario = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -340,13 +354,16 @@ class TerminosCondicionesUsuario(models.Model):
             aceptado = False
         return aceptado
 
+
 class Clasificacion(models.Model):
     nombre = models.CharField(max_length=50)
     umbral_puntos = models.IntegerField()
     print(f"Verificando si {nombre} tiene {umbral_puntos}")
     def __str__(self):
         return self.nombre
-
+    class Meta:
+         verbose_name = 'Clasificacion'
+         verbose_name_plural = 'Clasificaciones'
 class Adjunto(models.Model):
     archivo = models.FileField(upload_to='publicaciones/archivos/')
     publicacion = models.ForeignKey(Publicacion, on_delete=models.CASCADE, related_name='adjuntos')
@@ -357,6 +374,9 @@ class Accion(models.Model):
 
     def __str__(self):
         return self.nombre
+    class Meta:
+        verbose_name = 'Accion'
+        verbose_name_plural = 'Acciones'
 class AccionUsuario(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     accion = models.ForeignKey(Accion, on_delete=models.CASCADE)
@@ -454,7 +474,9 @@ class MensajeChatComunidad(models.Model):
     def marcar_como_leido(self, usuario):
         self.leido_por.add(usuario)
         self.save()
-
+    class Meta:
+       verbose_name = 'Mensaje Chat Comunidad'
+       verbose_name_plural = 'Mensajes Chat Comunidad'
 class Cuenta(models.Model):
     qr_code = models.ImageField(upload_to='comunidades/qr_codes/', null=True, blank=True)
     numero_cuenta = models.CharField(max_length=100, null=True, blank=True)
@@ -476,6 +498,9 @@ class SolicitudCrowuser(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} - {self.descripcion}"
+    class Meta:
+       verbose_name = 'Solicitud Crowdsourcer'
+       verbose_name_plural = 'Solicitudes Crowdsourcer'
 
 class PuntajeDesafio(models.Model):
     desafio = models.ForeignKey(Desafio, on_delete=models.CASCADE, related_name='puntajes')

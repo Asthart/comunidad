@@ -77,7 +77,7 @@ class ComunidadAdmin(admin.ModelAdmin):
             pass
 
         return actions
-
+     
 @admin.register(Proyecto)
 class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_creacion')
