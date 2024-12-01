@@ -59,4 +59,6 @@ urlpatterns = [
     path('solicitar_crowdsourcer/', views.solicitar_crowuser, name='solicitar_crowuser'),
     path('comunidad/<slug:slug>/salir/', views.salir_comunidad, name='salir_comunidad'),
     path('donaciones/', views.ver_donaciones, name='ver_donaciones'),
+    path('no_me_gusta/', views.no_me_gusta, name='no_me_gusta'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from django.urls import path
 from .models import *
 from django.core.mail import send_mail
+
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
     can_delete = False

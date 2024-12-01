@@ -15,8 +15,9 @@ from .utils import update_user_points, get_clasificacion, is_first_visit
 from django.core.mail import send_mail
 from django.views.generic import ListView
 from django.urls import path
+from .decorators import *
 
-
+@requires_login_or_404
 @login_required
 def inicio(request):
     terminos = TerminosCondiciones.objects.all().first()
@@ -156,6 +157,8 @@ def lista_publicaciones(request,username):
 
 @login_required
 def detalle_comunidad(request, slug):
+
+
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, slug=slug, activada=True)
@@ -1041,3 +1044,10 @@ def ver_donaciones(request):
     donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
 
     return render(request, 'donaciones.html', {'donaciones':donaciones,})
+
+@login_required()
+def no_me_gusta(request,tematica):
+    perfil_usuario = PerfilUsuario.objects.get(usuario=request.user)
+    perfil_usuario.no_gusta(tematica)
+    previous_url = request.META.get('HTTP_REFERER', '/')
+    return redirect(previous_url)
