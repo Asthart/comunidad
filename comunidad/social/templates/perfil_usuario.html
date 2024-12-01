@@ -130,13 +130,13 @@
         </div>
 
         <div class="projects-section dorado">
-            <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Proyectos Creados</h2>
+            <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Proyectos Publicados</h2>
             <hr class="community-divider">
             <ul class="project-list">
                 {% for proyecto in proyectos|slice:":5" %}
                     <li><a href="{% url 'detalle_proyecto' proyecto.slug %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
                 {% empty %}
-                    <li>Este usuario no ha creado ningún proyecto.</li>
+                    <li>Este usuario no ha publicado ningún proyecto.</li>
                 {% endfor %}
             </ul>
         </div>

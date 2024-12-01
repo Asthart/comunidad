@@ -79,6 +79,7 @@ class Proyecto(models.Model):
     imagenes = models.ImageField(upload_to='comunidades/imagenes_proyecto/', blank=True,default="")
     documentos = models.FileField(upload_to='comunidades/documentos_proyecto/', blank=True,default="")
     slug = models.SlugField(default="", null=False)
+    tematica = models.ForeignKey(Tematica, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.titulo
@@ -263,6 +264,7 @@ class Publicacion(models.Model):
     #archivos = MultiFileField(min_num=1, max_num=5)
     comunidad = models.ForeignKey('Comunidad', on_delete=models.CASCADE, null=True, blank=True)
     fecha_publicacion = models.DateTimeField(auto_now_add=True)
+    tematica = models.ForeignKey(Tematica, on_delete=models.CASCADE, null=True)
 
     def likes(self):
         return Like.objects.filter(publicacion=self).count()
@@ -274,6 +276,7 @@ class Publicacion(models.Model):
 
     def comentarios(self):
         return Comentario.objects.filter(publicacion=self).order_by('-fecha_comentarios')
+    
     def __str__(self):
         return f"Publicación de {self.autor.username} en {self.fecha_publicacion}"
 

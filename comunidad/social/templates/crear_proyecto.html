@@ -22,12 +22,20 @@
             </div>
             <div class="col-md-6">
                 <div class="mb-3 fw-bold">
-                    <label for="imagenes">Imágenes:</label>
+                    <label for="imagenes">Imagen:</label>
                     <input type="file" id="imagenes" name="imagenes" class="form-control" multiple>
                 </div>
                 <div class="mb-3 fw-bold">
-                    <label for="documentos">Documentos:</label>
+                    <label for="documentos">Documento:</label>
                     <input type="file" id="documentos" name="documentos" class="form-control" multiple>
+                </div>
+                <div class="mb-3 fw-bold">
+                    <label for="tematica">Tematica:</label>
+                    <select id="tematica" name="tematica" class="form-select">
+                        {% for tematica in tematicas %}
+                            <option value="{{ tematica.nombre }}">{{ tematica }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
             </div>
         </div>

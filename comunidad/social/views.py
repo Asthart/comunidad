@@ -152,8 +152,13 @@ def crear_comunidad(request):
 @login_required
 def lista_publicaciones(request,username):
     user = User.objects.get(username=username)
+    profile = PerfilUsuario.objects.get(usuario=user)
     publicaciones = Publicacion.objects.filter(autor = user).order_by('-fecha_publicacion')
-    return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user})
+    no_me_gustan = []
+    for no in profile.no_me_gusta.all():
+        no_me_gustan.append(no.pk)
+    
+    return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user, 'no_me_gustan': no_me_gustan})
 
 @login_required
 def detalle_comunidad(request, slug):
@@ -170,6 +175,17 @@ def detalle_comunidad(request, slug):
     seguidos = profile.seguidos.all()
     es_miembro = comunidad.es_miembro(user)
     is_superuser= user.is_superuser
+    tematicas = ""
+    mis_tematicas = comunidad.tematica.all()
+    no_me_gustan = []
+    for no in profile.no_me_gusta.all():
+        no_me_gustan.append(no.pk)
+    
+    for tema in mis_tematicas:
+        tematicas += f"{tema}, "
+    tematicas = tematicas[:-2]+'.'
+    print(tematicas)    
+    
     print(user.groups.filter(name="Crowdsourcer").exists())
     # Obtener todas las publicaciones relevantes
     publicaciones = Publicacion.objects.filter(
@@ -188,18 +204,24 @@ def detalle_comunidad(request, slug):
     'es_miembro': es_miembro,
     'campaigns': campaigns,
     'is_superuser': is_superuser,
+    'tematicas': tematicas,
+    'no_me_gustan': no_me_gustan,
 })
 
 @login_required
 #@permission_required('social.add_proyecto', raise_exception=True)
 def crear_proyecto(request,slug):
+    comunidad = Comunidad.objects.get(slug=slug)
+    tematicas = comunidad.tematica.all()
+    
+    
     if request.method == 'POST':
         form = ProyectoForm(request.POST, request.FILES)
         if form.is_valid():
             proyecto = form.save(commit=False)
-            comunidad = Comunidad.objects.get(slug=slug)
             proyecto.comunidad=comunidad
-
+            tematica = Tematica.objects.get(nombre=request.POST.get('tematica'))
+            proyecto.tematica = tematica
             proyecto.creador = request.user
             proyecto.slug=proyecto.titulo
             proyecto.save()
@@ -209,12 +231,16 @@ def crear_proyecto(request,slug):
             return redirect('detalle_proyecto', slug=proyecto.slug)
     else:
         form = ProyectoForm()
-    return render(request, 'crear_proyecto.html', {'form': form, 'comunidad': slug})
+    return render(request, 'crear_proyecto.html', {'form': form, 'comunidad': slug, 'tematicas': tematicas,})
 
 @login_required
 def detalle_proyecto(request, slug):
     proyecto = get_object_or_404(Proyecto, slug=slug)
-    return render(request, 'detalle_proyecto.html', {'proyecto': proyecto})
+    no_me_gusta = False
+    if proyecto.tematica in request.user.perfilusuario.no_me_gusta.all():
+        no_me_gusta = True
+    
+    return render(request, 'detalle_proyecto.html', {'proyecto': proyecto, 'no_me_gusta': no_me_gusta})
 
 @login_required
 def crear_desafio(request,slug):
@@ -373,13 +399,17 @@ def register(request):
 
 @login_required
 def crear_publicacion(request, slug):
+    comunidad = Comunidad.objects.get(slug=slug)
+    tematicas = comunidad.tematica.all()
+
     if request.method == 'POST':
         form = PublicacionForm(request.POST, request.FILES)
+        print(form.is_valid(),form.errors)
         if form.is_valid():
             publicacion = form.save(commit=False)
             publicacion.autor = request.user
-            comunidad = Comunidad.objects.get(slug=slug)
             publicacion.comunidad=comunidad
+            publicacion.tematica = Tematica.objects.get(nombre=request.POST.get('tematica'))
             '''# Verificamos si hay al menos una tematica seleccionada
             if not form.cleaned_data['tags']:
                 form.add_error('tags', 'Debes seleccionar al menos un Tematica.')
@@ -399,7 +429,7 @@ def crear_publicacion(request, slug):
     else:
         form = PublicacionForm()
 
-    return render(request, 'crear_publicacion.html', {'form': form, 'comunidad': slug})
+    return render(request, 'crear_publicacion.html', {'form': form, 'comunidad': slug, 'tematicas': tematicas,})
 
 @login_required
 def like_desafio(request, desafio_id):

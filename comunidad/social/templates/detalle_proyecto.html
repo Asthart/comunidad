@@ -74,6 +74,15 @@
             resize: vertical;
             border-radius: 5px;
         }
+        .community-tag {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+            width: fit-content;
+            max-width: 90%;
+        }
     </style>
 </head>
 <body>
@@ -103,6 +112,15 @@
                 <p><strong>Fecha de creación:</strong> {{ proyecto.fecha_creacion }}</p>
                 <p><strong>Descripción:</strong> {{ proyecto.descripcion }}</p>
                 <p><strong>Comunidad:</strong> <a href="{% url 'detalle_comunidad' proyecto.comunidad.slug %}" class="">{{ proyecto.comunidad }}</a></p>
+                {% if no_me_gusta %}
+                <p class="text-muted community-tag">Este tipo de contenido no te aparecerá más.</p>
+                {% else %}
+                <div class="mt-4">
+                    <a href="{% url 'no_me_gusta' proyecto.tematica.pk %}" class="btn btn-danger">No me interesa este contenido</a>
+                </div> 
+                {% endif %}
+
+                <br>
                 <div class="publication-actions">
                     <button onclick="mostrarComentarios({{ proyecto.id }})" class="action-button btn btn-primary">
                         <span class="comment-count">{{ proyecto.comentarios.count }} Comentarios</span>

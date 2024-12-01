@@ -229,6 +229,16 @@
         body a{
             text-decoration: none;
         }
+
+        .community-tag {
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 10px;
+            width: fit-content;
+            max-width: 90%;
+        }
     </style>
 </head>
 {%include 'header.html'%}
@@ -249,21 +259,33 @@
                     <h1 class="community-name">{{ comunidad.nombre }}</h1>
                     <hr class="community-divider">
                     <p class="community-description">{{ comunidad.descripcion }}</p>
+                    <p class="community-tag text-muted">Temáticas: {{ tematicas }}</p>
                 </div>
 
                 <div class="boton-comunidad">
                     {% if not is_superuser %}
                     {% if es_miembro %}
+                        <div style="margin-bottom: 1px">
                         <a href="{% url 'chat_comunidad' comunidad.slug %}" class="action-button bg-primary">Chat de la comunidad</a>
+                        </div>
+                        <br>    
                         {% if not es_admin %}
+                        <div style="margin-top: 1px">
                             <a href="{% url 'salir_comunidad' comunidad.slug %}" class="action-button boton-condicional">Salir de la comunidad</a>
+                        </div>
                         {% else %}
+                        <div style="margin-top: 1px">
                             <a href="http://localhost:8000/admin" class="action-button boton-condicional">Administrar comunidad</a>
-                        {% endif %}
+                        </div>
+                     {% endif %}
                     {% elif not es_miembro and comunidad.publica %}
+                    <div style="margin-bottom: 1px">
                         <a href="{% url 'unirse_comunidad' comunidad.slug %}" class="action-button">Unirse a la comunidad</a>
+                    </div>
                     {% else %}
+                    <div style="margin-bottom: 1px">
                         <a href="{% url 'solicitar_membresia' comunidad.slug %}" class="action-button">Solicitar unirse a la comunidad</a>
+                    </div>
                     {% endif %}
                     {% endif %}
                 </div>
@@ -344,9 +366,7 @@
                         <div class="publication">
                             <div class="publication-header">
                                 {% if pub.autor.perfilusuario.foto_perfil %}
-                                {% if pub.autor.perfilusuario.foto_perfil.url %}
                                     <img src="{{ pub.autor.perfilusuario.foto_perfil.url }}" alt="Foto de perfil" class="profile-picture">
-                                {% endif %}
                                 {% endif %}
                                 <div class="author-info">
                                     <a href="{% url 'perfil_usuario' pub.autor.username %}" class="author-name">{{ pub.autor.first_name }} {{ pub.autor.last_name }}</a>
@@ -361,6 +381,14 @@
                                     <img src="{{ pub.imagen.url }}" alt="Imagen de publicación" style="max-width: 100%; height: auto;">
                                 {% endif %}
                             </div>
+
+                            {% if pub.tematica.pk in no_me_gustan %}
+                            <p class="text-muted community-tag">Este tipo de contenido no te aparecerá más.</p>
+                            {% else %}
+                            <div class="mt-4">
+                                <a href="{% url 'no_me_gusta' pub.tematica.pk %}" class="btn btn-danger">No me interesa este contenido</a>
+                            </div> 
+                            {% endif %}
                             </div>
 
                             <div class="publication-actions">

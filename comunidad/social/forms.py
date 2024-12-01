@@ -121,7 +121,7 @@ class PublicacionForm(forms.ModelForm):
 
     class Meta:
         model = Publicacion
-        fields = ('contenido', 'imagen')
+        fields = ('contenido','imagen')
 
 class RespuestaForm(forms.ModelForm):
     class Meta:

@@ -19,6 +19,13 @@
                             <label for="imagen" class="form-label">Imagen:</label>
                             <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*">
                         </div>
+                        <div class="mb-3">
+                            <select id="tematica" name="tematica" class="form-select">
+                            {% for tematica in tematicas %}
+                                <option value="{{ tematica.nombre }}">{{ tematica }}</option>
+                            {% endfor %}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary w-100 mt-3">Crear Publicación</button>
