@@ -103,6 +103,10 @@ def inicio(request):
     if terminos_usuario:
         if terminos_usuario.aceptado:
             terminos_aceptados = True
+            
+    concursos = False
+    if Concurso.objects.all().count() > 0:
+        concursos = True
 
     return render(request, 'inicio.html', {
         'proyectos': proyectos,
@@ -111,6 +115,7 @@ def inicio(request):
         'terminos': terminos,
         'terminos_aceptados': terminos_aceptados,
         'is_superuser': is_superuser,
+        'concursos': concursos,
     })
 
 
@@ -1006,7 +1011,10 @@ def solicitar_crowuser(request):
 def ranking_usuarios(request):
     ranking = []
     form = RangoFechaForm(request.POST or None)
-
+    concursos = False
+    if Concurso.objects.all().count() > 0:
+        concursos = True
+    
     # Definir un rango de fechas predeterminado si no se proporciona
     if request.method == 'POST' and form.is_valid():
         fecha_inicio = form.cleaned_data['fecha_inicio']
@@ -1026,7 +1034,7 @@ def ranking_usuarios(request):
         .order_by('-total_puntos')
     )[:10]
     print(ranking)
-    return render(request, 'ranking.html', {'ranking': ranking, 'form': form})
+    return render(request, 'ranking.html', {'ranking': ranking, 'form': form, 'concursos': concursos})
 
 @login_required()
 def ver_donaciones(request):

@@ -72,9 +72,11 @@
     </div>
 
     <!-- Botón para ver concursos actuales -->
+    {% if concursos %}
     <div class="text-center mt-4">
         <button class="btn btn-primary" onclick="window.location.href='{% url 'concurso_resultados' %}'">Ver Concursos Actuales</button>
     </div>
+    {% endif %}
 </div>
 </main>
 </body>

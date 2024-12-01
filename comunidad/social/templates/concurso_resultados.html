@@ -71,7 +71,7 @@
                         <h2 class="card-title text-center fw-bold">Resultados del Concurso Actual</h2>
                         <hr class="community-divider">
                         <p><strong>Concurso:</strong> {{ concurso.nombre }}</p>
-                        <p><strong>Información:</strong> {{ concurso.descripcion }}</p>
+                        <p><strong>Información:</strong> {{ concurso.descripcion|linebreaksbr|safe }}</p>
                         <p><strong>Fecha de inicio:</strong> {{ concurso.fecha_inicio }}</p>
                         <p><strong>Fecha de fin:</strong> {{ concurso.fecha_fin }}</p>
 

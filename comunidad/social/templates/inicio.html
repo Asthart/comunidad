@@ -268,12 +268,17 @@
                 <div class="col-md-8">
                     <div class="card shadow-lg dorado">
                         <div class="card-body text-center ">
+                            {% if concursos %}
                             <h1 class="card-title mb-4 fw-bold">Concurso Activo: <a href="{% url 'concurso_resultados' %}">
                                 {{ concurso.nombre }}
+
                                 <span style="font-size: large;"> Ver más</span><img src="{% static 'images/more.svg' %}" style="width: 40px; height: auto;" alt="Icono" class="icono-svg"></a></h1>
                             <div class="countdown-container p-4 bg-light rounded dorado" id="cuadrito">
                                 <div id="contador" class="contador display-4 text-primary fw-bold"></div>
                             </div>
+                            {% else %}
+                            <h1 class="card-title mb-4 fw-bold">No hay concursos activos</h1>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -358,7 +363,7 @@
             </div>
             {% endfor %}
         {% else %}
-            <p>No hay proyectos para mostrar.</p>
+            <p class="text-center">No hay proyectos para mostrar.</p>
         {% endif %}
 
         <a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="terminos-b" style="display: none;">
