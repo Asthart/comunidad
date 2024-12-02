@@ -33,7 +33,7 @@
                 <label class="fw-bold">Tipo de Campaña:</label>
                 <select id="tipo_desafio" name="tipo_desafio" class="form-select">
                     <option value="votacion" {% if request.user.desafio.tipo_desafio == 'votacion' %}selected{% endif %}>Votación</option>
-                    {% if not publica %}
+                    {% if not publica and acepta_donaciones %}
                     <option value="donacion" {% if request.user.desafio.tipo_desafio == 'donacion' %}selected{% endif %}>Donación</option>
                     {% endif %}
                 </select>
