@@ -136,7 +136,7 @@ class Desafio(models.Model):
     likes = models.ManyToManyField(User, related_name='likes_desafios', blank=True)
     slug = models.SlugField(default="", null=False)
     activada = models.BooleanField(default=False)
-    
+
     def total_likes(self):
         return self.likes.count()
     def __str__(self):
@@ -209,7 +209,7 @@ class PerfilUsuario(models.Model):
     seguidos = models.ManyToManyField('self', symmetrical=False, blank=True)
     foto_perfil = models.ImageField(upload_to='fotos_perfil', blank=True, null=True, default='/fotos_perfil/default-avatar.svg')
     slug = models.SlugField(unique=True)
-    no_me_gusta= models.ManyToManyField(Tematica,null=True)
+    no_me_gusta= models.ManyToManyField(Tematica)
 
     def sigue_a(self, usuario):
         perfil_usuario = PerfilUsuario.objects.get(usuario=usuario)
