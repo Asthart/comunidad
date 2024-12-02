@@ -35,6 +35,7 @@ class Comunidad(models.Model):
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='comunidades/banners/banner_default.jpg')
     tematica = models.ManyToManyField(Tematica,related_name='Tema')
     slug = models.SlugField(default="", null=False)
+    acepta_donaciones=models.BooleanField(default=False)
 
     class Meta:
        verbose_name = 'Comunidad'
