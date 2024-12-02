@@ -29,13 +29,6 @@
                                     <img src="{{ pub.imagen.url }}" alt="Imagen de publicación" style="max-width: 60%; height: auto;">
                                 {% endif %}
                             </div>
-                            {% if pub.tematica.pk in no_me_gustan %}
-                            <p class="text-muted community-tag">Este tipo de contenido no te aparecerá más.</p>
-                            {% else %}
-                            <div class="mt-4">
-                                <a href="{% url 'no_me_gusta' pub.tematica.pk %}" class="btn btn-danger">No me interesa este contenido</a>
-                            </div> 
-                            {% endif %}
                             </div>
 
                             <div class="publication-actions">
