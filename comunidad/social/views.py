@@ -133,6 +133,8 @@ def crear_comunidad(request):
             comunidad.crowuser = request.user
             comunidad.slug = comunidad.nombre
             comunidad.acepta_donaciones=request.POST.get('acepta_donaciones')
+            if request.POST.get('acepta_donaciones')==None:
+                comunidad.acepta_donaciones=False
             comunidad.save()
             comunidad.miembros.add(request.user)
 
