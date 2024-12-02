@@ -122,7 +122,7 @@ class Desafio(models.Model):
     )
 
     titulo = models.CharField(max_length=200)
-    descripcion = models.TextField()
+    descripcion = models.TextField(max_length=250)
     creador = models.ForeignKey(User, on_delete=models.CASCADE)
     comunidad = models.ForeignKey(Comunidad, on_delete=models.CASCADE)
     fecha_inicio = models.DateTimeField(default=now)
