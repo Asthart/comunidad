@@ -394,6 +394,7 @@ class Concurso(models.Model):
     fecha_fin = models.DateField()
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE)
     ganador = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='ganador')
+    documento = models.FileField(upload_to='concursos/documentos/', blank=True,default="")
 
     @classmethod
     def ultimo_concurso(cls):
