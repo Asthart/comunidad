@@ -193,6 +193,8 @@ def detalle_comunidad(request, slug):
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).exclude(tematica__in=no_me_gustan).distinct().order_by('-fecha_publicacion')
 
+    if comunidad.publica:
+        campaigns= campaigns.exclude(desafio__tipo_desafio='donacion')
 
     return render(request, 'detalle_comunidad.html', {
     'publicaciones': publicaciones,
@@ -243,11 +245,11 @@ def detalle_proyecto(request, slug):
 
 @login_required
 def crear_desafio(request,slug):
+    comunidad = Comunidad.objects.get(slug=slug)
     if request.method == 'POST':
         form = DesafioForm(request.POST)
         if form.is_valid():
             desafio = form.save(commit=False)
-            comunidad = Comunidad.objects.get(slug=slug)
             desafio.comunidad=comunidad
             desafio.creador = request.user
             desafio.slug= desafio.titulo
@@ -267,8 +269,11 @@ def crear_desafio(request,slug):
     else:
         form = DesafioForm()
 
+    publica = False
+    if comunidad.publica:
+        publica = True
 
-    return render(request, 'crear_desafio.html', {'form': form,'comunidad':slug})
+    return render(request, 'crear_desafio.html', {'form': form,'comunidad':slug,'publica':publica})
 
 @login_required
 def detalle_desafio(request, slug):
@@ -726,8 +731,10 @@ def crear_concurso(request):
 
         premio_id = request.POST['premio']
         premio = Premio.objects.get(id=premio_id)
+        documento = request.FILES.get('documento')
 
         Concurso.objects.create(
+            documento=documento,
             nombre=nombre,
             fecha_inicio=fecha_inicio,
             fecha_fin=fecha_fin,
@@ -839,6 +846,9 @@ def lista_campaigns(request, slug):
     elif filtro == 'no_activas':
         campaigns = campaigns.filter(activa=False)
 
+    if comunidad.publica:
+        campaigns = campaigns.exclude(desafio__tipo_desafio='donacion')
+        
     return render(request, 'lista_campaigns.html', {
         'comunidad': comunidad,
         'campaigns': campaigns,

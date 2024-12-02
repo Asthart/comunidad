@@ -319,7 +319,9 @@
                     {% endfor %}
                     <br>
                     <div >
+                        {% if not campaigns.count == 0 %}
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
+                        {% endif %}
                         {% if es_admin or es_crowdsourcer and not is_superuser %}
                             <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.slug %}" class="action-button">Crear campaña</a>
                         {% else %}
@@ -342,8 +344,10 @@
                     <br>
 
                     <div>
+                        {% if not proyectos.count == 0 %}
                         {% if es_miembro or is_superuser or es_admin %}
                         <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_proyectos' comunidad.slug %}" class="action-button boton-condicional">Ver Todos</a>
+                        {% endif %}
                         {% endif %}
                         {% if es_miembro %}
                         <a style="display: flex; justify-content: center;" href="{% url 'crear_proyecto' comunidad.slug %}" class="action-button">Publicar proyecto</a>

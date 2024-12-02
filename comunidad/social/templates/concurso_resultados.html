@@ -79,6 +79,10 @@
                         <hr class="community-divider">
                         <p><strong>Tipo de Premio:</strong> {{ concurso.premio.tipo }}</p>
                         <p><strong>Descripción:</strong> {{ concurso.premio.descripcion }}</p>
+                        {% if concurso.documento %}
+                            <a href="{{ concurso.documento.url }}" class="link-body-emphasis fw-bold"><img src="{% static '/images/download.svg' %}" alt="PDF" width="30" height="30" style="object-fit: cover; border-radius: 50%;"> Descargar Adjunto</a>
+                            <br>
+                        {% endif %}
                         <!--
                         <h3>Ganador:</h3>
                         <hr class="community-divider">
