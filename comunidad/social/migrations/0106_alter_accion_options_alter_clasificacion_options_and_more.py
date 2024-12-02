@@ -56,4 +56,9 @@ class Migration(migrations.Migration):
             name='activada',
             field=models.BooleanField(default=False),
         ),
+        migrations.AlterField(
+            model_name='perfilusuario',
+            name='no_me_gusta',
+            field=models.ManyToManyField(to='social.tematica'),
+        ),
     ]
