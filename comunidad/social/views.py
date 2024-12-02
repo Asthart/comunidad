@@ -271,8 +271,11 @@ def crear_desafio(request,slug):
     publica = False
     if comunidad.publica:
         publica = True
+    acepta_donaciones = False
+    if comunidad.acepta_donaciones:
+        acepta_donaciones = True
 
-    return render(request, 'crear_desafio.html', {'form': form,'comunidad':slug,'publica':publica})
+    return render(request, 'crear_desafio.html', {'form': form,'comunidad':slug,'publica':publica,'acepta_donaciones':acepta_donaciones})
 
 @login_required
 def detalle_desafio(request, slug):
