@@ -77,7 +77,7 @@ class ComunidadAdmin(admin.ModelAdmin):
             pass
 
         return actions
-     
+
 @admin.register(Proyecto)
 class ProyectoAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'creador', 'comunidad', 'fecha_creacion')
@@ -93,7 +93,7 @@ class ProyectoAdmin(admin.ModelAdmin):
 
 @admin.register(Desafio)
 class DesafioAdmin(admin.ModelAdmin):
-    list_display = ('id','titulo', 'creador', 'comunidad', 'fecha_inicio', 'fecha_fin')
+    list_display = ('id','titulo', 'creador', 'comunidad', 'fecha_inicio', 'fecha_fin','activada')
     prepopulated_fields = {"slug": ("titulo",)}
     list_filter = ('comunidad', 'fecha_inicio', 'fecha_fin')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
@@ -102,6 +102,14 @@ class DesafioAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs
         return qs.filter(comunidad__administrador=request.user)
+
+    def Activar(self, request, queryset):
+        updated = queryset.update(activada=True)
+        if updated:
+            #self.send_activation_email(queryset.first())
+            pass
+        return updated
+    actions = ['Activar',]
 
 @admin.register(Campaña)
 class CampañaAdmin(admin.ModelAdmin):

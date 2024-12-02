@@ -268,7 +268,7 @@
                         <div style="margin-bottom: 1px">
                         <a href="{% url 'chat_comunidad' comunidad.slug %}" class="action-button bg-primary">Chat de la comunidad</a>
                         </div>
-                        <br>    
+                        <br>
                         {% if not es_admin %}
                         <div style="margin-top: 1px">
                             <a href="{% url 'salir_comunidad' comunidad.slug %}" class="action-button boton-condicional">Salir de la comunidad</a>
@@ -304,6 +304,7 @@
                     <h3>Campañas</h3>
                     <hr class="community-divider">
                     {% for campaign in campaigns|slice:":5" %}
+                    {% if campaign.desafio.activada %}
                     <div class="project-item">
                         <a href="{% url 'detalle_campaign' campaign.slug %}">
                         {% if campaign.tipo == 'donacion' %}
@@ -314,6 +315,8 @@
                             <span class="h4">{{ campaign.desafio.titulo }}</span>
                         </a>
                     </div>
+                    {% endif %}
+
                     {% empty %}
                         <p>No hay campañas para mostrar.</p>
                     {% endfor %}
@@ -387,7 +390,7 @@
                             {% else %}
                             <div class="mt-4">
                                 <a href="{% url 'no_me_gusta' pub.tematica.pk %}" class="btn btn-danger">No me interesa este contenido</a>
-                            </div> 
+                            </div>
                             {% endif %}
                             </div>
 

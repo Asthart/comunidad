@@ -135,7 +135,8 @@ class Desafio(models.Model):
     premio = models.ForeignKey(Premio, on_delete=models.CASCADE,default=None, null=True, blank=True)
     likes = models.ManyToManyField(User, related_name='likes_desafios', blank=True)
     slug = models.SlugField(default="", null=False)
-
+    activada = models.BooleanField(default=False)
+    
     def total_likes(self):
         return self.likes.count()
     def __str__(self):
