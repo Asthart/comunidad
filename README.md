@@ -30,3 +30,5 @@ python manage.py migrate
 ```
 python manage.py runserver
 ```
+## Copar el archivo defaults.py en la siguiente direccion:
+/venv/lib/python3.11/site-packages/django/views/defaults.py
