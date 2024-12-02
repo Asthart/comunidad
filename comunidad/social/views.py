@@ -166,7 +166,6 @@ def detalle_comunidad(request, slug):
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, slug=slug, activada=True)
-    proyectos = Proyecto.objects.filter(comunidad=comunidad).order_by('-id')
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
     es_admin = comunidad.administrador == request.user
@@ -177,6 +176,7 @@ def detalle_comunidad(request, slug):
     tematicas = ""
     mis_tematicas = comunidad.tematica.all()
     no_me_gustan = [no.id for no in profile.no_me_gusta.all()]
+    proyectos = Proyecto.objects.filter(comunidad=comunidad).exclude(tematica__in=no_me_gustan).order_by('-id')
 
     for tema in mis_tematicas:
         tematicas += f"{tema}, "
