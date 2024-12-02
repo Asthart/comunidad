@@ -155,10 +155,9 @@ def crear_comunidad(request):
 def lista_publicaciones(request,username):
     user = User.objects.get(username=username)
     profile = PerfilUsuario.objects.get(usuario=user)
-    no_me_gustan = [no.id for no in profile.no_me_gusta.all()]
-    publicaciones = Publicacion.objects.filter(autor = user).exclude(tematica__in=no_me_gustan).order_by('-fecha_publicacion')
+    publicaciones = Publicacion.objects.filter(autor = user).order_by('-fecha_publicacion')
 
-    return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user, 'no_me_gustan': no_me_gustan})
+    return render(request, 'lista_publicaciones.html', {'publicaciones': publicaciones, 'user': user, })
 
 @login_required
 def detalle_comunidad(request, slug):
@@ -859,7 +858,7 @@ def lista_proyectos(request, slug):
     profile = PerfilUsuario.objects.get(usuario=user)
     no_me_gustan = [no.id for no in profile.no_me_gusta.all()]
     proyectos = Proyecto.objects.filter(comunidad=comunidad).exclude(tematica__in=no_me_gustan).order_by('-id')
-    
+
     return render(request, 'lista_proyectos.html', {
         'comunidad': comunidad,
         'proyectos': proyectos,
