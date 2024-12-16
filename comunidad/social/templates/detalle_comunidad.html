@@ -258,11 +258,11 @@
                 <div class="community-info">
                     <h1 class="community-name">{{ comunidad.nombre }}</h1>
                     <hr class="community-divider">
-                    <p class="community-description">{{ comunidad.descripcion }}</p>
+                    <p  class="community-description">{{ comunidad.descripcion }}</p>
                     <p class="community-tag text-muted">Temáticas: {{ tematicas }}</p>
                 </div>
 
-                <div class="boton-comunidad">
+                <div class="boton-comunidad" style="min-width: max-content;">
                     {% if not is_superuser %}
                     {% if es_miembro %}
                         <div style="margin-bottom: 1px">
@@ -368,7 +368,17 @@
                     <a href="{% url 'crear_publicacion' comunidad.slug %}" class="action-button" style="">Crear Publicación</a>
                     {% endif %}
                 </div>
+                <div class="publication">
+                    <p class="fw-bold text-center title">Filtrar por temática:</p>
+                    <div class="d-flex flex-wrap justify-content-center">
+                        <a style="color: blue;" href="{% url 'detalle_comunidad' comunidad.slug %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %} me-2">Todas</a>
+                        {% for tematica in mis_tematicas %}
+                            <a style="color: blue;" href="{% url 'detalle_comunidad' comunidad.slug %}?filtro={{tematica.nombre}}" class="btn {% if filtro_actual == '{{tematica.nombre}}' %}btn-active{% endif %} me-2 mb-2">{{tematica.nombre}}</a>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% if publicaciones %}
+
                     {% for pub in publicaciones %}
                         <div class="publication">
                             <div class="publication-header">

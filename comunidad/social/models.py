@@ -33,7 +33,7 @@ class Comunidad(models.Model):
     #donaciones = models.BooleanField(default=False)
     foto_perfil = models.ImageField(upload_to='comunidades/perfiles/', null=True, blank=True, default='comunidades/perfiles/perfil_default.jpg')
     banner = models.ImageField(upload_to='comunidades/banners/', null=True, blank=True,default='comunidades/banners/banner_default.jpg')
-    tematica = models.ManyToManyField(Tematica,related_name='Tema')
+    tematica = models.ManyToManyField(Tematica,related_name='Tema',blank=True,null=True)
     slug = models.SlugField(default="", null=False)
     acepta_donaciones=models.BooleanField(default=False)
 

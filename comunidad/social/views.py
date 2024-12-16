@@ -191,7 +191,13 @@ def detalle_comunidad(request, slug):
         Q(comunidad=comunidad) |
         Q(autor__in=[seguido.usuario for seguido in seguidos])
     ).exclude(autor=user).exclude(tematica__in=no_me_gustan).distinct().order_by('-fecha_publicacion')
-
+    print(publicaciones)
+    filtro = request.GET.get('filtro', 'todas')
+    if filtro!=None and filtro != 'todas':
+        publicaciones = publicaciones.filter(tematica__nombre=filtro)
+    print(filtro)
+    print(publicaciones)
+    
     if comunidad.publica:
         campaigns= campaigns.exclude(desafio__tipo_desafio='donacion')
 
@@ -206,6 +212,8 @@ def detalle_comunidad(request, slug):
     'campaigns': campaigns,
     'is_superuser': is_superuser,
     'tematicas': tematicas,
+    'mis_tematicas': mis_tematicas,
+    'filtro_actual': filtro,
 })
 
 @login_required
@@ -366,6 +374,9 @@ def perfil_usuario(request, username):
     count = publicaciones.count()
     donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
     cantidad_donaciones = donaciones.__len__()
+    crowuser = False
+    if Crowuser.objects.get(user=usuario):
+        crowuser = True
 
     return render(request, 'perfil_usuario.html', {
         'usuario': usuario,
@@ -379,6 +390,7 @@ def perfil_usuario(request, username):
         'count': count,
         'donaciones': donaciones,
         'cantidad_donaciones': cantidad_donaciones,
+        'crowuser': crowuser,
     })
 
 from .forms import CustomUserCreationForm
@@ -395,7 +407,7 @@ def register(request):
             #login(request, user)
             if not request.user.is_superuser:
                 accion = Accion.objects.filter(nombre='registrarse').first()
-                update_user_points(request.user.id, accion.id, accion.puntos)
+                update_user_points(user.id, accion.id, accion.puntos)
             return redirect('login')  # Reemplaza 'home' con la URL a donde quieres redirigir después del registro
     else:
 

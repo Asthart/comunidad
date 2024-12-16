@@ -6,6 +6,7 @@
             <h1 class="text-center fw-bold">Campañas de {{comunidad.nombre}}</h1>
 
             <div class="mt-4">
+                <p class="fw-bold">Filtros:</p>
                 <div class="d-flex justify-content-center">
                     <a style="color: blue;" href="{% url 'lista_campaigns' comunidad.slug %}" class="btn {% if filtro_actual == 'todas' %}btn-active{% endif %} me-2">Ver todas</a>
                     <a style="color: blue;" href="{% url 'lista_campaigns' comunidad.slug %}?filtro=activas" class="btn {% if filtro_actual == 'activas' %}btn-active{% endif %} me-2">Ver solo activas</a>

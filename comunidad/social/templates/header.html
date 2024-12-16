@@ -23,7 +23,7 @@
         </li>
           <li class="nav-item"><a href="{% url 'ranking' %}" class="nav-link active"><img src="{% static 'images/ranking1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-ranking-star"></i><span class="texto">Ranking</span></a></li>
           <li class="nav-item"><a href="#" class="nav-link active"><img src="{% static 'images/marketplace1.svg' %}" alt="Icono" class="icono-svg"><i class="fas"></i><span class="texto">Marketplace</span></a></li>
-          <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link active"><img src="{% static 'images/logout1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-out-alt"></i><span class="texto">Cerrar Sesión</span></a></li>
+          <li class="nav-item"><a href="{% url 'login' %}" class="nav-link active"><img src="{% static 'images/logout1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-out-alt"></i><span class="texto">Cerrar Sesión</span></a></li>
         {% else %}
           <li class="nav-item"><a href="{% url 'login' %}" class="nav-link active"><img src="{% static 'images/login1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-sign-in-alt"></i><span class="texto">Iniciar Sesión</span></a></li>
           <li class="nav-item"><a href="{% url 'register' %}" class="nav-link active"><img src="{% static 'images/register1.svg' %}" alt="Icono" class="icono-svg"><i class="fas fa-user-plus"></i><span class="texto">Registrarse</span></a></li>
