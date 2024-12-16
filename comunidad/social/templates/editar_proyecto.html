@@ -1,0 +1,95 @@
+{% load static %}
+
+<body>
+    <main>
+        <div class="container mt-5 p-4 bg-white shadow rounded dorado">
+            <h2 class="text-center mb-4 fw-bold">Edita tu proyecto</h2>
+            <hr class="community-divider">
+            <br>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 fw-bold">
+                        <label for="descripcion mb-5 ">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" rows="4" class="form-control">{{ proyecto.descripcion }}</textarea>
+                    </div>
+                    <div class="col-md-6 fw-bold">
+                        <label for="imagenes">Imagen:</label>
+                        <input accept="image/*" type="file" id="imagenes" name="imagenes" class="form-control">
+                    </div>
+                    <div class="col-md-6 fw-bold">
+                        <label for="documentos">Documento:</label>
+                        <input accept="file/*" type="file" id="documentos" name="documentos" class="form-control">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-md-6 fw-bold">
+                        <label for="titulo">Título:</label>
+                        <input type="text" id="titulo" name="titulo" class="form-control" placeholder="{{ proyecto.titulo }}" value="{{ proyecto.titulo }}">
+                    </div>
+                </div>
+                <br>
+                <button type="submit" class="btn btn-primary mt-3 w-100">Actualizar proyecto</button>
+            </form>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'eliminar_proyecto' proyecto.slug %}" class="btn btn-danger">Eliminar proyecto</a>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'perfil_usuario' request.user.username %}" class="btn btn-primary">Volver</a>
+        </div>
+        <br>
+    </main>
+
+{% include 'header.html' %}
+{% include 'footer.html' %}
+
+<style>
+    .dorado{
+        border:2px solid #fcc350 !important;
+      }
+      .community-divider {
+        width: 100%;
+        border: 1px solid #fcc350;
+        height: 1px;
+        background: #ddd;
+        margin: 10px 0;
+      }
+      body {
+        margin-top: 80px;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+    
+      main{
+        flex: 1;
+      }
+
+    .container {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    h2 {
+        color: #2c3e50;
+        padding-bottom: 10px;
+    }
+
+    .btn {
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .btn-secondary {
+        background-color: #ecf0f1;
+        border-color: #bdc3c7;
+    }
+</style>
+</body>
+</html>

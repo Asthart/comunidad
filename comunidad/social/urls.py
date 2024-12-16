@@ -60,5 +60,6 @@ urlpatterns = [
     path('comunidad/<slug:slug>/salir/', views.salir_comunidad, name='salir_comunidad'),
     path('donaciones/', views.ver_donaciones, name='ver_donaciones'),
     path('no_me_gusta/<tematica>/', views.no_me_gusta, name='no_me_gusta'),
-
+    path('editar_proyecto/<slug:slug>/', views.editar_proyecto, name='editar_proyecto'),
+    path('eliminar_proyecto/<slug:slug>/', views.eliminar_proyecto, name='eliminar_proyecto'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

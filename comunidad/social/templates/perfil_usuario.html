@@ -134,7 +134,7 @@
             <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Proyectos Publicados</h2>
             <hr class="community-divider">
             <ul class="project-list">
-                {% for proyecto in proyectos|slice:":5" %}
+                {% for proyecto in proyectos %}
                     <li><a href="{% url 'detalle_proyecto' proyecto.slug %}" class="text-decoration-none">{{ proyecto.titulo }}</a></li>
                 {% empty %}
                     <li>Este usuario no ha publicado ningún proyecto.</li>
@@ -146,7 +146,7 @@
             <h2 class="mb-4 fw-bold"><i class="fas fa-project-diagram"></i> Comunidades</h2>
             <hr class="community-divider">
             <ul class="project-list">
-                {% for comunidad in comunidades|slice:":5" %}
+                {% for comunidad in comunidades %}
                     <li><a href="{% url 'detalle_comunidad' comunidad.slug %}" class="text-decoration-none">{{ comunidad.nombre }}</a></li>
                 {% empty %}
                     <li>Este usuario no pertenece a ninguna comunidad.</li>

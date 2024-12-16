@@ -93,6 +93,12 @@
             <div class="card-body">
                 <h1 class="card-title fw-bold text-center">Proyecto {{ proyecto.titulo }}</h1>
                 <hr class="community-divider">
+                {% if yo %}
+                <div class="text-center mt-4">
+                    <a href="{% url 'editar_proyecto' proyecto.slug  %}" class="btn btn-success">Editar proyecto</a>
+                </div>
+                <br>
+                {% endif %}
                 {% if proyecto.imagenes %}
                 <img src="{{ proyecto.imagenes.url }}" class="card-img-top" alt="{{ proyecto.titulo }}" style="max-width: 100%; height: auto;">
                 {% endif %}

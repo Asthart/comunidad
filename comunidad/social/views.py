@@ -245,10 +245,13 @@ def crear_proyecto(request,slug):
 def detalle_proyecto(request, slug):
     proyecto = get_object_or_404(Proyecto, slug=slug)
     no_me_gusta = False
+    yo = False
+    if proyecto.creador == request.user:
+        yo = True
     if proyecto.tematica in request.user.perfilusuario.no_me_gusta.all():
         no_me_gusta = True
 
-    return render(request, 'detalle_proyecto.html', {'proyecto': proyecto, 'no_me_gusta': no_me_gusta})
+    return render(request, 'detalle_proyecto.html', {'proyecto': proyecto, 'no_me_gusta': no_me_gusta, 'yo':yo})
 
 @login_required
 def crear_desafio(request,slug):
@@ -371,7 +374,8 @@ def perfil_usuario(request, username):
     yo= not usuario==request.user
     comunidades=Comunidad.objects.filter(miembros=usuario)
     publicaciones = Publicacion.objects.filter(autor=usuario).order_by('-fecha_publicacion')
-    count = publicaciones.count()
+    pubcount = publicaciones.count()
+    procount = proyectos.count()
     donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
     cantidad_donaciones = donaciones.__len__()
     crowuser = False
@@ -387,7 +391,8 @@ def perfil_usuario(request, username):
         'yo':yo,
         'comunidades':comunidades,
         'publicaciones':publicaciones,
-        'count': count,
+        'pubcount': pubcount,
+        'procount': procount,
         'donaciones': donaciones,
         'cantidad_donaciones': cantidad_donaciones,
         'crowuser': crowuser,
@@ -997,6 +1002,23 @@ def editar_perfil(request):
         'form_usuario': user_form,
         'user': user,
     })
+    
+@login_required
+def editar_proyecto(request, slug):
+    proyecto = get_object_or_404(Proyecto, slug=slug)
+    form = ProyectoForm(instance=proyecto)
+    if request.method == 'POST':
+        form = ProyectoForm(request.POST, request.FILES, instance=proyecto)
+        if form.is_valid():
+            form.save()
+            return redirect('detalle_proyecto', slug=proyecto.slug)
+    return render(request, 'editar_proyecto.html', {'form': form, 'proyecto': proyecto})
+
+@login_required
+def eliminar_proyecto(request, slug):
+    proyecto = get_object_or_404(Proyecto, slug=slug)
+    proyecto.delete()
+    return redirect('detalle_comunidad', slug=proyecto.comunidad.slug)
 
 @login_required
 def unirse_comunidad(request, slug):
