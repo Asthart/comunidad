@@ -98,8 +98,10 @@
                     <!--
                     <p class="profile-info"><i class="fas fa-user-tag"></i> Rol: {{ perfil.rol }}</p>
                     -->
+                    {% if usuario.es_administrador_comunidad %}
                     <p class="profile-info"><i class="fas fa-star"></i> Puntos: {{ perfil.puntos }}</p>
                     <p class="profile-info"><i class="fas fa-trophy"></i> Clasificación: {{ clasificacion }}</p>
+                    {% endif %}
 
 
                     <div class="action-buttons">

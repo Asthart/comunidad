@@ -1109,7 +1109,10 @@ def ranking_usuarios(request):
     ranking = (
         AccionUsuario.objects.filter(
             timestamp__range=(fecha_inicio, fecha_fin),
-            user__is_superuser=False)
+            user__is_superuser=False,
+            user__id__in=(
+        User.objects.exclude(groups__name='Administrador de Comunidad').values_list('id', flat=True)
+    ))
         .values('user__username')
         .annotate(total_puntos=Sum('puntos'))
         .order_by('-total_puntos')

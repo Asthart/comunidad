@@ -172,6 +172,7 @@ class ClasificacionAdmin(admin.ModelAdmin):
 class ActionAdmin(admin.ModelAdmin):
     list_display = ('id','nombre', 'puntos')
     search_fields = ('nombre',)
+    readonly_fields= ('nombre',)
 
 @admin.register(Premio)
 class PremioAdmin(admin.ModelAdmin):

@@ -218,6 +218,9 @@ class PerfilUsuario(models.Model):
         sigue = perfil_usuario.seguidos.filter(id=self.usuario.id).exists()
         print(f"Resultado: {sigue}")
         return sigue
+    def es_administrador_comunidad(usuario):
+        return usuario.groups.filter(name='Administrador de Comunidad').exists()
+
 
     def seguir_usuario(self, usuario_a_seguir):
         perfil_usuario_a_seguir = PerfilUsuario.objects.get(usuario=usuario_a_seguir)
