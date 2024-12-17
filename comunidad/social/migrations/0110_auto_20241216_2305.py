@@ -15,7 +15,7 @@ def create_default_entries(apps, schema_editor):
         'crear_proyecto',
         'registrarse',
         'publicar',
-        'inicio',
+        'donar',
         'seguir',
         'responder_campaign',
         'puntuar desafio',

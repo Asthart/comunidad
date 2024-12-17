@@ -922,10 +922,7 @@ def guardar_donacion(request,slug):
 
         if (float(cantidad)<desafio.min_monto or float(cantidad)>desafio.max_monto or desafio.cantidad_donada>desafio.objetivo_monto):
             if (desafio.cantidad_donada>desafio.objetivo_monto):
-                print(campaig.slug)
-                print("el problema es aqui")
-                print(desafio.min_monto)
-                print(maximo)
+
                 return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {maximo}',
                                                                 'slug':campaig.slug})
             return render(request, 'crear_donacion.html', {'error': 'Por favor, el monto debe ser entre {desafio.min_monto} y {desafio.max_monto}',
@@ -938,7 +935,9 @@ def guardar_donacion(request,slug):
             identificador_transferencia=identificador_transferencia,
             cantidad=cantidad,
         )
-
+        if not request.user.is_superuser:
+            accion = Accion.objects.filter(nombre='donar').first()
+            update_user_points(request.user.id, accion.id, accion.puntos)
         # Si todo salió bien, redirige al usuario a la lista de donaciones
         return redirect('detalle_campaign', slug=campaig.slug)
     campaign = desafio.campaign
