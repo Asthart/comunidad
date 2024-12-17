@@ -197,7 +197,7 @@ def detalle_comunidad(request, slug):
         publicaciones = publicaciones.filter(tematica__nombre=filtro)
     print(filtro)
     print(publicaciones)
-    
+
     if comunidad.publica:
         campaigns= campaigns.exclude(desafio__tipo_desafio='donacion')
 
@@ -379,7 +379,7 @@ def perfil_usuario(request, username):
     donaciones = DonacionComunidad.objects.filter(donador=request.user).order_by('-fecha_creacion')
     cantidad_donaciones = donaciones.__len__()
     crowuser = False
-    if Crowuser.objects.get(user=usuario):
+    if usuario.groups.filter(name='Crowdsourcer').exists():
         crowuser = True
 
     return render(request, 'perfil_usuario.html', {
@@ -527,7 +527,7 @@ def crear_comentario(request, pk):
                 accion = Accion.objects.filter(nombre='comentar').first()
                 update_user_points(request.user.id, accion.id, accion.puntos)
 
-            return redirect('detalle_comunidad', publicacion.comunidad.pk)
+            return redirect('detalle_comunidad', publicacion.comunidad.slug)
     else:
         form = ComentarioForm()
     return render(request, 'crear_comentario.html', {'form': form, 'publicacion': publicacion})
@@ -1002,7 +1002,7 @@ def editar_perfil(request):
         'form_usuario': user_form,
         'user': user,
     })
-    
+
 @login_required
 def editar_proyecto(request, slug):
     proyecto = get_object_or_404(Proyecto, slug=slug)

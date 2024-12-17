@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.urls import path
 from .models import *
 from django.core.mail import send_mail
-
+from django.db.models import Q
 class PerfilUsuarioInline(admin.StackedInline):
     model = PerfilUsuario
     can_delete = False
@@ -25,7 +25,20 @@ class ComunidadAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'administrador','activada')
     search_fields = ('nombre', 'administrador__username')
     filter_horizontal = ('miembros','tematica')
+    readonly_fields= ('activada',)
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = super().get_readonly_fields(request, obj)
 
+        # Verificamos si el objeto existe y si campo_b es True
+        if obj and obj.publica:
+            # Si campo_b es True, agregamos campo_c a readonly_fields
+            readonly_fields = readonly_fields + ('acepta_donaciones',)
+
+        return readonly_fields
+    def save_model(self, request, obj, form, change):
+        if obj.publica:
+            obj.acepta_donaciones = False
+        super().save_model(request, obj, form, change)
     def Activar(self, request, queryset):
         updated = queryset.update(activada=True)
         if updated:
@@ -97,19 +110,24 @@ class DesafioAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("titulo",)}
     list_filter = ('comunidad', 'fecha_inicio', 'fecha_fin')
     search_fields = ('titulo', 'creador__username', 'comunidad__nombre')
+    readonly_fields= ('activada',)
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         if request.user.is_superuser:
             return qs
-        return qs.filter(comunidad__administrador=request.user)
+        return qs.filter(Q(comunidad__administrador=request.user) | Q(creador=request.user))
+
 
     def Activar(self, request, queryset):
-        updated = queryset.update(activada=True)
-        if updated:
+        if request.user.is_superuser:
+            updated = queryset.update(activada=True)
+            if updated:
             #self.send_activation_email(queryset.first())
-            pass
-        return updated
+                return updated
+        return queryset
     actions = ['Activar',]
+
 
 @admin.register(Campaña)
 class CampañaAdmin(admin.ModelAdmin):
@@ -202,7 +220,13 @@ class DonacionComunidadAdmin(admin.ModelAdmin):
             donacion.delete()
         self.message_user(request, f"{len(queryset)} donación(es) eliminada(s) y el monto objetivo actualizado.")
     eliminar_donacion.short_description = "Eliminar seleccionadas y actualizar monto objetivo"
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
 
+
+        return qs.filter(Q(campaign__comunidad__administrador=request.user) | Q(campaign__creador=request.user))
 @admin.register(Cuenta)
 class CuentaAdmin(admin.ModelAdmin):
     list_display = ('id','qr_code', 'numero_cuenta')
@@ -225,6 +249,7 @@ class SolicitudMembresiaAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'comunidad', 'fecha_solicitud', 'estado')
     list_filter = ('estado',)
     actions = ['aceptar_solicitud', 'rechazar_solicitud']
+    readonly_fields= ('estado',)
 
     def aceptar_solicitud(self, request, queryset):
         for solicitud in queryset:
@@ -250,13 +275,18 @@ class SolicitudMembresiaAdmin(admin.ModelAdmin):
 
     aceptar_solicitud.short_description = "Aceptar solicitudes seleccionadas"
     rechazar_solicitud.short_description = "Rechazar solicitudes seleccionadas"
-
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        return qs.filter(comunidad__administrador=request.user)
 admin.site.register(SolicitudMembresia, SolicitudMembresiaAdmin)
 
 class SolicitudCrowuserAdmin(admin.ModelAdmin):
     list_display = ('usuario', 'fecha_solicitud')
     actions = ['aceptar_solicitud', 'rechazar_solicitud']
-
+    def has_delete_permission(self, request, obj=None):
+        return False
     def aceptar_solicitud(self, request, queryset):
         for solicitud in queryset:
             # Cambiar el estado de la solicitud a 'aceptada'
