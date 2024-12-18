@@ -22,7 +22,7 @@
                 <br>
                 <div class="form-group fw-bold">
                     <label for="cantidad">Cantidad:</label>
-                    <input type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any" min="{{min}}" max="{{ max }}" oninput="this.value = Math.min(Math.max(0, parseInt(this.value)), {{max}}).toFixed(0)">
+                    <input required type="number" id="cantidad" name="cantidad" class="form-control" value="" step="any" min="{{min}}" max="{{ max }}" oninput="this.value = Math.min(Math.max(0, parseInt(this.value)), {{max}}).toFixed(0)">
                     <small class="form-text text-muted">La cantidad debe estar entre {{min}} y {{max}}.</small>
                 </div>
                 <br>

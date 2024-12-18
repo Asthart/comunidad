@@ -303,6 +303,7 @@
                 <div class="publication">
                     <h3>Campañas</h3>
                     <hr class="community-divider">
+                    {% if hay %}
                     {% for campaign in campaigns|slice:":5" %}
                     {% if campaign.desafio.activada %}
                     <div class="project-item">
@@ -320,10 +321,13 @@
                     {% empty %}
                         <p>No hay campañas para mostrar.</p>
                     {% endfor %}
+                    {% else %}
+                        <p>No hay campañas para mostrar.</p>
+                    {% endif %}
                     <br>
                     <div >
-                        {% if not campaigns.count == 0 %}
-                        <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.id %}" class="action-button boton-condicional">Ver Todas</a>
+                        {% if not campaigns.count == 0 and hay %}
+                        <a style="margin-bottom: 10px; display: flex; justify-content: center;" href="{% url 'lista_campaigns' comunidad.slug %}" class="action-button boton-condicional">Ver Todas</a>
                         {% endif %}
                         {% if es_admin or es_crowdsourcer and not is_superuser %}
                             <a style="display: flex; justify-content: center;" href="{% url 'crear_desafio' comunidad.slug %}" class="action-button">Crear campaña</a>

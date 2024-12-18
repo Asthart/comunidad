@@ -169,6 +169,9 @@ def detalle_comunidad(request, slug):
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, slug=slug, activada=True)
+    
+    revisar_campaigns(comunidad=comunidad)
+    
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
     es_admin = comunidad.administrador == request.user
@@ -200,7 +203,11 @@ def detalle_comunidad(request, slug):
 
     if comunidad.publica:
         campaigns= campaigns.exclude(desafio__tipo_desafio='donacion')
-
+    
+    hay = False
+    if campaigns.filter(activa=True).count() > 0:
+        hay = True
+    
     return render(request, 'detalle_comunidad.html', {
     'publicaciones': publicaciones,
     'comunidad': comunidad,
@@ -214,7 +221,17 @@ def detalle_comunidad(request, slug):
     'tematicas': tematicas,
     'mis_tematicas': mis_tematicas,
     'filtro_actual': filtro,
+    'hay': hay,
 })
+    
+def revisar_campaigns(comunidad):
+    campaigns = Campaña.objects.filter(desafio__comunidad=comunidad, desafio__activada=True)
+    for campaign in campaigns:
+        if campaign.desafio.fecha_fin != None and campaign.desafio.fecha_fin < timezone.now():
+            campaign.desafio.activada = False
+            campaign.activa = False
+            campaign.desafio.save()
+            campaign.save()
 
 @login_required
 #@permission_required('social.add_proyecto', raise_exception=True)
@@ -865,7 +882,7 @@ def lista_campaigns(request, slug):
     elif filtro == 'no_activas':
         campaigns = campaigns.filter(activa=False)
 
-    if comunidad.publica:
+    if comunidad != None and comunidad.publica:
         campaigns = campaigns.exclude(desafio__tipo_desafio='donacion')
 
     return render(request, 'lista_campaigns.html', {
