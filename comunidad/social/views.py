@@ -93,9 +93,7 @@ def inicio(request):
             publicaciones.append(publicaciones_seguidos.pop(0))
 
     # Actualizar puntos del usuario
-    if not request.user.is_superuser:
-        accion = Accion.objects.filter(nombre='inicio').first()
-        update_user_points(user.id, accion.id, accion.puntos)
+
 
     url = request.path
     is_first_time = is_first_visit(request, url)
@@ -169,9 +167,9 @@ def detalle_comunidad(request, slug):
     user = request.user
     profile = PerfilUsuario.objects.get(usuario=user)
     comunidad = get_object_or_404(Comunidad, slug=slug, activada=True)
-    
+
     revisar_campaigns(comunidad=comunidad)
-    
+
     desafios = Desafio.objects.filter(comunidad=comunidad)
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad).order_by('-id')
     es_admin = comunidad.administrador == request.user
@@ -203,11 +201,11 @@ def detalle_comunidad(request, slug):
 
     if comunidad.publica:
         campaigns= campaigns.exclude(desafio__tipo_desafio='donacion')
-    
+
     hay = False
     if campaigns.filter(activa=True).count() > 0:
         hay = True
-    
+
     return render(request, 'detalle_comunidad.html', {
     'publicaciones': publicaciones,
     'comunidad': comunidad,
@@ -223,7 +221,7 @@ def detalle_comunidad(request, slug):
     'filtro_actual': filtro,
     'hay': hay,
 })
-    
+
 def revisar_campaigns(comunidad):
     campaigns = Campaña.objects.filter(desafio__comunidad=comunidad, desafio__activada=True)
     for campaign in campaigns:
